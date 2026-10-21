@@ -8,14 +8,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 body{font-family:'Noto Nastaliq Urdu',serif;background:#f3f6f4;margin:0;color:#173;line-height:2}
-.w{max-width:960px;margin:auto;padding:12px}
+.w{max-width:1000px;margin:auto;padding:12px}
 .c{background:#fff;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 1px 4px #0002}
-h1,h2{color:#0b5d3b;margin:4px 0}
+h1,h2,h3{color:#0b5d3b;margin:4px 0}
 input,select,button{font:inherit;padding:4px 10px;margin:3px;border:1px solid #9bb;border-radius:8px}
 button{background:#0b5d3b;color:#fff;border:0;cursor:pointer}
 .t{overflow-x:auto}table{border-collapse:collapse;width:100%}
 th,td{border:1px solid #cdd;padding:2px 8px;text-align:center;white-space:nowrap}th{background:#e3f1ea}
-.g{display:flex;flex-wrap:wrap;gap:4px}
+.g{display:flex;flex-wrap:wrap;gap:4px;align-items:center}[hidden]{display:none!important}
+.im{width:40px;height:40px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-left:6px}
+#pimg{width:70px;height:70px}
 </style>
 </head>
 <body><div class="w">
@@ -29,14 +31,23 @@ th,td{border:1px solid #cdd;padding:2px 8px;text-align:center;white-space:nowrap
 
 <div id="app" hidden>
   <div class="c"><b id="who"></b> <button onclick="location.reload()">لاگ آؤٹ</button></div>
+  <div id="mine" class="c" hidden></div>
 
-  <div class="c"><h2>نئی کارکردگی درج کریں</h2><div class="g">
-    <select id="st"></select><input id="dt" type="date">
-    <input id="mu" type="number" placeholder="مطالعہ (صفحات)">
-    <input id="te" type="number" placeholder="ٹیسٹ نمبر">
-    <input id="mp" type="number" placeholder="مدنی پھول">
-    <input id="fa" type="number" placeholder="فتاویٰ">
-    <input id="no" placeholder="نوٹ"><button onclick="add()">محفوظ کریں</button>
+  <div class="c"><h2>نئی کارکردگی درج کریں</h2>
+    <div class="g"><select id="st" onchange="fields()"></select><input id="dt" type="month" title="ماہ"></div>
+    <div id="flds" class="g"></div>
+    <div class="g"><input id="no" placeholder="نوٹ"><button onclick="add()">محفوظ کریں</button></div>
+    <div id="ph" class="g">تصویر:
+      <img id="pimg" class="im" alt="" hidden><input type="file" accept="image/*" onchange="pick(this)">
+    </div>
+  </div>
+
+  <div id="tg" class="c" hidden><h2>ماہانہ ہدف مقرر کریں</h2><div class="g">
+    <select id="tc" onchange="loadT()"></select><input id="tm" type="month" onchange="loadT()">
+    <input id="t_mutalia" type="number" placeholder="مطالعہ ہدف (صفحات)">
+    <input id="t_hazri" type="number" placeholder="حاضری ہدف (دن)">
+    <input id="t_madaniPhool" type="number" placeholder="مدنی پھول ہدف">
+    <button onclick="setT()">ہدف محفوظ کریں</button>
   </div></div>
 
   <div id="adm" class="c" hidden><h2>نیا یوزر شامل کریں (منتظم)</h2><div class="g">
@@ -46,9 +57,9 @@ th,td{border:1px solid #cdd;padding:2px 8px;text-align:center;white-space:nowrap
   </div></div>
 
   <div class="c"><h2>تجزیہ</h2>
+    ماہ: <select id="mf" onchange="render()"></select>
     جماعت: <select id="cf" onchange="render()"></select>
-    <div class="t"><table id="sum"></table></div>
-    <canvas id="ch" height="110"></canvas>
+    <div id="out"></div>
   </div>
 
   <div class="c"><h2>حالیہ اندراجات</h2><div class="t"><table id="log"></table></div></div>
@@ -57,54 +68,78 @@ th,td{border:1px solid #cdd;padding:2px 8px;text-align:center;white-space:nowrap
 
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
-let U,P,D,ch;
+let U,P,D,CH=[];
+const TK=['mutalia','hazri','madaniPhool'];
+const COL=['#0b5d3b','#3b6fb6','#2e8b57','#c9a227','#a0522d','#7b4fa3','#d2691e','#008b8b'];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
-async function call(o){const r=await fetch(API,{method:'POST',body:JSON.stringify({u:U,p:P,...o})});return r.json();}
+const L=k=>D.labels[D.keys.indexOf(k)];
+const cfg=c=>(D.classes.find(x=>x.class==c)||{f:{deeni12:0,mutalia:0,madaniPhool:0,hazri:0}}).f;
+const mon=e=>String(e.date).slice(0,7);
+const fk=f=>D.keys.filter(k=>k!='photo'&&k in f);
+const V=e=>{const o={};['mutalia','test','madaniPhool','fatwe'].forEach(k=>{if(e[k]!==''&&e[k]!=null)o[k]=+e[k]});
+  try{Object.assign(o,JSON.parse(e.data||'{}'))}catch(_){}return o;};
+const tgt=(cl,key,ms)=>ms.reduce((a,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return a+(r?+r[key]||0:0)},0);
+async function call(o){
+  let r;
+  try{r=await(await fetch(API,{method:'POST',body:JSON.stringify({u:U,p:P,...o})})).json();}
+  catch(e){return {ok:false,msg:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code.gs لگا کر setup چلایا اور New version Deploy کیا ہے؟'};}
+  if(r.ok&&!r.keys)return {ok:false,msg:'Code.gs کا نیا ورژن Deploy نہیں ہوا'};
+  return r;
+}
 
 async function login(){
   U=$('u').value.trim();P=$('p').value;$('msg').textContent='...';
   try{const r=await call({action:'list'});
     if(!r.ok)return $('msg').textContent=r.msg;
-    D=r;$('login').hidden=true;$('app').hidden=false;init();
+    D=r;$('login').hidden=true;$('app').hidden=false;
+    $('who').textContent=D.me.name+' — '+{admin:'منتظم',teacher:'استاد',student:'طالب علم'}[D.me.role];
+    $('adm').hidden=D.me.role!='admin';$('tg').hidden=D.me.role=='student';
+    $('dt').value=$('tm').value=new Date().toISOString().slice(0,7);
+    fill();
   }catch(e){$('msg').textContent='کنکشن میں مسئلہ'}
 }
-function init(){
-  $('who').textContent=D.me.name+' — '+{admin:'منتظم',teacher:'استاد',student:'طالب علم'}[D.me.role];
-  $('adm').hidden=D.me.role!='admin';
-  $('dt').value=new Date().toISOString().slice(0,10);
-  fill();render();
-}
 function fill(){
+  const sv=$('st').value,cv=$('cf').value,mv=$('mf').value,tv=$('tc').value;
   $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(s.name)} (${esc(s.class)})</option>`).join('');
+  if(sv)$('st').value=sv;
   const cl=[...new Set(D.students.map(s=>s.class))];
   $('cf').innerHTML='<option value="">تمام جماعتیں</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
+  $('cf').value=cv;
+  $('tc').innerHTML=cl.map(c=>`<option>${esc(c)}</option>`).join('');if(tv)$('tc').value=tv;
+  const ms=[...new Set(D.entries.map(mon))].sort().reverse();
+  $('mf').innerHTML='<option value="">تمام مہینے</option>'+ms.map(m=>`<option>${m}</option>`).join('');
+  $('mf').value=ms.includes(mv)?mv:(ms[0]||'');
+  if(D.me.role=='student'&&D.students[0]){const s=D.students[0],im=D.photos[s.username];
+    $('mine').hidden=false;
+    $('mine').innerHTML=(im?`<img class="im" style="width:110px;height:110px" src="${im}">`:'<small>ابھی تصویر نہیں لگی، نیچے سے لگائیں</small>')+` <b>${esc(s.name)}</b> — ${esc(s.class)}`;}
+  fields();loadT();render();
+}
+function fields(){
+  const s=D.students.find(x=>x.username==$('st').value);
+  if(!s){$('flds').innerHTML='';return;}
+  $('flds').innerHTML=fk(cfg(s.class)).map(k=>`<input id="f_${k}" type="number" step="any" placeholder="${esc(L(k))}">`).join('');
+  const im=D.photos[s.username];$('pimg').hidden=!im;if(im)$('pimg').src=im;
+}
+function loadT(){
+  const r=D.targets.find(x=>x.class==$('tc').value&&String(x.month).slice(0,7)==$('tm').value)||{};
+  TK.forEach(k=>$('t_'+k).value=r[k]||'');
+}
+async function setT(){
+  const r=await call({action:'setTarget',cls:$('tc').value,month:$('tm').value,
+    mutalia:$('t_mutalia').value,hazri:$('t_hazri').value,madaniPhool:$('t_madaniPhool').value});
+  if(!r.ok)return alert(r.msg);D=r;fill();alert('ہدف محفوظ ہو گیا ✅');
 }
 async function add(){
-  const r=await call({action:'add',student:$('st').value,date:$('dt').value,mutalia:$('mu').value,
-    test:$('te').value,madaniPhool:$('mp').value,fatwe:$('fa').value,note:$('no').value});
+  const vals={};D.keys.forEach(k=>{const el=$('f_'+k);if(el&&el.value!=='')vals[k]=+el.value;});
+  const r=await call({action:'add',student:$('st').value,date:$('dt').value,vals,note:$('no').value});
   if(!r.ok)return alert(r.msg);
-  D=r;render();['mu','te','mp','fa','no'].forEach(i=>$(i).value='');alert('محفوظ ہو گیا ✅');
+  D=r;$('no').value='';fill();alert('محفوظ ہو گیا ✅');
 }
-async function addUser(){
-  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value});
-  if(!r.ok)return alert(r.msg);
-  D=r;fill();render();alert('یوزر شامل ہو گیا ✅');
-}
-function render(){
-  const c=$('cf').value,E=D.entries.filter(e=>!c||e.class==c),S={};
-  E.forEach(e=>{const s=S[e.username]??={name:e.name,cl:e.class,n:0,m:0,t:0,mp:0,f:0};
-    s.n++;s.m+=+e.mutalia;s.t+=+e.test;s.mp+=+e.madaniPhool;s.f+=+e.fatwe;});
-  const A=Object.values(S).sort((a,b)=>b.f-a.f);
-  $('sum').innerHTML='<tr><th>نام</th><th>جماعت</th><th>اندراجات</th><th>کل مطالعہ</th><th>اوسط ٹیسٹ</th><th>مدنی پھول</th><th>فتاویٰ</th></tr>'+
-    A.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.cl)}</td><td>${s.n}</td><td>${s.m}</td><td>${(s.t/s.n).toFixed(1)}</td><td>${s.mp}</td><td>${s.f}</td></tr>`).join('');
-  if(ch)ch.destroy();
-  ch=new Chart($('ch'),{type:'bar',data:{labels:A.map(s=>s.name),datasets:[
-    {label:'مدنی پھول',data:A.map(s=>s.mp),backgroundColor:'#2e8b57'},
-    {label:'فتاویٰ',data:A.map(s=>s.f),backgroundColor:'#c9a227'},
-    {label:'اوسط ٹیسٹ',data:A.map(s=>+(s.t/s.n).toFixed(1)),backgroundColor:'#3b6fb6'}]}});
-  $('log').innerHTML='<tr><th>تاریخ</th><th>نام</th><th>جماعت</th><th>مطالعہ</th><th>ٹیسٹ</th><th>مدنی پھول</th><th>فتاویٰ</th><th>نوٹ</th></tr>'+
-    E.slice(-30).reverse().map(e=>`<tr><td>${esc(String(e.date).slice(0,10))}</td><td>${esc(e.name)}</td><td>${esc(e.class)}</td><td>${e.mutalia}</td><td>${e.test}</td><td>${e.madaniPhool}</td><td>${e.fatwe}</td><td>${esc(e.note)}</td></tr>`).join('');
-}
-</script>
-</body></html>
+function pick(inp){
+  const f=inp.files[0];if(!f)return;const im=new Image();
+  im.onload=async()=>{const r=Math.min(1,160/Math.max(im.width,im.height)),c=document.createElement('canvas');
+    c.width=im.width*r;c.height=im.height*r;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    const x=await call({action:'photo',student:$('st').value,img:c.toDataURL('image/jpeg',.6)});
+    if(!x.ok)return alert(x.msg);D=x;fill();alert('تصویر محفوظ ہو گئی ✅');};
+  im.onerror=()=>alert('یہ تصویر کھل نہیں
