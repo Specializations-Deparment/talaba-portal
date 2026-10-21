@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>طلبہ کارکردگی پورٹل</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+body{font-family:'Noto Nastaliq Urdu',serif;background:#f3f6f4;margin:0;color:#173;line-height:2}
+.w{max-width:960px;margin:auto;padding:12px}
+.c{background:#fff;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 1px 4px #0002}
+h1,h2{color:#0b5d3b;margin:4px 0}
+input,select,button{font:inherit;padding:4px 10px;margin:3px;border:1px solid #9bb;border-radius:8px}
+button{background:#0b5d3b;color:#fff;border:0;cursor:pointer}
+.t{overflow-x:auto}table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #cdd;padding:2px 8px;text-align:center;white-space:nowrap}th{background:#e3f1ea}
+.g{display:flex;flex-wrap:wrap;gap:4px}
+</style>
+</head>
+<body><div class="w">
+<h1>📚 طلبہ کارکردگی پورٹل</h1>
+
+<div id="login" class="c">
+  <h2>لاگ اِن</h2>
+  <input id="u" placeholder="یوزر نیم"><input id="p" type="password" placeholder="پاس ورڈ">
+  <button onclick="login()">داخل ہوں</button> <b id="msg" style="color:#c00"></b>
+</div>
+
+<div id="app" hidden>
+  <div class="c"><b id="who"></b> <button onclick="location.reload()">لاگ آؤٹ</button></div>
+
+  <div class="c"><h2>نئی کارکردگی درج کریں</h2><div class="g">
+    <select id="st"></select><input id="dt" type="date">
+    <input id="mu" type="number" placeholder="مطالعہ (صفحات)">
+    <input id="te" type="number" placeholder="ٹیسٹ نمبر">
+    <input id="mp" type="number" placeholder="مدنی پھول">
+    <input id="fa" type="number" placeholder="فتاویٰ">
+    <input id="no" placeholder="نوٹ"><button onclick="add()">محفوظ کریں</button>
+  </div></div>
+
+  <div id="adm" class="c" hidden><h2>نیا یوزر شامل کریں (منتظم)</h2><div class="g">
+    <input id="nn" placeholder="نام"><input id="nu" placeholder="یوزر نیم"><input id="np" placeholder="پاس ورڈ">
+    <select id="nr"><option value="student">طالب علم</option><option value="teacher">استاد</option></select>
+    <input id="nc" placeholder="جماعت"><button onclick="addUser()">شامل کریں</button>
+  </div></div>
+
+  <div class="c"><h2>تجزیہ</h2>
+    جماعت: <select id="cf" onchange="render()"></select>
+    <div class="t"><table id="sum"></table></div>
+    <canvas id="ch" height="110"></canvas>
+  </div>
+
+  <div class="c"><h2>حالیہ اندراجات</h2><div class="t"><table id="log"></table></div></div>
+</div>
+</div>
+
+<script>
+const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
+let U,P,D,ch;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
+async function call(o){const r=await fetch(API,{method:'POST',body:JSON.stringify({u:U,p:P,...o})});return r.json();}
+
+async function login(){
+  U=$('u').value.trim();P=$('p').value;$('msg').textContent='...';
+  try{const r=await call({action:'list'});
+    if(!r.ok)return $('msg').textContent=r.msg;
+    D=r;$('login').hidden=true;$('app').hidden=false;init();
+  }catch(e){$('msg').textContent='کنکشن میں مسئلہ'}
+}
+function init(){
+  $('who').textContent=D.me.name+' — '+{admin:'منتظم',teacher:'استاد',student:'طالب علم'}[D.me.role];
+  $('adm').hidden=D.me.role!='admin';
+  $('dt').value=new Date().toISOString().slice(0,10);
+  fill();render();
+}
+function fill(){
+  $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(s.name)} (${esc(s.class)})</option>`).join('');
+  const cl=[...new Set(D.students.map(s=>s.class))];
+  $('cf').innerHTML='<option value="">تمام جماعتیں</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
+}
+async function add(){
+  const r=await call({action:'add',student:$('st').value,date:$('dt').value,mutalia:$('mu').value,
+    test:$('te').value,madaniPhool:$('mp').value,fatwe:$('fa').value,note:$('no').value});
+  if(!r.ok)return alert(r.msg);
+  D=r;render();['mu','te','mp','fa','no'].forEach(i=>$(i).value='');alert('محفوظ ہو گیا ✅');
+}
+async function addUser(){
+  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value});
+  if(!r.ok)return alert(r.msg);
+  D=r;fill();render();alert('یوزر شامل ہو گیا ✅');
+}
+function render(){
+  const c=$('cf').value,E=D.entries.filter(e=>!c||e.class==c),S={};
+  E.forEach(e=>{const s=S[e.username]??={name:e.name,cl:e.class,n:0,m:0,t:0,mp:0,f:0};
+    s.n++;s.m+=+e.mutalia;s.t+=+e.test;s.mp+=+e.madaniPhool;s.f+=+e.fatwe;});
+  const A=Object.values(S).sort((a,b)=>b.f-a.f);
+  $('sum').innerHTML='<tr><th>نام</th><th>جماعت</th><th>اندراجات</th><th>کل مطالعہ</th><th>اوسط ٹیسٹ</th><th>مدنی پھول</th><th>فتاویٰ</th></tr>'+
+    A.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.cl)}</td><td>${s.n}</td><td>${s.m}</td><td>${(s.t/s.n).toFixed(1)}</td><td>${s.mp}</td><td>${s.f}</td></tr>`).join('');
+  if(ch)ch.destroy();
+  ch=new Chart($('ch'),{type:'bar',data:{labels:A.map(s=>s.name),datasets:[
+    {label:'مدنی پھول',data:A.map(s=>s.mp),backgroundColor:'#2e8b57'},
+    {label:'فتاویٰ',data:A.map(s=>s.f),backgroundColor:'#c9a227'},
+    {label:'اوسط ٹیسٹ',data:A.map(s=>+(s.t/s.n).toFixed(1)),backgroundColor:'#3b6fb6'}]}});
+  $('log').innerHTML='<tr><th>تاریخ</th><th>نام</th><th>جماعت</th><th>مطالعہ</th><th>ٹیسٹ</th><th>مدنی پھول</th><th>فتاویٰ</th><th>نوٹ</th></tr>'+
+    E.slice(-30).reverse().map(e=>`<tr><td>${esc(String(e.date).slice(0,10))}</td><td>${esc(e.name)}</td><td>${esc(e.class)}</td><td>${e.mutalia}</td><td>${e.test}</td><td>${e.madaniPhool}</td><td>${e.fatwe}</td><td>${esc(e.note)}</td></tr>`).join('');
+}
+</script>
+</body></html>
