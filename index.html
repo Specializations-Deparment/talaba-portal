@@ -142,4 +142,43 @@ function pick(inp){
     c.width=im.width*r;c.height=im.height*r;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
     const x=await call({action:'photo',student:$('st').value,img:c.toDataURL('image/jpeg',.6)});
     if(!x.ok)return alert(x.msg);D=x;fill();alert('تصویر محفوظ ہو گئی ✅');};
-  im.onerror=()=>alert('یہ تصویر کھل نہیں
+  im.onerror=()=>alert('یہ تصویر کھل نہیں سکی، کوئی JPG یا PNG تصویر چنیں');
+  im.src=URL.createObjectURL(f);inp.value='';
+}
+async function addUser(){
+  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value});
+  if(!r.ok)return alert(r.msg);
+  D=r;fill();alert('یوزر شامل ہو گیا ✅');
+}
+function render(){
+  CH.forEach(c=>c.destroy());CH=[];
+  const c=$('cf').value,m=$('mf').value;
+  const E=D.entries.filter(e=>(!c||e.class==c)&&(!m||mon(e)==m));
+  const by={};
+  E.forEach(e=>{const s=((by[e.class]??={})[e.username]??={u:e.username,name:e.name,n:0,sum:{},cnt:{}});
+    s.n++;const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});
+  let h='';const items=[];
+  Object.keys(by).forEach((k,i)=>{
+    const f=cfg(k),ks=fk(f),A=Object.values(by[k]);
+    const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))];
+    const T={};TK.forEach(x=>{T[x]=tgt(k,x,ms)});
+    const val=(s,key)=>key=='test'?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
+    items.push({i,A,ks,T,val});
+    h+=`<h3>${esc(k)}</h3><div class="t"><table><tr><th>نام</th><th>اندراجات</th>`+
+      ks.map(x=>`<th>${esc(L(x))}${T[x]?`<br><small>ہدف ${T[x]}</small>`:''}</th>`).join('')+'</tr>'+
+      A.map(s=>`<tr><td>${D.photos[s.u]?`<img class="im" src="${D.photos[s.u]}">`:''}${esc(s.name)}</td><td>${s.n}</td>`+
+        ks.map(x=>{const v=val(s,x);return `<td>${+v.toFixed(1)}${T[x]?` (${Math.round(v/T[x]*100)}%)`:''}</td>`}).join('')+'</tr>').join('')+
+      `</table></div>${TK.some(x=>ks.includes(x)&&!T[x])?'<small>جن خانوں کا ہدف مقرر نہیں ان کا فیصد نہیں آئے گا</small>':''}<canvas id="ch${i}" height="100"></canvas>`;
+  });
+  $('out').innerHTML=h||'<p>اس انتخاب کا کوئی ریکارڈ نہیں</p>';
+  items.forEach(({i,A,ks,T,val})=>{
+    CH.push(new Chart($('ch'+i),{type:'bar',data:{labels:A.map(s=>s.name),
+      datasets:ks.map((x,j)=>({label:L(x)+(T[x]?' %':''),backgroundColor:COL[j%COL.length],
+        data:A.map(s=>T[x]?Math.round(val(s,x)/T[x]*100):+val(s,x).toFixed(1))}))}}));
+  });
+  $('log').innerHTML='<tr><th>ماہ</th><th>نام</th><th>جماعت</th><th>تفصیل</th><th>نوٹ</th></tr>'+
+    E.slice(-30).reverse().map(e=>`<tr><td>${esc(mon(e))}</td><td>${esc(e.name)}</td><td>${esc(e.class)}</td><td style="white-space:normal;text-align:right">${
+      Object.entries(V(e)).map(([k,v])=>`${esc(L(k)||k)}: ${v}`).join(' | ')}</td><td>${esc(e.note)}</td></tr>`).join('');
+}
+</script>
+</body></html>
