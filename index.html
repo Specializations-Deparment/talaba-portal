@@ -80,6 +80,9 @@ h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
 .md{position:fixed;inset:0;background:#0007;display:grid;place-items:center;z-index:8;padding:12px}
 .mb{background:#fff;border-radius:14px;padding:20px;max-width:560px;width:100%;max-height:90vh;overflow:auto}
 .ib{background:none;border:0;cursor:pointer;font-size:17px;padding:0 4px}
+.ckg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.ck{display:flex;align-items:center;gap:6px;background:var(--tint);color:var(--pri);border-radius:20px;padding:2px 14px;cursor:pointer;font-weight:600}
+.ck input{width:auto;margin:0}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 22px;border-radius:12px;z-index:9;font-weight:600}
 #toast.bad{background:var(--low)}
 @media(max-width:700px){.login{grid-template-columns:1fr;margin:16px}.top{padding:6px 12px}.panel{padding:14px}.ttl{font-size:17px}}
@@ -107,7 +110,7 @@ h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
   <nav class="tabs">
     <button data-t="an" class="on" onclick="show('an')">تجزیہ</button>
     <button data-t="en" onclick="show('en')">کارکردگی درج کریں</button>
-    <button data-t="tg" id="tbT" onclick="show('tg')">ماہانہ ہدف</button>
+    <button data-t="tg" id="tbT" onclick="show('tg')">ماہانہ ترتیب</button>
     <button data-t="adm" id="tbU" onclick="show('adm')">یوزرز</button>
   </nav>
 
@@ -127,7 +130,7 @@ h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
     <h2>نئی کارکردگی درج کریں</h2>
     <div class="grid" style="margin-top:12px">
       <label class="f">طالب علم<select id="st" onchange="fields()"></select></label>
-      <label class="f">ماہ<input id="dt" type="month"></label>
+      <label class="f">ماہ<input id="dt" type="month" onchange="fields()"></label>
     </div>
     <div id="flds" class="grid" style="margin-top:12px"></div>
     <div class="row">
@@ -141,8 +144,8 @@ h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
   </section>
 
   <section id="tg" class="panel" hidden>
-    <h2>ماہانہ ہدف مقرر کریں</h2>
-    <p class="note">جماعت اور ماہ منتخب کریں۔ اسی ہدف کے مطابق فیصد نکلے گا۔</p>
+    <h2>ماہانہ ہدف اور کارکردگی کی ترتیب</h2>
+    <p class="note">جماعت اور ماہ منتخب کریں۔ ہدف کے مطابق فیصد نکلے گا۔</p>
     <div class="grid" style="margin-top:12px">
       <label class="f">جماعت<select id="tc" onchange="loadT()"></select></label>
       <label class="f">ماہ<input id="tm" type="month" onchange="loadT()"></label>
@@ -150,7 +153,10 @@ h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
       <label class="f">حاضری (دن)<input id="t_hazri" type="number"></label>
       <label class="f">مدنی پھول<input id="t_madaniPhool" type="number"></label>
     </div>
-    <div class="row"><button class="btn" onclick="setT()">ہدف محفوظ کریں</button></div>
+    <h4>اس ماہ کون سی کارکردگی لینی ہے</h4>
+    <p class="note">جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں۔ آئندہ ماہ لینی ہو تو نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔</p>
+    <div id="t_f" class="ckg"></div>
+    <div class="row"><button class="btn" onclick="setT()">ترتیب محفوظ کریں</button></div>
   </section>
 
   <section id="adm" class="panel" hidden>
@@ -190,6 +196,8 @@ const fk=f=>D.keys.filter(k=>k!='photo'&&k in f);
 const V=e=>{const o={};['mutalia','test','madaniPhool','fatwe'].forEach(k=>{if(e[k]!==''&&e[k]!=null)o[k]=+e[k]});
   try{Object.assign(o,JSON.parse(e.data||'{}'))}catch(_){}return o;};
 const tgt=(cl,key,ms)=>ms.reduce((a,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return a+(r?+r[key]||0:0)},0);
+const fset=(cl,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return r&&r.fields?String(r.fields).split(','):fk(cfg(cl));};
+const ordk=s=>D.keys.filter(k=>k!='photo'&&s.has(k));
 const lv=p=>p>=75?'ok':p>=40?'mid':'low';
 const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
 function toast(m,bad){const t=$('toast');t.textContent=m;t.className=bad?'bad':'';t.hidden=false;clearTimeout(TT);TT=setTimeout(()=>t.hidden=true,2800);}
@@ -241,17 +249,21 @@ function ulist(){
 function fields(){
   const s=D.students.find(x=>x.username==$('st').value);
   if(!s){$('flds').innerHTML='';$('pv').innerHTML='';return;}
-  $('flds').innerHTML=fk(cfg(s.class)).map(k=>`<label class="f">${esc(L(k))}<input id="f_${k}" type="number" step="any"></label>`).join('');
+  $('flds').innerHTML=ordk(new Set(fset(s.class,$('dt').value))).map(k=>`<label class="f">${esc(L(k))}<input id="f_${k}" type="number" step="any"></label>`).join('');
   $('pv').innerHTML=ava(s.username,s.name,'xl');
 }
 function loadT(){
   const r=D.targets.find(x=>x.class==$('tc').value&&String(x.month).slice(0,7)==$('tm').value)||{};
   TK.forEach(k=>$('t_'+k).value=r[k]||'');
+  const on=new Set(fset($('tc').value,$('tm').value));
+  $('t_f').innerHTML=D.keys.filter(k=>k!='photo').map(k=>`<label class="ck"><input type="checkbox" value="${k}" ${on.has(k)?'checked':''}> ${esc(L(k))}</label>`).join('');
 }
 async function setT(){
+  const fields=[...document.querySelectorAll('#t_f input:checked')].map(i=>i.value);
+  if(!fields.length)return toast('کم از کم ایک کارکردگی منتخب کریں',1);
   const r=await call({action:'setTarget',cls:$('tc').value,month:$('tm').value,
-    mutalia:$('t_mutalia').value,hazri:$('t_hazri').value,madaniPhool:$('t_madaniPhool').value});
-  if(!r.ok)return toast(r.msg,1);D=r;fill();toast('ہدف محفوظ ہو گیا');
+    mutalia:$('t_mutalia').value,hazri:$('t_hazri').value,madaniPhool:$('t_madaniPhool').value,fields});
+  if(!r.ok)return toast(r.msg,1);D=r;fill();toast('ترتیب محفوظ ہو گئی');
 }
 async function add(){
   const vals={};D.keys.forEach(k=>{const el=$('f_'+k);if(el&&el.value!=='')vals[k]=+el.value;});
@@ -278,7 +290,7 @@ const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.cl
 function editE(id){
   const e=D.entries.find(x=>x.id==id);if(!e)return;EID=id;const v=V(e);
   $('e_h').textContent=e.name+' — '+e.class;$('e_m').value=mon(e);$('e_n').value=e.note||'';
-  $('e_f').innerHTML=fk(cfg(e.class)).map(k=>`<label class="f">${esc(L(k))}<input id="e_${k}" type="number" step="any" value="${v[k]??''}"></label>`).join('');
+  $('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).map(k=>`<label class="f">${esc(L(k))}<input id="e_${k}" type="number" step="any" value="${v[k]??''}"></label>`).join('');
   $('md').hidden=false;
 }
 async function saveE(){
@@ -304,8 +316,11 @@ function render(){
     s.n++;const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});
   let h='';const items=[];
   Object.keys(by).forEach((k,i)=>{
-    const f=cfg(k),ks=fk(f),A=Object.values(by[k]);
+    const A=Object.values(by[k]);
     const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))];
+    const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
+    E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
+    const ks=ordk(st);
     const T={};TK.forEach(x=>{T[x]=tgt(k,x,ms)});
     const val=(s,key)=>key=='test'?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
     items.push({i,A,ks,T,val});
