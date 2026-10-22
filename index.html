@@ -178,7 +178,7 @@ const fk=f=>D.keys.filter(k=>k!='photo'&&k in f);
 const V=e=>{const o={};['mutalia','test','madaniPhool','fatwe'].forEach(k=>{if(e[k]!==''&&e[k]!=null)o[k]=+e[k]});
   try{Object.assign(o,JSON.parse(e.data||'{}'))}catch(_){}return o;};
 const tgt=(cl,key,ms)=>ms.reduce((a,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return a+(r?+r[key]||0:0)},0);
-const lv=p=>p>=90?'ok':p>=60?'mid':'low';
+const lv=p=>p>=75?'ok':p>=40?'mid':'low';
 const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
 function toast(m,bad){const t=$('toast');t.textContent=m;t.className=bad?'bad':'';t.hidden=false;clearTimeout(TT);TT=setTimeout(()=>t.hidden=true,2800);}
 function show(t){['an','en','tg','adm'].forEach(x=>{$(x=='an'||x=='en'?'p_'+x:x).hidden=x!=t;});
