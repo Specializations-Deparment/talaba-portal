@@ -110,7 +110,8 @@ h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
     <div id="mine" class="me" hidden></div>
     <div class="bar-tools">
       <label>ماہ <select id="mf" onchange="render()"></select></label>
-      <label>جماعت <select id="cf" onchange="render()"></select></label>
+      <label>جماعت <select id="cf" onchange="fsf();render()"></select></label>
+      <label>طالب علم <select id="sf" onchange="render()"></select></label>
     </div>
     <div id="out"></div>
     <h4>حالیہ اندراجات</h4>
@@ -157,6 +158,8 @@ h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
       <label class="f">جماعت<input id="nc"></label>
     </div>
     <div class="row"><button class="btn" onclick="addUser()">یوزر شامل کریں</button></div>
+    <h4>تمام یوزرز <span id="uc" class="chip"></span></h4>
+    <div class="t"><table id="ul"></table></div>
   </section>
 </div>
 <div id="toast" hidden></div>
@@ -208,10 +211,20 @@ function fill(){
   const ms=[...new Set(D.entries.map(mon))].sort().reverse();
   $('mf').innerHTML='<option value="">تمام مہینے</option>'+ms.map(m=>`<option>${m}</option>`).join('');
   $('mf').value=ms.includes(mv)?mv:(ms[0]||'');
-  if(D.me.role=='student'&&D.students[0]){const s=D.students[0];
-    $('mine').hidden=false;
-    $('mine').innerHTML=ava(s.username,s.name,'xl')+`<div><b>${esc(s.name)}</b><div class="note">${esc(s.class)}${D.photos[s.username]?'':' — «کارکردگی درج کریں» میں اپنی تصویر لگائیں'}</div></div>`;}
-  fields();loadT();render();
+  fsf();ulist();fields();loadT();render();
+}
+function fsf(){
+  const c=$('cf').value,v=$('sf').value,ss=D.students.filter(s=>!c||s.class==c);
+  $('sf').innerHTML='<option value="">تمام طلبہ</option>'+ss.map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('');
+  if(ss.some(s=>s.username==v))$('sf').value=v;
+  $('sf').parentElement.hidden=D.me.role=='student';
+}
+function ulist(){
+  const R={admin:'منتظم',teacher:'استاد',student:'طالب علم'};
+  if(!D.users){$('ul').innerHTML='<tr><td>یوزرز کی فہرست کے لیے نیا Code.gs لگا کر Deploy کریں</td></tr>';return;}
+  $('uc').textContent='کل '+D.users.length;
+  $('ul').innerHTML='<tr><th>نام</th><th>یوزر نیم</th><th>کردار</th><th>جماعت</th></tr>'+
+    D.users.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.username)}</td><td>${R[u.role]||esc(u.role)}</td><td>${esc(u.class)}</td></tr>`).join('');
 }
 function fields(){
   const s=D.students.find(x=>x.username==$('st').value);
@@ -251,8 +264,11 @@ async function addUser(){
 function render(){
   CH.forEach(c=>c.destroy());CH=[];
   Chart.defaults.font.family="'Noto Naskh Arabic',serif";Chart.defaults.color='#5d6e6b';
-  const c=$('cf').value,m=$('mf').value;
-  const E=D.entries.filter(e=>(!c||e.class==c)&&(!m||mon(e)==m));
+  const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
+  const E=D.entries.filter(e=>(!c||e.class==c)&&(!m||mon(e)==m)&&(!sv||e.username==sv));
+  const bs=sv?D.students.find(x=>x.username==sv):(D.me.role=='student'?D.students[0]:null);
+  $('mine').hidden=!bs;
+  if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?' — «کارکردگی درج کریں» میں اپنی تصویر لگائیں':'')}</div></div>`;
   const by={};
   E.forEach(e=>{const s=((by[e.class]??={})[e.username]??={u:e.username,name:e.name,n:0,sum:{},cnt:{}});
     s.n++;const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});
