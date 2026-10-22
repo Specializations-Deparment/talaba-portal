@@ -77,6 +77,9 @@ small.tg{display:block;font-weight:400;color:var(--mute)}
 .note{color:var(--mute);font-size:14px;margin:6px 0 0}
 .empty{text-align:center;color:var(--mute);padding:36px 10px}
 h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
+.md{position:fixed;inset:0;background:#0007;display:grid;place-items:center;z-index:8;padding:12px}
+.mb{background:#fff;border-radius:14px;padding:20px;max-width:560px;width:100%;max-height:90vh;overflow:auto}
+.ib{background:none;border:0;cursor:pointer;font-size:17px;padding:0 4px}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 22px;border-radius:12px;z-index:9;font-weight:600}
 #toast.bad{background:var(--low)}
 @media(max-width:700px){.login{grid-template-columns:1fr;margin:16px}.top{padding:6px 12px}.panel{padding:14px}.ttl{font-size:17px}}
@@ -164,6 +167,13 @@ h4{font:700 17px 'Noto Nastaliq Urdu',serif;color:var(--pri);margin:26px 0 8px}
     <div class="t"><table id="ul"></table></div>
   </section>
 </div>
+<div id="md" class="md" hidden><div class="mb">
+  <h2 id="e_h" style="color:var(--pri)"></h2>
+  <div class="grid" style="margin-top:10px"><label class="f">ماہ<input id="e_m" type="month"></label></div>
+  <div id="e_f" class="grid" style="margin-top:12px"></div>
+  <label class="f" style="margin-top:12px">نوٹ<input id="e_n"></label>
+  <div class="row"><button class="btn" onclick="saveE()">تبدیلی محفوظ کریں</button><button class="btn ghost" style="color:var(--pri)" onclick="$('md').hidden=true">منسوخ کریں</button></div>
+</div></div>
 <div id="toast" hidden></div>
 
 <script>
@@ -263,6 +273,24 @@ async function addUser(){
   if(!r.ok)return toast(r.msg,1);
   D=r;fill();['nn','nu','np','nc'].forEach(i=>$(i).value='');toast('یوزر شامل ہو گیا');
 }
+let EID;
+const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.class));
+function editE(id){
+  const e=D.entries.find(x=>x.id==id);if(!e)return;EID=id;const v=V(e);
+  $('e_h').textContent=e.name+' — '+e.class;$('e_m').value=mon(e);$('e_n').value=e.note||'';
+  $('e_f').innerHTML=fk(cfg(e.class)).map(k=>`<label class="f">${esc(L(k))}<input id="e_${k}" type="number" step="any" value="${v[k]??''}"></label>`).join('');
+  $('md').hidden=false;
+}
+async function saveE(){
+  const vals={};D.keys.forEach(k=>{const el=$('e_'+k);if(el&&el.value!=='')vals[k]=+el.value;});
+  const r=await call({action:'editEntry',id:EID,date:$('e_m').value,vals,note:$('e_n').value});
+  if(!r.ok)return toast(r.msg,1);D=r;$('md').hidden=true;fill();toast('اندراج درست ہو گئی');
+}
+async function delE(id){
+  if(!confirm('کیا آپ واقعی یہ اندراج حذف کرنا چاہتے ہیں؟'))return;
+  const r=await call({action:'delEntry',id});
+  if(!r.ok)return toast(r.msg,1);D=r;fill();toast('اندراج حذف ہو گئی');
+}
 function render(){
   CH.forEach(c=>c.destroy());CH=[];
   Chart.defaults.font.family="'Noto Naskh Arabic',serif";Chart.defaults.color='#5d6e6b';
@@ -298,9 +326,9 @@ function render(){
         data:A.map(s=>T[x]?Math.round(val(s,x)/T[x]*100):+val(s,x).toFixed(1))}))},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,grid:{color:'#e6ecea'}},x:{grid:{display:false}}}}}));
   });
-  $('log').innerHTML='<tr><th>ماہ</th><th>نام</th><th>جماعت</th><th>تفصیل</th><th>نوٹ</th></tr>'+
-    E.slice(-30).reverse().map(e=>`<tr><td>${esc(mon(e))}</td><td>${esc(e.name)}</td><td>${esc(e.class)}</td><td style="text-align:right">${
-      Object.entries(V(e)).map(([k,v])=>`${esc(L(k)||k)}: <b>${v}</b>`).join('، ')}</td><td>${esc(e.note)}</td></tr>`).join('');
+  $('log').innerHTML='<tr><th>ماہ</th><th>نام</th><th>جماعت</th><th>تفصیل</th><th>نوٹ</th><th></th></tr>'+
+    E.slice(-60).reverse().map(e=>`<tr><td>${esc(mon(e))}</td><td>${esc(e.name)}</td><td>${esc(e.class)}</td><td style="text-align:right">${
+      Object.entries(V(e)).map(([k,v])=>`${esc(L(k)||k)}: <b>${v}</b>`).join('، ')}</td><td>${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="تبدیل کریں" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="حذف کریں" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('');
 }
 </script>
 </body></html>
