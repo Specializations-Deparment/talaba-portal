@@ -83,4 +83,272 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:26px 0 8px}
 .mb{background:#fff;border-radius:14px;padding:20px;max-width:560px;width:100%;max-height:90vh;overflow:auto}
 .ib{background:none;border:0;cursor:pointer;font-size:17px;padding:0 4px}
 .ckg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
-.ck{display:flex;align-items:center;gap:6px;background:var(--tint);color:var(--pri);border-r
+.ck{display:flex;align-items:center;gap:6px;background:var(--tint);color:var(--pri);border-radius:20px;padding:2px 14px;cursor:pointer;font-weight:600}
+.ck input{width:auto;margin:0}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 22px;border-radius:12px;z-index:9;font-weight:600}
+#toast.bad{background:var(--low)}
+@media(max-width:700px){.login{grid-template-columns:1fr;margin:16px}.top{padding:8px 12px}.panel{padding:14px}.ttl{font-size:17px}}
+@media(prefers-reduced-motion:no-preference){.tabs button{transition:color .15s}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark"><img src="logo.png" alt="" onerror="this.replaceWith('SD')"></span><div><div class="ttl">Student Performance Portal</div><small>Specializations Department</small></div></div>
+  <div id="user" class="user" hidden><span id="who"></span><button class="btn" onclick="location.reload()">Log out</button></div>
+</header>
+
+<div id="login" class="login">
+  <div class="side"><img class="lg" src="logo.png" alt="Jamia-tul-Madina" onerror="this.style.display='none'"><h1>Every student's monthly performance</h1><p>Study, attendance, Madani Phool and class-specific work, all in one place.</p></div>
+  <form onsubmit="login();return false">
+    <h2>Sign in</h2>
+    <label class="f">Username<input id="u" autocomplete="username"></label>
+    <label class="f">Password<input id="p" type="password" autocomplete="current-password"></label>
+    <div id="msg" class="err"></div>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+</div>
+
+<div id="app" class="wrap" hidden>
+  <nav class="tabs">
+    <button data-t="an" class="on" onclick="show('an')">Analysis</button>
+    <button data-t="en" onclick="show('en')">Enter Performance</button>
+    <button data-t="tg" id="tbT" onclick="show('tg')">Monthly Setup</button>
+    <button data-t="adm" id="tbU" onclick="show('adm')">Users</button>
+  </nav>
+
+  <section id="p_an" class="panel">
+    <div id="mine" class="me" hidden></div>
+    <div class="bar-tools">
+      <label>Month <select id="mf" onchange="render()"></select></label>
+      <label>Class <select id="cf" onchange="fsf();render()"></select></label>
+      <label>Student <select id="sf" onchange="render()"></select></label>
+    </div>
+    <div id="out"></div>
+    <h4>Recent Entries</h4>
+    <div class="t"><table id="log"></table></div>
+  </section>
+
+  <section id="p_en" class="panel" hidden>
+    <h2>Enter new performance</h2>
+    <div class="grid" style="margin-top:12px">
+      <label class="f">Student<select id="st" onchange="fields()"></select></label>
+      <label class="f">Month<input id="dt" type="month" onchange="fields()"></label>
+    </div>
+    <div id="flds" class="grid" style="margin-top:12px"></div>
+    <div class="row">
+      <label class="f" style="flex:1;min-width:200px">Note<input id="no"></label>
+      <button class="btn" onclick="add()">Save</button>
+    </div>
+    <div id="ph" class="row" style="border-top:1px solid var(--line);margin-top:20px;padding-top:16px;align-items:center">
+      <span id="pv"></span>
+      <label class="btn ghost" style="color:var(--pri)">Add photo<input type="file" accept="image/*" hidden onchange="pick(this)"></label>
+    </div>
+  </section>
+
+  <section id="tg" class="panel" hidden>
+    <h2>Monthly targets and performance setup</h2>
+    <p class="note">Choose a class and month. Percentages are calculated against these targets.</p>
+    <div class="grid" style="margin-top:12px">
+      <label class="f">Class<select id="tc" onchange="loadT()"></select></label>
+      <label class="f">Month<input id="tm" type="month" onchange="loadT()"></label>
+      <label class="f">Mutalia target (pages)<input id="t_mutalia" type="number"></label>
+      <label class="f">Attendance target (days)<input id="t_hazri" type="number"></label>
+      <label class="f">Madani Phool target<input id="t_madaniPhool" type="number"></label>
+    </div>
+    <h4>Which performance is taken this month</h4>
+    <p class="note">Untick any performance you will not take this month. Tick it again next month when needed. Saved entries are never deleted.</p>
+    <div id="t_f" class="ckg"></div>
+    <div class="row"><button class="btn" onclick="setT()">Save setup</button></div>
+  </section>
+
+  <section id="adm" class="panel" hidden>
+    <h2>Add new user</h2>
+    <div class="grid" style="margin-top:12px">
+      <label class="f">Name<input id="nn"></label>
+      <label class="f">Username<input id="nu"></label>
+      <label class="f">Password<input id="np"></label>
+      <label class="f">Role<select id="nr"><option value="student">Student</option><option value="teacher">Teacher</option></select></label>
+      <label class="f">Class<input id="nc"></label>
+    </div>
+    <div class="row"><button class="btn" onclick="addUser()">Add user</button></div>
+    <h4>All users <span id="uc" class="chip"></span></h4>
+    <div class="t"><table id="ul"></table></div>
+  </section>
+</div>
+<div id="md" class="md" hidden><div class="mb">
+  <h2 id="e_h" style="color:var(--pri);unicode-bidi:plaintext"></h2>
+  <div class="grid" style="margin-top:10px"><label class="f">Month<input id="e_m" type="month"></label></div>
+  <div id="e_f" class="grid" style="margin-top:12px"></div>
+  <label class="f" style="margin-top:12px">Note<input id="e_n"></label>
+  <div class="row"><button class="btn" onclick="saveE()">Save changes</button><button class="btn ghost" style="color:var(--pri)" onclick="$('md').hidden=true">Cancel</button></div>
+</div></div>
+<div id="toast" hidden></div>
+
+<script>
+const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
+let U,P,D,CH=[],TT;
+const TK=['mutalia','hazri','madaniPhool'];
+const COL=['#0e3b3a','#2f6fa3','#1f8a63','#c98a1b','#8a4f7d','#b5453a','#5d6e6b','#3aa0a0'];
+const LBL={deeni12:'12 Deeni Kaam',mutalia:'Mutalia (Study)',madaniPhool:'Madani Phool',hazri:'Attendance',qafila:'Madani Qafila',test:'Monthly Test Result',takhrij:'Takhrij-e-Hadith',tahqeeq:'Tahqeeq-e-Hadith',fatwe:'Fatawa',photo:'Student Photo'};
+const ROLE={admin:'Admin',teacher:'Teacher',student:'Student'};
+const MSG={'یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
+const L=k=>LBL[k]||(D.labels&&D.labels[D.keys.indexOf(k)])||k;
+const cfg=c=>(D.classes.find(x=>x.class==c)||{f:{deeni12:0,mutalia:0,madaniPhool:0,hazri:0}}).f;
+const mon=e=>String(e.date).slice(0,7);
+const fk=f=>D.keys.filter(k=>k!='photo'&&k in f);
+const V=e=>{const o={};['mutalia','test','madaniPhool','fatwe'].forEach(k=>{if(e[k]!==''&&e[k]!=null)o[k]=+e[k]});
+  try{Object.assign(o,JSON.parse(e.data||'{}'))}catch(_){}return o;};
+const tgt=(cl,key,ms)=>ms.reduce((a,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return a+(r?+r[key]||0:0)},0);
+const fset=(cl,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return r&&r.fields?String(r.fields).split(','):fk(cfg(cl));};
+const ordk=s=>D.keys.filter(k=>k!='photo'&&s.has(k));
+const lv=p=>p>=75?'ok':p>=40?'mid':'low';
+const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
+function toast(m,bad){const t=$('toast');t.textContent=m;t.className=bad?'bad':'';t.hidden=false;clearTimeout(TT);TT=setTimeout(()=>t.hidden=true,2800);}
+function show(t){['an','en','tg','adm'].forEach(x=>{$(x=='an'||x=='en'?'p_'+x:x).hidden=x!=t;});
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));}
+async function call(o){
+  let r;
+  try{r=await(await fetch(API,{method:'POST',body:JSON.stringify({u:U,p:P,...o})})).json();}
+  catch(e){return {ok:false,msg:'No response from the server. Did you paste the new Code.gs, run setup and deploy a New version?'};}
+  if(r.ok&&!r.keys)return {ok:false,msg:'The new version of Code.gs is not deployed'};
+  if(r.msg&&MSG[r.msg])r.msg=MSG[r.msg];
+  return r;
+}
+async function login(){
+  U=$('u').value.trim();P=$('p').value;$('msg').textContent='';
+  const r=await call({action:'list'});
+  if(!r.ok)return $('msg').textContent=r.msg;
+  D=r;$('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
+  $('who').textContent=D.me.name+' — '+ROLE[D.me.role];
+  $('tbU').hidden=D.me.role!='admin';$('tbT').hidden=D.me.role=='student';
+  $('dt').value=$('tm').value=new Date().toISOString().slice(0,7);
+  fill();
+}
+function fill(){
+  const sv=$('st').value,cv=$('cf').value,mv=$('mf').value,tv=$('tc').value;
+  $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(s.name)} (${esc(s.class)})</option>`).join('');
+  if(sv)$('st').value=sv;
+  const cl=[...new Set(D.students.map(s=>s.class))];
+  $('cf').innerHTML='<option value="">All classes</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
+  $('cf').value=cv;
+  $('tc').innerHTML=cl.map(c=>`<option>${esc(c)}</option>`).join('');if(tv)$('tc').value=tv;
+  const ms=[...new Set(D.entries.map(mon))].sort().reverse();
+  $('mf').innerHTML='<option value="">All months</option>'+ms.map(m=>`<option>${m}</option>`).join('');
+  $('mf').value=ms.includes(mv)?mv:(ms[0]||'');
+  fsf();ulist();fields();loadT();render();
+}
+function fsf(){
+  const c=$('cf').value,v=$('sf').value,ss=D.students.filter(s=>!c||s.class==c);
+  $('sf').innerHTML='<option value="">All students</option>'+ss.map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('');
+  if(ss.some(s=>s.username==v))$('sf').value=v;
+  $('sf').parentElement.hidden=D.me.role=='student';
+}
+function ulist(){
+  if(!D.users){$('ul').innerHTML='<tr><td>Deploy the new Code.gs to see the list of users</td></tr>';return;}
+  $('uc').textContent='Total '+D.users.length;
+  $('ul').innerHTML='<tr><th>Name</th><th>Username</th><th>Role</th><th>Class</th></tr>'+
+    D.users.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.username)}</td><td>${ROLE[u.role]||esc(u.role)}</td><td>${esc(u.class)}</td></tr>`).join('');
+}
+function fields(){
+  const s=D.students.find(x=>x.username==$('st').value);
+  if(!s){$('flds').innerHTML='';$('pv').innerHTML='';return;}
+  $('flds').innerHTML=ordk(new Set(fset(s.class,$('dt').value))).map(k=>`<label class="f">${esc(L(k))}<input id="f_${k}" type="number" step="any"></label>`).join('');
+  $('pv').innerHTML=ava(s.username,s.name,'xl');
+}
+function loadT(){
+  const r=D.targets.find(x=>x.class==$('tc').value&&String(x.month).slice(0,7)==$('tm').value)||{};
+  TK.forEach(k=>$('t_'+k).value=r[k]||'');
+  const on=new Set(fset($('tc').value,$('tm').value));
+  $('t_f').innerHTML=D.keys.filter(k=>k!='photo').map(k=>`<label class="ck"><input type="checkbox" value="${k}" ${on.has(k)?'checked':''}> ${esc(L(k))}</label>`).join('');
+}
+async function setT(){
+  const fields=[...document.querySelectorAll('#t_f input:checked')].map(i=>i.value);
+  if(!fields.length)return toast('Select at least one performance',1);
+  const r=await call({action:'setTarget',cls:$('tc').value,month:$('tm').value,
+    mutalia:$('t_mutalia').value,hazri:$('t_hazri').value,madaniPhool:$('t_madaniPhool').value,fields});
+  if(!r.ok)return toast(r.msg,1);D=r;fill();toast('Setup saved');
+}
+async function add(){
+  const vals={};D.keys.forEach(k=>{const el=$('f_'+k);if(el&&el.value!=='')vals[k]=+el.value;});
+  const r=await call({action:'add',student:$('st').value,date:$('dt').value,vals,note:$('no').value});
+  if(!r.ok)return toast(r.msg,1);
+  D=r;$('no').value='';fill();toast('Performance saved');
+}
+function pick(inp){
+  const f=inp.files[0];if(!f)return;const im=new Image();
+  im.onload=async()=>{const r=Math.min(1,160/Math.max(im.width,im.height)),c=document.createElement('canvas');
+    c.width=im.width*r;c.height=im.height*r;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    const x=await call({action:'photo',student:$('st').value,img:c.toDataURL('image/jpeg',.6)});
+    if(!x.ok)return toast(x.msg,1);D=x;fill();toast('Photo saved');};
+  im.onerror=()=>toast('This image could not be opened. Choose a JPG or PNG',1);
+  im.src=URL.createObjectURL(f);inp.value='';
+}
+async function addUser(){
+  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value});
+  if(!r.ok)return toast(r.msg,1);
+  D=r;fill();['nn','nu','np','nc'].forEach(i=>$(i).value='');toast('User added');
+}
+let EID;
+const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.class));
+function editE(id){
+  const e=D.entries.find(x=>x.id==id);if(!e)return;EID=id;const v=V(e);
+  $('e_h').textContent=e.name+' — '+e.class;$('e_m').value=mon(e);$('e_n').value=e.note||'';
+  $('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).map(k=>`<label class="f">${esc(L(k))}<input id="e_${k}" type="number" step="any" value="${v[k]??''}"></label>`).join('');
+  $('md').hidden=false;
+}
+async function saveE(){
+  const vals={};D.keys.forEach(k=>{const el=$('e_'+k);if(el&&el.value!=='')vals[k]=+el.value;});
+  const r=await call({action:'editEntry',id:EID,date:$('e_m').value,vals,note:$('e_n').value});
+  if(!r.ok)return toast(r.msg,1);D=r;$('md').hidden=true;fill();toast('Entry updated');
+}
+async function delE(id){
+  if(!confirm('Are you sure you want to delete this entry?'))return;
+  const r=await call({action:'delEntry',id});
+  if(!r.ok)return toast(r.msg,1);D=r;fill();toast('Entry deleted');
+}
+function render(){
+  CH.forEach(c=>c.destroy());CH=[];
+  Chart.defaults.font.family="'Source Sans 3','Noto Naskh Arabic',sans-serif";Chart.defaults.color='#5d6e6b';
+  const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
+  const E=D.entries.filter(e=>(!c||e.class==c)&&(!m||mon(e)==m)&&(!sv||e.username==sv));
+  const bs=sv?D.students.find(x=>x.username==sv):(D.me.role=='student'?D.students[0]:null);
+  $('mine').hidden=!bs;
+  if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?' — add your photo from “Enter Performance”':'')}</div></div>`;
+  const by={};
+  E.forEach(e=>{const s=((by[e.class]??={})[e.username]??={u:e.username,name:e.name,n:0,sum:{},cnt:{}});
+    s.n++;const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});
+  let h='';const items=[];
+  Object.keys(by).forEach((k,i)=>{
+    const A=Object.values(by[k]);
+    const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))];
+    const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
+    E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
+    const ks=ordk(st);
+    const T={};TK.forEach(x=>{T[x]=tgt(k,x,ms)});
+    const val=(s,key)=>key=='test'?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
+    items.push({i,A,ks,T,val});
+    const chips=TK.filter(x=>ks.includes(x)&&T[x]).map(x=>`<span class="chip">Avg ${esc(L(x))} ${Math.round(A.reduce((a,s)=>a+val(s,x)/T[x]*100,0)/A.length)}%</span>`).join('');
+    h+=`<div class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">Students ${A.length}</span>${chips}</div><div class="t"><table><tr><th>Name</th><th>Entries</th>`+
+      ks.map(x=>`<th>${esc(L(x))}${T[x]?`<small class="tg">Target ${T[x]}</small>`:''}</th>`).join('')+'</tr>'+
+      A.map(s=>`<tr><td><div class="nm">${ava(s.u,s.name)}${esc(s.name)}</div></td><td>${s.n}</td>`+
+        ks.map(x=>{const v=val(s,x),n=+v.toFixed(1);
+          if(!T[x])return `<td><span class="num">${n}</span></td>`;
+          const p=Math.round(v/T[x]*100),l=lv(p);
+          return `<td><span class="num">${n}</span><span class="pc ${l}">${p}%</span><div class="bar"><i class="${l}" style="width:${Math.min(p,100)}%"></i></div></td>`}).join('')+'</tr>').join('')+
+      `</table></div>${TK.some(x=>ks.includes(x)&&!T[x])?'<p class="note">Fields without a target show no percentage. Set one in “Monthly Setup”.</p>':''}<div class="cw"><canvas id="ch${i}"></canvas></div></div>`;
+  });
+  $('out').innerHTML=h||'<div class="empty">No records for this selection. Add the first entry in “Enter Performance”.</div>';
+  items.forEach(({i,A,ks,T,val})=>{
+    CH.push(new Chart($('ch'+i),{type:'bar',data:{labels:A.map(s=>s.name),
+      datasets:ks.map((x,j)=>({label:L(x)+(T[x]?' %':''),backgroundColor:COL[j%COL.length],borderRadius:4,
+        data:A.map(s=>T[x]?Math.round(val(s,x)/T[x]*100):+val(s,x).toFixed(1))}))},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,grid:{color:'#e6ecea'}},x:{grid:{display:false}}}}}));
+  });
+  $('log').innerHTML='<tr><th>Month</th><th>Name</th><th>Class</th><th>Details</th><th>Note</th><th></th></tr>'+
+    E.slice(-60).reverse().map(e=>`<tr><td>${esc(mon(e))}</td><td>${esc(e.name)}</td><td>${esc(e.class)}</td><td style="text-align:left">${
+      Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(', ')}</td><td>${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="Edit" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="Delete" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('');
+}
+</script>
+</body></html>
