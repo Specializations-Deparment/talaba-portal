@@ -223,7 +223,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='7';
+const VER='8';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -265,8 +265,8 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
-Object.assign(T.en,{save_to:'This will be saved for {n} in {m}.'});
-Object.assign(T.ur,{save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+Object.assign(T.en,{no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
 const MSG={'یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -443,7 +443,7 @@ function render(){
     const Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
     const tf=ks.filter(x=>Tg[x]>0);
     const val=(s,key)=>key=='test'?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
-    A.forEach(s=>{s.ov=tf.length?Math.round(tf.reduce((a,x)=>a+Math.min(100,val(s,x)/Tg[x]*100),0)/tf.length):null;ALL.push(s);
+    A.forEach(s=>{s.none=!Object.keys(s.sum).length;s.ov=(tf.length&&!s.none)?Math.round(tf.reduce((a,x)=>a+Math.min(100,val(s,x)/Tg[x]*100),0)/tf.length):null;ALL.push(s);
       EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+val(s,x).toFixed(1):'')]);});
     A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
     const chips=tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(A.reduce((a,s)=>a+val(s,x)/Tg[x]*100,0)/A.length)}%</span>`).join('');
@@ -451,11 +451,12 @@ function render(){
       ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${Tg[x]}</small>`:''}</th>`).join('')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
       A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm">${ava(s.u,s.name)}${esc(s.name)}</div></td><td>${s.n}</td>`+
         ks.map(x=>{const v=val(s,x),n=+v.toFixed(1);
+          if(s.none)return `<td><span class="of">—</span></td>`;
           if(!Tg[x])return `<td><span class="num">${n}</span></td>`;
           const p=Math.round(v/Tg[x]*100),l=lv(p);
           return `<td><div class="cell"><span class="num">${n}</span><span class="of">/ ${Tg[x]}</span><span class="pc ${l}">${p}%</span></div><div class="bar"><i class="${l}" style="width:${Math.min(p,100)}%"></i></div></td>`}).join('')+
-        (tf.length?`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b><span class="bd ${lv(s.ov)}">${stl(lv(s.ov))}</span></div></td>`:'')+'</tr>').join('')+
-      `</tbody></table></div>`+
+        (tf.length?(s.ov==null?`<td><span class="bd mid">${t('no_nums')}</span></td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b><span class="bd ${lv(s.ov)}">${stl(lv(s.ov))}</span></div></td>`):'')+'</tr>').join('')+
+      `</tbody></table></div>`+(A.some(s=>s.none)?`<div class="hint"><span>${t('empty_hint')}</span></div>`:'')+
       (tf.length?`<div class="cbox"><h5>${t('chart_h')}</h5><div style="height:${Math.max(190,70+A.length*(tf.length*18+16))}px"><canvas id="ch${i}"></canvas></div></div>`
         :`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`)+`</section>`;
     items.push({i,A,tf,Tg,val});
