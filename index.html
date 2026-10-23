@@ -114,6 +114,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 .pr .lb{flex:1;display:flex;align-items:center;gap:10px;font-weight:600;cursor:pointer}
 .pr .lb input{width:18px;height:18px;margin:0;accent-color:var(--pri)}
 .pr input.tin{width:120px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.vtag{font-size:12px;opacity:.75;border:1px solid #ffffff55;border-radius:20px;padding:0 10px;white-space:nowrap}
 .vr{text-align:center;color:var(--mute);font-size:12px;padding:18px 10px 26px}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 22px;border-radius:12px;z-index:9;font-weight:600}
 #toast.bad{background:var(--low)}
@@ -125,6 +126,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <header class="top">
   <div class="brand"><span class="mark"><img src="logo.png" alt="" onerror="this.replaceWith('SD')"></span><div><div class="ttl" data-i="title"></div><small data-i="sub"></small></div></div>
   <div class="tr">
+    <span class="vtag" id="vtag"></span>
     <button class="lang" id="lgb" onclick="setLang(LG=='en'?'ur':'en')"></button>
     <div id="user" class="user" hidden><span id="who"></span><button class="btn" onclick="location.reload()" data-i="logout"></button></div>
   </div>
@@ -221,7 +223,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='6';
+const VER='7';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -285,7 +287,8 @@ const ordk=s=>D.keys.filter(k=>k!='photo'&&s.has(k));
 const lv=p=>p>=75?'ok':p>=40?'mid':'low';
 const stl=l=>t({ok:'st_ex',mid:'st_ok',low:'st_low'}[l]);
 const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
-function setVer(){$('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
+function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');
+  $('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
 function toast(m,bad){const x=$('toast');x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,2800);}
 function show(x){['an','en','tg','adm'].forEach(y=>{$(y=='an'||y=='en'?'p_'+y:y).hidden=y!=x;});
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));}
