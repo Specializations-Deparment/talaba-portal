@@ -170,6 +170,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
       <label class="f"><span data-i="month"></span><input id="dt" type="month" onchange="fields()"></label>
     </div>
     <div id="flds" class="grid" style="margin-top:12px"></div>
+    <div id="svto" class="note" style="margin-top:10px"></div>
     <div class="row">
       <label class="f" style="flex:1;min-width:200px"><span data-i="note"></span><input id="no"></label>
       <button class="btn" onclick="add()" data-i="save"></button>
@@ -220,7 +221,8 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='5';
+const VER='6';
+let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
 const COL=['#0e3b3a','#2f6fa3','#1f8a63','#c98a1b','#8a4f7d','#b5453a','#5d6e6b','#3aa0a0'];
@@ -261,6 +263,8 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
+Object.assign(T.en,{save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
 const MSG={'یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -321,7 +325,8 @@ function fill(){
   $('tc').innerHTML=cl.map(c=>`<option>${esc(c)}</option>`).join('');if(tv)$('tc').value=tv;
   const ms=[...new Set(D.entries.map(mon))].sort().reverse();
   $('mf').innerHTML=`<option value="">${t('all_m')}</option>`+ms.map(m=>`<option>${m}</option>`).join('');
-  $('mf').value=ms.includes(mv)?mv:(ms[0]||'');
+  const want=FORCEM&&ms.includes(FORCEM)?FORCEM:null;FORCEM=null;
+  $('mf').value=want||(ms.includes(mv)?mv:(ms[0]||''));
   fsf();ulist();fields();loadT();render();
 }
 function fsf(){
@@ -338,10 +343,13 @@ function ulist(){
 }
 function fields(){
   const s=D.students.find(x=>x.username==$('st').value);
-  if(!s){$('flds').innerHTML='';$('pv').innerHTML='';return;}
-  const m=$('dt').value;
-  $('flds').innerHTML=ordk(new Set(fset(s.class,m))).map(k=>{const g=tgt(s.class,k,[m]);return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" placeholder="${g?t('target')+' '+(+g.toFixed(1)):''}"></label>`}).join('');
+  if(!s){$('flds').innerHTML='';$('pv').innerHTML='';$('svto').textContent='';return;}
+  const m=$('dt').value,keep={};
+  if(fields.u===s.username)document.querySelectorAll('#flds input').forEach(i=>{if(i.value!=='')keep[i.id]=i.value;});
+  fields.u=s.username;
+  $('flds').innerHTML=ordk(new Set(fset(s.class,m))).map(k=>{const g=tgt(s.class,k,[m]);return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" placeholder="${g?t('target')+' '+(+g.toFixed(1)):''}" value="${esc(keep['f_'+k]??'')}"></label>`}).join('');
   $('pv').innerHTML=ava(s.username,s.name,'xl');
+  $('svto').textContent=t('save_to').replace('{n}',s.name).replace('{m}',m);
 }
 function loadT(){
   const c=$('tc').value,m=$('tm').value,r=trow(c,m),tv=r?tjo(r):{},on=new Set(fset(c,m));
@@ -368,7 +376,7 @@ async function add(){
   if(!Object.keys(vals).length)return toast(t('need_val'),1);
   const r=await call({action:'add',student:$('st').value,date:$('dt').value,vals,note:$('no').value});
   if(!r.ok)return toast(r.msg,1);
-  D=r;$('no').value='';fill();toast(t('ok_perf')+': '+Object.entries(vals).map(([k,v])=>L(k)+' '+v).join(', '));
+  fields.u=null;FORCEM=$('dt').value;D=r;$('no').value='';fill();toast(t('ok_perf')+': '+Object.entries(vals).map(([k,v])=>L(k)+' '+v).join(', '));
 }
 function pick(inp){
   const f=inp.files[0];if(!f)return;const im=new Image();
