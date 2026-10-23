@@ -108,6 +108,12 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 .ckg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .ck{display:flex;align-items:center;gap:6px;background:var(--tint);color:var(--pri);border-radius:20px;padding:2px 14px;cursor:pointer;font-weight:600}
 .ck input{width:auto;margin:0}
+.plist{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:10px;margin-top:8px}
+.pr{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 14px;background:#fff}
+.pr.off{background:var(--paper);opacity:.6}
+.pr .lb{flex:1;display:flex;align-items:center;gap:10px;font-weight:600;cursor:pointer}
+.pr .lb input{width:18px;height:18px;margin:0;accent-color:var(--pri)}
+.pr input.tin{width:120px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 22px;border-radius:12px;z-index:9;font-weight:600}
 #toast.bad{background:var(--low)}
 @media(max-width:700px){.login{grid-template-columns:1fr;margin:16px}.top{padding:8px 12px}.panel{padding:14px}.ttl{font-size:17px}.bar-tools .sp{display:none}}
@@ -179,14 +185,11 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
     <div class="grid" style="margin-top:12px">
       <label class="f"><span data-i="cls"></span><select id="tc" onchange="loadT()"></select></label>
       <label class="f"><span data-i="month"></span><input id="tm" type="month" onchange="loadT()"></label>
-      <label class="f"><span data-i="s_mut"></span><input id="t_mutalia" type="number"></label>
-      <label class="f"><span data-i="s_att"></span><input id="t_hazri" type="number"></label>
-      <label class="f"><span data-i="s_mad"></span><input id="t_madaniPhool" type="number"></label>
     </div>
     <h4 data-i="s_pick"></h4>
     <p class="note" data-i="s_pick_n"></p>
-    <div id="t_f" class="ckg"></div>
-    <div class="row"><button class="btn" onclick="setT()" data-i="s_save"></button></div>
+    <div id="t_f" class="plist"></div>
+    <div class="row"><button class="btn" onclick="setT()" data-i="s_save"></button><button class="btn ghost" onclick="copyPrev()" data-i="copy_prev"></button></div>
   </section>
 
   <section id="adm" class="panel" hidden>
@@ -253,6 +256,8 @@ ok_perf:'کارکردگی محفوظ ہو گئی',ok_setup:'ترتیب محفو�
 sel_one:'کم از کم ایک کارکردگی منتخب کریں',confirm_del:'کیا آپ واقعی یہ اندراج حذف کرنا چاہتے ہیں؟',
 no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code.gs لگا کر setup چلایا اور New version Deploy کیا ہے؟',not_dep:'Code.gs کا نیا ورژن Deploy نہیں ہوا',
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
+Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
+Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
 const MSG={'یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -263,7 +268,11 @@ const mon=e=>String(e.date).slice(0,7);
 const fk=f=>D.keys.filter(k=>k!='photo'&&k in f);
 const V=e=>{const o={};['mutalia','test','madaniPhool','fatwe'].forEach(k=>{if(e[k]!==''&&e[k]!=null)o[k]=+e[k]});
   try{Object.assign(o,JSON.parse(e.data||'{}'))}catch(_){}return o;};
-const tgt=(cl,key,ms)=>ms.reduce((a,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return a+(r?+r[key]||0:0)},0);
+const num=s=>{const x=String(s??'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٫,]/g,'.').trim();return x===''?NaN:+x;};
+const tjo=r=>{let o={};try{o=JSON.parse(r.tjson||'{}')}catch(_){}TK.forEach(k=>{if(o[k]===undefined&&+r[k]>0)o[k]=+r[k]});return o;};
+const trow=(cl,m)=>D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);
+const tgt=(cl,key,ms)=>{const v=ms.map(m=>{const r=trow(cl,m);return r?(+tjo(r)[key]||0):0});
+  if(key=='test'){const nz=v.filter(x=>x>0);return nz.length?nz.reduce((a,b)=>a+b,0)/nz.length:0;}return v.reduce((a,b)=>a+b,0);};
 const fset=(cl,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return r&&r.fields?String(r.fields).split(','):fk(cfg(cl));};
 const ordk=s=>D.keys.filter(k=>k!='photo'&&s.has(k));
 const lv=p=>p>=75?'ok':p>=40?'mid':'low';
@@ -325,24 +334,33 @@ function ulist(){
 function fields(){
   const s=D.students.find(x=>x.username==$('st').value);
   if(!s){$('flds').innerHTML='';$('pv').innerHTML='';return;}
-  $('flds').innerHTML=ordk(new Set(fset(s.class,$('dt').value))).map(k=>`<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" type="number" step="any"></label>`).join('');
+  const m=$('dt').value;
+  $('flds').innerHTML=ordk(new Set(fset(s.class,m))).map(k=>{const g=tgt(s.class,k,[m]);return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" placeholder="${g?t('target')+' '+(+g.toFixed(1)):''}"></label>`}).join('');
   $('pv').innerHTML=ava(s.username,s.name,'xl');
 }
 function loadT(){
-  const r=D.targets.find(x=>x.class==$('tc').value&&String(x.month).slice(0,7)==$('tm').value)||{};
-  TK.forEach(k=>$('t_'+k).value=r[k]||'');
-  const on=new Set(fset($('tc').value,$('tm').value));
-  $('t_f').innerHTML=D.keys.filter(k=>k!='photo').map(k=>`<label class="ck"><input type="checkbox" value="${k}" ${on.has(k)?'checked':''}> ${esc(L(k))}</label>`).join('');
+  const c=$('tc').value,m=$('tm').value,r=trow(c,m),tv=r?tjo(r):{},on=new Set(fset(c,m));
+  $('t_f').innerHTML=D.keys.filter(k=>k!='photo').map(k=>`<div class="pr${on.has(k)?'':' off'}"><label class="lb"><input type="checkbox" value="${k}" ${on.has(k)?'checked':''} onchange="tgl(this)"><span>${esc(L(k))}</span></label><input class="tin" inputmode="decimal" autocomplete="off" placeholder="${t('target')}" value="${tv[k]||''}" ${on.has(k)?'':'disabled'}></div>`).join('');
+}
+function tgl(cb){const r=cb.closest('.pr');r.classList.toggle('off',!cb.checked);r.querySelector('.tin').disabled=!cb.checked;}
+function copyPrev(){
+  const c=$('tc').value,m=$('tm').value;
+  const p=D.targets.filter(x=>x.class==c&&String(x.month).slice(0,7)<m).sort((a,b)=>String(b.month).localeCompare(String(a.month)))[0];
+  if(!p)return toast(t('no_prev'),1);
+  const on=new Set(p.fields?String(p.fields).split(','):fk(cfg(c))),tv=tjo(p);
+  document.querySelectorAll('#t_f .pr').forEach(r=>{const cb=r.querySelector('input[type=checkbox]');cb.checked=on.has(cb.value);tgl(cb);r.querySelector('.tin').value=tv[cb.value]||'';});
 }
 async function setT(){
-  const fields=[...document.querySelectorAll('#t_f input:checked')].map(i=>i.value);
+  const fields=[],tj={};
+  document.querySelectorAll('#t_f .pr').forEach(r=>{const cb=r.querySelector('input[type=checkbox]');
+    if(!cb.checked)return;fields.push(cb.value);const v=num(r.querySelector('.tin').value);if(v>0)tj[cb.value]=v;});
   if(!fields.length)return toast(t('sel_one'),1);
-  const r=await call({action:'setTarget',cls:$('tc').value,month:$('tm').value,
-    mutalia:$('t_mutalia').value,hazri:$('t_hazri').value,madaniPhool:$('t_madaniPhool').value,fields});
+  const r=await call({action:'setTarget',cls:$('tc').value,month:$('tm').value,fields,tj});
   if(!r.ok)return toast(r.msg,1);D=r;fill();toast(t('ok_setup'));
 }
 async function add(){
-  const vals={};D.keys.forEach(k=>{const el=$('f_'+k);if(el&&el.value!=='')vals[k]=+el.value;});
+  const vals={};D.keys.forEach(k=>{const el=$('f_'+k);if(el){const v=num(el.value);if(!isNaN(v))vals[k]=v;}});
+  if(!Object.keys(vals).length)return toast(t('need_val'),1);
   const r=await call({action:'add',student:$('st').value,date:$('dt').value,vals,note:$('no').value});
   if(!r.ok)return toast(r.msg,1);
   D=r;$('no').value='';fill();toast(t('ok_perf'));
@@ -365,11 +383,12 @@ const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.cl
 function editE(id){
   const e=D.entries.find(x=>x.id==id);if(!e)return;EID=id;const v=V(e);
   $('e_h').textContent=e.name+' — '+e.class;$('e_m').value=mon(e);$('e_n').value=e.note||'';
-  $('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).map(k=>`<label class="f"><span>${esc(L(k))}</span><input id="e_${k}" type="number" step="any" value="${v[k]??''}"></label>`).join('');
+  $('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).map(k=>`<label class="f"><span>${esc(L(k))}</span><input id="e_${k}" inputmode="decimal" autocomplete="off" value="${v[k]??''}"></label>`).join('');
   $('md').hidden=false;
 }
 async function saveE(){
-  const vals={};D.keys.forEach(k=>{const el=$('e_'+k);if(el&&el.value!=='')vals[k]=+el.value;});
+  const vals={};D.keys.forEach(k=>{const el=$('e_'+k);if(el){const v=num(el.value);if(!isNaN(v))vals[k]=v;}});
+  if(!Object.keys(vals).length)return toast(t('need_val'),1);
   const r=await call({action:'editEntry',id:EID,date:$('e_m').value,vals,note:$('e_n').value});
   if(!r.ok)return toast(r.msg,1);D=r;$('md').hidden=true;fill();toast(t('ok_upd'));
 }
@@ -405,8 +424,8 @@ function render(){
     const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
     E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
     const ks=ordk(st);
-    const Tg={};TK.forEach(x=>{Tg[x]=tgt(k,x,ms)});
-    const tf=TK.filter(x=>ks.includes(x)&&Tg[x]);
+    const Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
+    const tf=ks.filter(x=>Tg[x]>0);
     const val=(s,key)=>key=='test'?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
     A.forEach(s=>{s.ov=tf.length?Math.round(tf.reduce((a,x)=>a+Math.min(100,val(s,x)/Tg[x]*100),0)/tf.length):null;ALL.push(s);
       EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+val(s,x).toFixed(1):'')]);});
