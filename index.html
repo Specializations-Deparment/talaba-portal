@@ -243,7 +243,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='12';
+const VER='13';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -256,7 +256,7 @@ side_h:"Every student's monthly performance",side_p:'Study, attendance, Madani P
 t_an:'Analysis',t_en:'Enter Performance',t_tg:'Monthly Setup',t_us:'Users',
 month:'Month',cls:'Class',stu:'Student',all_m:'All months',all_c:'All classes',all_s:'All students',export:'Export CSV',
 k_stu:'Students',k_ent:'Entries',k_ach:'Average achievement',k_att:'Need attention',
-name:'Name',entries:'Entries',overall:'Overall',target:'Target',avg:'Avg',st_ex:'Excellent',st_ok:'On track',st_low:'Needs attention',
+name:'Name',entries:'Entries',overall:'Overall',target:'Target',avg:'Avg',st_ex:'Excellent',st_ok:'On track',st_low:'Need attention',
 chart_h:'Achievement against target (%)',chart_none:'Set monthly targets to see percentages, status and achievement charts.',go_setup:'Open Monthly Setup',
 empty:'No records for this selection. Add the first entry in “Enter Performance”.',recent:'Recent Entries',details:'Details',note:'Note',edit:'Edit',del:'Delete',
 e_h:'Enter new performance',save:'Save',add_photo:'Add photo',photo_hint:' — add your photo from “Enter Performance”',
@@ -306,7 +306,8 @@ const tgt=(cl,key,ms)=>{const v=ms.map(m=>{const r=trow(cl,m);return r?(+tjo(r)[
   if(key=='test'){const nz=v.filter(x=>x>0);return nz.length?nz.reduce((a,b)=>a+b,0)/nz.length:0;}return v.reduce((a,b)=>a+b,0);};
 const fset=(cl,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return r&&r.fields?String(r.fields).split(','):fk(cfg(cl));};
 const ordk=s=>D.keys.filter(k=>k!='photo'&&s.has(k));
-const lv=p=>p>=75?'ok':p>=40?'mid':'low';
+const HIGH=75,LOW=60;
+const lv=p=>p>=HIGH?'ok':p>=LOW?'mid':'low';
 const stl=l=>t({ok:'st_ex',mid:'st_ok',low:'st_low'}[l]);
 const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
 function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');
@@ -522,7 +523,7 @@ function render(){
     items.push({i,A,tf,Tg,bm,tr});
   });
   const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
-  const low=ovs.filter(s=>s.ov<40).length;
+  const low=ovs.filter(s=>s.ov<LOW).length;
   const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
     `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
     `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
