@@ -9,11 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
+@font-face{font-family:'JNN';src:local('Jameel Noori Nastaleeq'),local('JameelNooriNastaleeq'),local('Jameel Noori Nastaleeq Kasheeda'),url('JameelNooriNastaleeq.ttf') format('truetype');font-display:swap}
 :root{--ink:#14201f;--mute:#5d6e6b;--line:#d9e1df;--paper:#f2f5f4;--card:#fff;--pri:#0e3b3a;--pri2:#1b5c58;--tint:#e4eeec;--ok:#1f8a63;--mid:#c98a1b;--low:#b5453a;--serif:'Fraunces','Noto Naskh Arabic',serif;--sans:'Source Sans 3','Noto Naskh Arabic',sans-serif}
-html[lang=ur]{--serif:'Noto Nastaliq Urdu','Noto Naskh Arabic',serif;--sans:'Noto Naskh Arabic',serif}
+html[lang=ur]{--serif:'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif;--sans:'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif}
+html[lang=ur] h1,html[lang=ur] h2,html[lang=ur] h3,html[lang=ur] h4,html[lang=ur] .ttl,html[lang=ur] .me b{font-weight:400}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);font-variant-numeric:tabular-nums}
-html[lang=ur] body{line-height:1.9}
+html[lang=ur] body{line-height:2.05}
 h1,h2,h3,.ttl{font-family:var(--serif);font-weight:700;line-height:1.3;margin:0}
 html[lang=ur] h1,html[lang=ur] h2,html[lang=ur] h3,html[lang=ur] .ttl{line-height:2.1}
 button,input,select{font:inherit;color:inherit}
@@ -78,8 +80,8 @@ label.f input,label.f select,.bar-tools select{border:1px solid var(--line);back
 .chip{background:var(--tint);color:var(--pri);border-radius:20px;padding:0 12px;font-size:14px;font-weight:600}
 .t{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
 table{border-collapse:collapse;width:100%;min-width:600px}
-th{background:var(--tint);color:var(--pri);font-size:13px;padding:9px 12px;text-align:center;position:sticky;top:0;white-space:nowrap;letter-spacing:.02em}
-td{padding:9px 12px;border-top:1px solid var(--line);text-align:center;vertical-align:middle}
+th{background:var(--tint);color:var(--pri);font-size:13px;padding:9px 8px;text-align:center;position:sticky;top:0;white-space:nowrap;letter-spacing:.02em}
+td{padding:9px 8px;border-top:1px solid var(--line);text-align:center;vertical-align:middle}
 td:first-child,th:first-child,td.l,th.l{text-align:start}
 tbody tr:hover td{background:#f1f7f6}
 small.tg{display:block;font-weight:400;color:var(--mute)}
@@ -96,7 +98,24 @@ small.tg{display:block;font-weight:400;color:var(--mute)}
 .ov b{font-size:17px}
 .bd{display:inline-block;font-size:12px;font-weight:700;border-radius:20px;padding:0 10px;white-space:nowrap}
 .bd.ok{background:#e1f3ea;color:var(--ok)}.bd.mid{background:#fbf0d9;color:#8a5d0c}.bd.low{background:#f8e1de;color:var(--low)}
-.cbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px}
+.cbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:14px}
+.c2{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:92px}
+.c2 .bar{width:100%;margin:3px 0}
+td.l .nm{white-space:nowrap;min-width:130px}
+.sc .bar{width:100%;margin:6px 0 2px}
+.scs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.sc{border:1px solid var(--line);border-radius:12px;padding:12px 16px;background:#fff;display:flex;flex-direction:column;gap:2px}
+.sc small{color:var(--mute);font-weight:600;font-size:13px}
+.sc b{font:700 26px/1.3 var(--serif)}
+.sc .of{font:400 14px var(--sans)}
+.sc.big{background:var(--pri);border-color:var(--pri);color:#fff}
+.sc.big small{color:#ffffffbb}.sc.big b{font-size:34px}
+.sc.big .bd{align-self:flex-start}
+.sc.ok{border-top:4px solid var(--ok)}.sc.mid{border-top:4px solid var(--mid)}.sc.low{border-top:4px solid var(--low)}
+.sc.big.ok,.sc.big.mid,.sc.big.low{border-top-width:1px}
+.scf{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+@media print{.top,.tabs,.bar-tools,.vr,#toast,.md,.ib,.hint{display:none!important}body{background:#fff}.panel{border:0;padding:0}.cls{break-inside:avoid}}
 .cbox h5{margin:0 0 8px;font:700 15px var(--sans);color:var(--mute);letter-spacing:.02em}
 .hint{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px;background:#fbf6ea;border:1px solid #ecdcb4;color:#6b4e0e;border-radius:12px;padding:10px 16px}
 .note{color:var(--mute);font-size:14px;margin:6px 0 0}
@@ -158,6 +177,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
       <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
       <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
       <span class="sp"></span>
+      <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
       <button class="btn ghost sm" onclick="exportCSV()" data-i="export"></button>
     </div>
     <div id="out"></div>
@@ -223,10 +243,12 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='11';
+const VER='12';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
+const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans 3','Noto Naskh Arabic',sans-serif";
+const CLR={ok:'#1f8a63',mid:'#c98a1b',low:'#b5453a'};
 const COL=['#0e3b3a','#2f6fa3','#1f8a63','#c98a1b','#8a4f7d','#b5453a','#5d6e6b','#3aa0a0'];
 const T={
 en:{title:'Student Performance Portal',sub:'Specializations Department',logout:'Log out',signin:'Sign in',user_l:'Username',pass_l:'Password',
@@ -265,8 +287,8 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
-Object.assign(T.en,{no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
-Object.assign(T.ur,{no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+Object.assign(T.en,{print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
 const MSG={'یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -424,63 +446,98 @@ function exportCSV(){
   a.href=URL.createObjectURL(new Blob(['\ufeff'+EXP.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv;charset=utf-8'}));
   a.download='performance-'+($('mf').value||'all')+'.csv';a.click();
 }
+const vl=(s,key)=>key=='test'?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
+function agg(list){const s={n:list.length,sum:{},cnt:{}};list.forEach(e=>{const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});s.none=!Object.keys(s.sum).length;return s;}
+function ovOf(s,cls,ms){
+  if(s.none)return null;
+  const st=new Set();ms.forEach(x=>fset(cls,x).forEach(y=>st.add(y)));Object.keys(s.sum).forEach(y=>st.add(y));
+  const tf=ordk(st).filter(x=>tgt(cls,x,ms)>0);
+  return tf.length?Math.round(tf.reduce((a,x)=>a+Math.min(100,vl(s,x)/tgt(cls,x,ms)*100),0)/tf.length):null;
+}
+const hl=axis=>({id:'h100'+axis,afterDraw(ch){const sc=ch.scales[axis];if(!sc)return;const px=sc.getPixelForValue(100),a=ch.chartArea,g=ch.ctx;
+  g.save();g.strokeStyle='#14201f66';g.setLineDash([5,4]);g.beginPath();if(axis=='x'){g.moveTo(px,a.top);g.lineTo(px,a.bottom);}else{g.moveTo(a.left,px);g.lineTo(a.right,px);}g.stroke();g.restore();}});
+const ovBadge=s=>s.ov==null?`<span class="bd mid">${t('no_nums')}</span>`:`<span class="bd ${lv(s.ov)}">${stl(lv(s.ov))}</span>`;
+function scorecard(s,ks,Tg){
+  const l=s.ov==null?'':lv(s.ov);
+  return `<div class="scs"><div class="sc big ${l}"><small>${t('overall')}</small><b>${s.ov==null?'—':s.ov+'%'}</b>${ovBadge(s)}</div>`+ks.map(x=>{
+    const lb=`<small>${esc(L(x))}</small>`;
+    if(s.none)return `<div class="sc">${lb}<b>—</b></div>`;
+    const v=vl(s,x),n=+v.toFixed(1);
+    if(!Tg[x])return `<div class="sc">${lb}<b>${n}</b><span class="of">${t('sc_nt')}</span></div>`;
+    const p=Math.round(v/Tg[x]*100),q=lv(p);
+    return `<div class="sc ${q}">${lb}<b><bdi dir="ltr">${n}<span class="of"> / ${+Tg[x].toFixed(1)}</span></bdi></b><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><div class="scf"><span class="pc ${q}">${p}%</span><span class="bd ${q}">${stl(q)}</span></div></div>`;
+  }).join('')+'</div>';
+}
+function ptable(A,ks,Tg,tf){
+  const cell=(s,x)=>{
+    if(s.none)return `<td><span class="of">—</span></td>`;
+    const v=vl(s,x),n=+v.toFixed(1);
+    if(!Tg[x])return `<td><span class="num">${n}</span></td>`;
+    const p=Math.round(v/Tg[x]*100),q=lv(p);
+    return `<td><div class="c2"><div dir="ltr"><span class="num">${n}</span><span class="of"> / ${+Tg[x].toFixed(1)}</span></div><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><span class="pc ${q}">${p}%</span></div></td>`;
+  };
+  return `<div class="t"><table><thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('entries')}</th>`+
+    ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}</th>`).join('')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
+    A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm">${ava(s.u,s.name)}${esc(s.name)}</div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+
+      (tf.length?(s.ov==null?`<td>${ovBadge(s)}</td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b>${ovBadge(s)}</div></td>`):'')+'</tr>').join('')+'</tbody></table></div>';
+}
 function render(){
   CH.forEach(c=>c.destroy());CH=[];
-  Chart.defaults.font.family="'Source Sans 3','Noto Naskh Arabic',sans-serif";Chart.defaults.color='#5d6e6b';
+  Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b';
   const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
-  const E=D.entries.filter(e=>(!c||e.class==c)&&(!m||mon(e)==m)&&(!sv||e.username==sv));
+  const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv));
+  const E=base.filter(e=>!m||mon(e)==m);
   const bs=sv?D.students.find(x=>x.username==sv):(D.me.role=='student'?D.students[0]:null);
   $('mine').hidden=!bs;
   if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
   const by={};
-  E.forEach(e=>{const s=((by[e.class]??={})[e.username]??={u:e.username,name:e.name,n:0,sum:{},cnt:{}});
-    s.n++;const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});
+  E.forEach(e=>{((by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
   const allk=D.keys.filter(k=>k!='photo');
   EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L)]];
-  let h='',cards='';const items=[],ALL=[];
+  let h='';const items=[],ALL=[];
   Object.keys(by).forEach((k,i)=>{
-    const A=Object.values(by[k]);
-    const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))];
+    const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
+    const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
     const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
     E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
-    const ks=ordk(st);
-    const Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
+    const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
     const tf=ks.filter(x=>Tg[x]>0);
-    const val=(s,key)=>key=='test'?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
-    A.forEach(s=>{s.none=!Object.keys(s.sum).length;s.ov=(tf.length&&!s.none)?Math.round(tf.reduce((a,x)=>a+Math.min(100,val(s,x)/Tg[x]*100),0)/tf.length):null;ALL.push(s);
-      EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+val(s,x).toFixed(1):'')]);});
+    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):'')]);});
     A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
     const live=A.filter(s=>!s.none);
-    const chips=live.length?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+val(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
-    h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div><div class="t"><table><thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('entries')}</th>`+
-      ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${Tg[x]}</small>`:''}</th>`).join('')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
-      A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm">${ava(s.u,s.name)}${esc(s.name)}</div></td><td>${s.n}</td>`+
-        ks.map(x=>{const v=val(s,x),n=+v.toFixed(1);
-          if(s.none)return `<td><span class="of">—</span></td>`;
-          if(!Tg[x])return `<td><span class="num">${n}</span></td>`;
-          const p=Math.round(v/Tg[x]*100),l=lv(p);
-          return `<td><div class="cell"><span class="num">${n}</span><span class="of">/ ${Tg[x]}</span><span class="pc ${l}">${p}%</span></div><div class="bar"><i class="${l}" style="width:${Math.min(p,100)}%"></i></div></td>`}).join('')+
-        (tf.length?(s.ov==null?`<td><span class="bd mid">${t('no_nums')}</span></td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b><span class="bd ${lv(s.ov)}">${stl(lv(s.ov))}</span></div></td>`):'')+'</tr>').join('')+
-      `</tbody></table></div>`+(A.some(s=>s.none)?`<div class="hint"><span>${t('empty_hint')}</span></div>`:'')+
-      (tf.length?`<div class="cbox"><h5>${t('chart_h')}</h5><div style="height:${Math.max(190,70+A.length*(tf.length*18+16))}px"><canvas id="ch${i}"></canvas></div></div>`
-        :`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`)+`</section>`;
-    items.push({i,A,tf,Tg,val});
+    const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
+    h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
+    h+=A.length==1?scorecard(A[0],ks,Tg):ptable(A,ks,Tg,tf);
+    let cg='';
+    if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
+    if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
+    const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
+    const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
+      const o=Object.values(per).map(l=>ovOf(agg(l),k,[mm])).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
+    if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
+    if(cg)h+=`<div class="cg">${cg}</div>`;
+    if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`;
+    if(A.some(s=>s.none))h+=`<div class="hint"><span>${t('empty_hint')}</span></div>`;
+    h+='</section>';
+    items.push({i,A,tf,Tg,bm,tr});
   });
   const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
   const low=ovs.filter(s=>s.ov<40).length;
-  if(ALL.length)cards=`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
+  const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
     `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
-    `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`;
+    `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
   $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
-  items.forEach(({i,A,tf,Tg,val})=>{
-    if(!tf.length)return;
-    CH.push(new Chart($('ch'+i),{type:'bar',data:{labels:A.map(s=>s.name),
-      datasets:tf.map((x,j)=>({label:L(x)+' %',backgroundColor:COL[j%COL.length],borderRadius:4,barThickness:14,
-        data:A.map(s=>Math.round(val(s,x)/Tg[x]*100))}))},
-      options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},
-        scales:{x:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}},
-      plugins:[{id:'t100',afterDraw(ch){const x=ch.scales.x.getPixelForValue(100),a=ch.chartArea,g=ch.ctx;
-        g.save();g.strokeStyle='#14201f66';g.setLineDash([5,4]);g.beginPath();g.moveTo(x,a.top);g.lineTo(x,a.bottom);g.stroke();g.restore();}}]}));
+  const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
+  const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
+    options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
+  items.forEach(({i,A,tf,Tg,bm,tr})=>{
+    const o1=$('co'+i);
+    if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
+    const o2=$('cp'+i);
+    if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
+    const o3=$('ct'+i);
+    if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},
+      options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
   });
   $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
     E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
