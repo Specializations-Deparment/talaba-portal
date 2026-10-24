@@ -306,7 +306,7 @@ const tgt=(cl,key,ms)=>{const v=ms.map(m=>{const r=trow(cl,m);return r?(+tjo(r)[
   if(key=='test'){const nz=v.filter(x=>x>0);return nz.length?nz.reduce((a,b)=>a+b,0)/nz.length:0;}return v.reduce((a,b)=>a+b,0);};
 const fset=(cl,m)=>{const r=D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);return r&&r.fields?String(r.fields).split(','):fk(cfg(cl));};
 const ordk=s=>D.keys.filter(k=>k!='photo'&&s.has(k));
-const HIGH=75,LOW=60;
+const HIGH=85,LOW=60;
 const lv=p=>p>=HIGH?'ok':p>=LOW?'mid':'low';
 const stl=l=>t({ok:'st_ex',mid:'st_ok',low:'st_low'}[l]);
 const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
