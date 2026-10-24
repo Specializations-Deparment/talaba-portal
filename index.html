@@ -223,7 +223,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='9';
+const VER='10';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -379,7 +379,11 @@ async function add(){
   if(!Object.keys(vals).length)return toast(t('need_val'),1);
   const r=await call({action:'add',student:$('st').value,date:$('dt').value,vals,note:$('no').value});
   if(!r.ok)return toast(r.msg,1);
-  fields.u=null;FORCEM=$('dt').value;D=r;$('no').value='';fill();toast(t('ok_perf')+': '+Object.entries(vals).map(([k,v])=>L(k)+' '+v).join(', '));
+  fields.u=null;FORCEM=$('dt').value;D=r;$('no').value='';fill();
+  const sent=JSON.stringify(vals),ms=D.entries.filter(x=>x.username==$('st').value&&mon(x)==$('dt').value),ne=ms[ms.length-1];
+  const okS=!r.dbg||r.dbg.stored===sent,okC=ne&&Object.keys(vals).every(k=>V(ne)[k]===vals[k]);
+  if(!okS||!okC){alert('The numbers were NOT stored correctly.\n\nSent: '+sent+'\nStored by the server: '+(r.dbg?r.dbg.stored:'(old server)')+'\nRow '+(r.dbg?r.dbg.row:'?')+', column '+(r.dbg?r.dbg.col:'?')+'\nEntry read back: '+(ne?ne.data:'none'));return;}
+  toast(t('ok_perf')+': '+Object.entries(vals).map(([k,v])=>L(k)+' '+v).join(', '));
 }
 function pick(inp){
   const f=inp.files[0];if(!f)return;const im=new Image();
