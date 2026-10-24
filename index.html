@@ -223,7 +223,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='8';
+const VER='9';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -446,7 +446,8 @@ function render(){
     A.forEach(s=>{s.none=!Object.keys(s.sum).length;s.ov=(tf.length&&!s.none)?Math.round(tf.reduce((a,x)=>a+Math.min(100,val(s,x)/Tg[x]*100),0)/tf.length):null;ALL.push(s);
       EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+val(s,x).toFixed(1):'')]);});
     A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
-    const chips=tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(A.reduce((a,s)=>a+val(s,x)/Tg[x]*100,0)/A.length)}%</span>`).join('');
+    const live=A.filter(s=>!s.none);
+    const chips=live.length?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+val(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
     h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div><div class="t"><table><thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('entries')}</th>`+
       ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${Tg[x]}</small>`:''}</th>`).join('')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
       A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm">${ava(s.u,s.name)}${esc(s.name)}</div></td><td>${s.n}</td>`+
