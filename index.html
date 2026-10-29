@@ -123,6 +123,7 @@ td.l .nm{white-space:nowrap;min-width:130px}
 h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 .md{position:fixed;inset:0;background:#0007;display:grid;place-items:center;z-index:8;padding:12px}
 .mb{background:#fff;border-radius:14px;padding:20px;max-width:560px;width:100%;max-height:90vh;overflow:auto}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .ib{background:none;border:0;cursor:pointer;font-size:17px;padding:0 4px}
 .ckg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .ck{display:flex;align-items:center;gap:6px;background:var(--tint);color:var(--pri);border-radius:20px;padding:2px 14px;cursor:pointer;font-weight:600}
@@ -193,9 +194,10 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
     </div>
     <div id="flds" class="grid" style="margin-top:12px"></div>
     <div id="svto" class="note" style="margin-top:10px"></div>
+    <div id="lockmsg" class="hint" hidden></div>
     <div class="row">
       <label class="f" style="flex:1;min-width:200px"><span data-i="note"></span><input id="no"></label>
-      <button class="btn" onclick="add()" data-i="save"></button>
+      <button class="btn" id="savebtn" onclick="add()" data-i="save"></button>
     </div>
     <div id="ph" class="row" style="border-top:1px solid var(--line);margin-top:20px;padding-top:16px;align-items:center">
       <span id="pv"></span>
@@ -214,6 +216,8 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
     <p class="note" data-i="s_pick_n"></p>
     <div id="t_f" class="plist"></div>
     <div class="row"><button class="btn" onclick="setT()" data-i="s_save"></button><button class="btn ghost" onclick="copyPrev()" data-i="copy_prev"></button></div>
+    <h4 data-i="saved_setups"></h4>
+    <div class="t"><table id="tlist"></table></div>
   </section>
 
   <section id="adm" class="panel" hidden>
@@ -243,7 +247,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='13';
+const VER='14';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -287,9 +291,9 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
-Object.assign(T.en,{print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
-Object.assign(T.ur,{print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
-const MSG={'یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
+Object.assign(T.en,{locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+const MSG={'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے':'This student already has an entry for this month. The admin or teacher can edit it.','یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
@@ -353,7 +357,7 @@ function fill(){
   $('mf').innerHTML=`<option value="">${t('all_m')}</option>`+ms.map(m=>`<option>${m}</option>`).join('');
   const want=FORCEM&&ms.includes(FORCEM)?FORCEM:null;FORCEM=null;
   $('mf').value=want||(ms.includes(mv)?mv:(ms[0]||''));
-  fsf();ulist();fields();loadT();render();
+  fsf();ulist();fields();loadT();tlist();render();
 }
 function fsf(){
   const c=$('cf').value,v=$('sf').value,ss=D.students.filter(s=>!c||s.class==c);
@@ -369,13 +373,31 @@ function ulist(){
 }
 function fields(){
   const s=D.students.find(x=>x.username==$('st').value);
-  if(!s){$('flds').innerHTML='';$('pv').innerHTML='';$('svto').textContent='';return;}
+  if(!s){$('flds').innerHTML='';$('pv').innerHTML='';$('svto').textContent='';$('lockmsg').hidden=true;return;}
   const m=$('dt').value,keep={};
+  const ex=D.entries.find(x=>String(x.username)==String(s.username)&&mon(x)==m);
   if(fields.u===s.username)document.querySelectorAll('#flds input').forEach(i=>{if(i.value!=='')keep[i.id]=i.value;});
   fields.u=s.username;
-  $('flds').innerHTML=ordk(new Set(fset(s.class,m))).map(k=>{const g=tgt(s.class,k,[m]);return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" placeholder="${g?t('target')+' '+(+g.toFixed(1)):''}" value="${esc(keep['f_'+k]??'')}"></label>`}).join('');
+  $('flds').innerHTML=ordk(new Set(fset(s.class,m))).map(k=>{const g=tgt(s.class,k,[m]);return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" ${ex?'disabled':''} placeholder="${g?t('target')+' '+(+g.toFixed(1)):''}" value="${esc(keep['f_'+k]??'')}"></label>`}).join('');
   $('pv').innerHTML=ava(s.username,s.name,'xl');
-  $('svto').textContent=t('save_to').replace('{n}',s.name).replace('{m}',m);
+  $('svto').textContent=ex?'':t('save_to').replace('{n}',s.name).replace('{m}',m);
+  $('savebtn').disabled=!!ex;$('no').disabled=!!ex;
+  $('lockmsg').hidden=!ex;
+  if(ex)$('lockmsg').innerHTML=`<span>${t('locked')}</span>`+(canE(ex)?`<button class="btn ghost sm" onclick="editE('${esc(ex.id)}')">${t('edit_it')}</button>`:'');
+}
+let TL=[];
+function tlist(){
+  TL=[...D.targets].sort((a,b)=>String(b.month).localeCompare(String(a.month))||String(a.class).localeCompare(String(b.class)));
+  if(!TL.length){$('tlist').innerHTML='<tr><td>—</td></tr>';return;}
+  $('tlist').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('cls')}</th><th class="l">${t('perfs')}</th><th class="l">${t('targets')}</th><th></th></tr></thead><tbody>`+
+    TL.map((r,i)=>{const on=r.fields?String(r.fields).split(','):fk(cfg(r.class)),tv=tjo(r);
+      return `<tr><td class="l" style="white-space:nowrap">${esc(String(r.month).slice(0,7))}</td><td class="l">${esc(r.class)}</td><td class="l">${on.map(k=>esc(L(k))).join(', ')}</td><td class="l">${Object.entries(tv).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(', ')||'—'}</td><td style="white-space:nowrap"><button class="ib" title="${t('edit')}" onclick="editT(${i})">✏️</button><button class="ib" title="${t('del')}" onclick="delT(${i})">🗑️</button></td></tr>`}).join('')+'</tbody>';
+}
+function editT(i){const r=TL[i];$('tc').value=r.class;$('tm').value=String(r.month).slice(0,7);loadT();window.scrollTo({top:0,behavior:'smooth'});toast(t('edit_loaded'));}
+async function delT(i){
+  const r=TL[i];if(!confirm(t('confirm_delT')))return;
+  const x=await call({action:'delTarget',cls:r.class,month:String(r.month).slice(0,7)});
+  if(!x.ok)return toast(x.msg,1);D=x;fill();toast(t('ok_delT'));
 }
 function loadT(){
   const c=$('tc').value,m=$('tm').value,r=trow(c,m),tv=r?tjo(r):{},on=new Set(fset(c,m));
@@ -398,6 +420,7 @@ async function setT(){
   if(!r.ok)return toast(r.msg,1);D=r;fill();toast(t('ok_setup'));
 }
 async function add(){
+  if($('savebtn').disabled)return toast(t('locked'),1);
   const vals={};D.keys.forEach(k=>{const el=$('f_'+k);if(el){const v=num(el.value);if(!isNaN(v))vals[k]=v;}});
   if(!Object.keys(vals).length)return toast(t('need_val'),1);
   const r=await call({action:'add',student:$('st').value,date:$('dt').value,vals,note:$('no').value});
