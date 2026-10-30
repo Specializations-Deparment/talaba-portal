@@ -242,6 +242,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
       <label class="f"><span data-i="cls"></span><input id="nc"></label>
     </div>
     <div class="row"><button class="btn" onclick="addUser()" data-i="u_add"></button></div>
+    <div id="sharebox" class="cbox" style="margin-top:22px"></div>
     <h4><span data-i="u_all"></span> <span id="uc" class="chip"></span></h4>
     <div class="t"><table id="ul"></table></div>
   </section>
@@ -271,7 +272,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='16';
+const VER='17';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -315,8 +316,8 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
-Object.assign(T.en,{pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
-Object.assign(T.ur,{pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+Object.assign(T.en,{pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
 const MSG={'آپ اپنا اکاؤنٹ خود حذف نہیں کر سکتے':'You cannot delete your own account','یوزر نہیں ملا':'User not found','اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے':'This student already has an entry for this month. The admin or teacher can edit it.','یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -381,7 +382,7 @@ function fill(){
   $('mf').innerHTML=`<option value="">${t('all_m')}</option>`+ms.map(m=>`<option>${m}</option>`).join('');
   const want=FORCEM&&ms.includes(FORCEM)?FORCEM:null;FORCEM=null;
   $('mf').value=want||(ms.includes(mv)?mv:(ms[0]||''));
-  fsf();ulist();fields();loadT();tlist();render();
+  fsf();ulist();shareBox();fields();loadT();tlist();render();
 }
 function fsf(){
   const c=$('cf').value,v=$('sf').value,ss=D.students.filter(s=>!c||s.class==c);
@@ -394,6 +395,28 @@ function ulist(){
   $('uc').textContent=t('u_tot')+' '+D.users.length;
   $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th></th></tr></thead><tbody>`+
     D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
+}
+const shareUrl=()=>new URL('dashboard.html',location.href).href.split('?')[0]+'?k='+D.share;
+function shareBox(){
+  const b=$('sharebox');if(!b)return;
+  if(D.share===undefined){b.innerHTML=`<h5 style="margin:0 0 6px;font:700 17px var(--serif);color:var(--pri)">${t('pl_h')}</h5><p class="note">${t('pl_old')}</p>`;return;}
+  b.innerHTML=`<h5 style="margin:0 0 6px;font:700 17px var(--serif);color:var(--pri)">${t('pl_h')}</h5><p class="note">${t('pl_note')}</p>`+
+    (D.share?`<div class="row"><input id="shl" readonly dir="ltr" style="flex:1;min-width:260px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:#fff" value="${esc(shareUrl())}">`+
+      `<button class="btn sm" onclick="copyShare()">${t('pl_copy')}</button><a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(shareUrl())}">${t('pl_open')}</a></div>`+
+      `<div class="row"><button class="btn ghost sm" onclick="mkShare(true)">${t('pl_new')}</button><button class="btn danger sm" onclick="offShare()">${t('pl_off')}</button></div>`
+     :`<p class="note">${t('pl_none')}</p><div class="row"><button class="btn sm" onclick="mkShare(false)">${t('pl_create')}</button></div>`);
+}
+async function mkShare(ask){
+  if(ask&&!confirm(t('pl_confirm_new')))return;
+  const r=await call({action:'makeShare'});if(!r.ok)return toast(r.msg,1);D=r;fill();toast(t('pl_done'));
+}
+async function offShare(){
+  if(!confirm(t('pl_confirm_off')))return;
+  const r=await call({action:'delShare'});if(!r.ok)return toast(r.msg,1);D=r;fill();toast(t('pl_done'));
+}
+function copyShare(){
+  const i=$('shl');i.select();
+  (navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).catch(()=>document.execCommand('copy')).then(()=>toast(t('pl_copied')));
 }
 let DU=null;
 function askDelUser(i){DU=D.users[i];$('du_t').textContent=DU.name+' ('+DU.username+')';$('du_all').checked=false;$('dm').hidden=false;}
