@@ -135,6 +135,10 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 #lb img{max-width:90vw;max-height:78vh;border-radius:14px;border:6px solid #fff;background:#fff;object-fit:contain}
 #lb figcaption{margin-top:10px;font-weight:600;unicode-bidi:plaintext}
 .btn.danger{background:var(--low)}
+.at3{display:inline-flex;gap:6px;flex-wrap:wrap}
+.ab{border:1px solid var(--line);background:#fff;border-radius:20px;padding:2px 16px;cursor:pointer;font-weight:600;color:var(--mute)}
+.ab.p.on{background:var(--ok);border-color:var(--ok);color:#fff}.ab.l.on{background:var(--mid);border-color:var(--mid);color:#fff}.ab.a.on{background:var(--low);border-color:var(--low);color:#fff}
+.attc{display:flex;gap:6px;flex-wrap:wrap}
 .f input.bad{border-color:var(--low);background:#fdf3f2}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .ib{background:none;border:0;cursor:pointer;font-size:17px;padding:0 4px}
@@ -180,6 +184,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
   <nav class="tabs">
     <button data-t="an" class="on" onclick="show('an')" data-i="t_an"></button>
     <button data-t="en" onclick="show('en')" data-i="t_en"></button>
+    <button data-t="at" id="tbA" onclick="show('at')" data-i="t_at"></button>
     <button data-t="tg" id="tbT" onclick="show('tg')" data-i="t_tg"></button>
     <button data-t="adm" id="tbU" onclick="show('adm')" data-i="t_us"></button>
   </nav>
@@ -217,6 +222,18 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
       <span id="pv"></span>
       <label class="btn ghost"><span data-i="add_photo"></span><input type="file" accept="image/*" hidden onchange="pick(this)"></label>
     </div>
+  </section>
+
+  <section id="p_at" class="panel" hidden>
+    <h2 data-i="at_h"></h2>
+    <p class="note" data-i="at_note"></p>
+    <div class="grid" style="margin-top:12px">
+      <label class="f"><span data-i="cls"></span><select id="ac" onchange="loadAtt()"></select></label>
+      <label class="f"><span data-i="at_date"></span><input id="ad" type="date" onchange="loadAtt()"></label>
+    </div>
+    <div class="row"><button class="btn ghost sm" onclick="allPresent()" data-i="at_allp"></button><span id="atcnt" class="attc"></span></div>
+    <div class="t" style="margin-top:12px"><table id="attbl"></table></div>
+    <div class="row"><button class="btn" id="atsave" onclick="saveAtt()" data-i="at_save"></button><span id="atmsg" class="note" style="align-self:center"></span></div>
   </section>
 
   <section id="tg" class="panel" hidden>
@@ -283,7 +300,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='18';
+const VER='19';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -327,8 +344,8 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
-Object.assign(T.en,{cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
-Object.assign(T.ur,{cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+Object.assign(T.en,{t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
 const MSG={'آپ اپنا اکاؤنٹ خود حذف نہیں کر سکتے':'You cannot delete your own account','یوزر نہیں ملا':'User not found','اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے':'This student already has an entry for this month. The admin or teacher can edit it.','یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -355,8 +372,9 @@ const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" al
 function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');
   $('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
 function toast(m,bad){const x=$('toast');x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,2800);}
-function show(x){['an','en','tg','adm'].forEach(y=>{$(y=='an'||y=='en'?'p_'+y:y).hidden=y!=x;});
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));}
+function show(x){['an','en','at','tg','adm'].forEach(y=>{$(y=='an'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));
+  if(x=='at')attOpen();}
 function setLang(l){
   LG=l;try{localStorage.setItem('lg',l)}catch(e){}
   document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
@@ -370,7 +388,7 @@ async function call(o){
   catch(e){return {ok:false,msg:t('no_resp')};}
   if(r.ok&&!r.keys)return {ok:false,msg:t('not_dep')};
   if(r.msg&&r.msg.indexOf('MISSING:')==0)r.msg=t('fill_all')+' '+r.msg.slice(8).split(',').map(L).join(', ');
-  else if(r.msg=='NAME_NEEDED')r.msg=t('cu_need');else if(r.msg=='IN_USE')r.msg=t('cu_used');
+  else if(r.msg=='BAD_DATE')r.msg=t('BAD_DATE');else if(r.msg=='NAME_NEEDED')r.msg=t('cu_need');else if(r.msg=='IN_USE')r.msg=t('cu_used');
   else if(r.msg&&LG=='en'&&MSG[r.msg])r.msg=MSG[r.msg];
   return r;
 }
@@ -379,7 +397,7 @@ async function login(){
   const r=await call({action:'list'});
   if(!r.ok)return $('msg').textContent=r.msg;
   D=r;$('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
-  $('tbU').hidden=D.me.role!='admin';$('tbT').hidden=D.me.role=='student';
+  $('tbU').hidden=D.me.role!='admin';$('tbA').hidden=D.me.role=='student';$('tbT').hidden=D.me.role=='student';
   $('dt').value=$('tm').value=new Date().toISOString().slice(0,7);
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
   fill();
@@ -441,6 +459,38 @@ async function doDelUser(){
   if(!r.ok)return toast(r.msg,1);
   D=r;fill();toast(t('ok_delU'));
 }
+let AT={};
+const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+function attOpen(){
+  const cl=[...new Set(D.students.map(s=>s.class))],cv=$('ac').value;
+  $('ac').innerHTML=cl.map(c=>`<option>${esc(c)}</option>`).join('');if(cl.includes(cv))$('ac').value=cv;
+  $('ad').max=todayStr();if(!$('ad').value)$('ad').value=todayStr();
+  loadAtt();
+}
+async function loadAtt(){
+  const c=$('ac').value,d=$('ad').value;if(!c||!d){AT={};return drawAtt();}
+  const r=await call({action:'getAtt',cls:c,date:d});if(!r.ok){AT={};drawAtt();return toast(r.msg,1);}
+  AT={...r.attday};drawAtt();
+}
+function drawAtt(){
+  const c=$('ac').value,L2=D.students.filter(s=>s.class==c);
+  const cnt={P:0,L:0,A:0};L2.forEach(s=>{if(AT[s.username])cnt[AT[s.username]]++;});
+  const un=L2.length-cnt.P-cnt.L-cnt.A;
+  $('attbl').innerHTML=L2.length?`<thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('t_at')}</th></tr></thead><tbody>`+
+    L2.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm">${ava(s.username,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td><div class="at3">`+
+      [['P','p'],['L','l'],['A','a']].map(([k,c2])=>`<button class="ab ${c2} ${AT[s.username]==k?'on':''}" data-u="${esc(s.username)}" onclick="setAtt(this.dataset.u,'${k}')">${t('at_'+c2)}</button>`).join('')+`</div></td></tr>`).join('')+'</tbody>':`<tbody><tr><td>${t('at_none')}</td></tr></tbody>`;
+  $('atcnt').innerHTML=`<span class="bd ok">${t('at_p')} ${cnt.P}</span><span class="bd mid">${t('at_l')} ${cnt.L}</span><span class="bd low">${t('at_a')} ${cnt.A}</span><span class="chip">${t('at_unm')} ${un}</span>`;
+  $('atsave').disabled=!L2.length||un>0;$('atmsg').textContent=L2.length&&un>0?t('at_need'):'';
+}
+function setAtt(u,s){AT[u]=s;drawAtt();}
+function allPresent(){D.students.filter(s=>s.class==$('ac').value).forEach(s=>{if(!AT[s.username])AT[s.username]='P';});drawAtt();}
+async function saveAtt(){
+  const c=$('ac').value,L2=D.students.filter(s=>s.class==c);
+  if(L2.some(s=>!AT[s.username]))return toast(t('at_need'),1);
+  const r=await call({action:'saveAtt',cls:c,date:$('ad').value,marks:AT});if(!r.ok)return toast(r.msg,1);
+  const ids=new Set(L2.map(s=>String(s.username)));D.attsum=(D.attsum||[]).filter(x=>!ids.has(String(x.username))).concat(r.attsum||[]);
+  render();toast(t('at_ok'));
+}
 let LOCK=false;
 function chk(){
   const ins=[...document.querySelectorAll('#flds input')],ok=ins.filter(i=>!isNaN(num(i.value))).length;
@@ -455,7 +505,7 @@ function fields(){
   const ex=D.entries.find(x=>String(x.username)==String(s.username)&&mon(x)==m);
   if(fields.u===s.username)document.querySelectorAll('#flds input').forEach(i=>{if(i.value!=='')keep[i.id]=i.value;});
   fields.u=s.username;
-  $('flds').innerHTML=ordk(new Set(fset(s.class,m))).map(k=>{const g=tgt(s.class,k,[m]);return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" oninput="chk()" ${ex?'disabled':''} placeholder="${g?t('target')+' '+(+g.toFixed(1)):''}" value="${esc(keep['f_'+k]??'')}"></label>`}).join('');
+  $('flds').innerHTML=ordk(new Set(fset(s.class,m))).map(k=>{const g=tgt(s.class,k,[m]),ao=k=='hazri'?attOf(s.username,m):null;return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" oninput="chk()" ${ex?'disabled':''} placeholder="${(g?t('target')+' '+(+g.toFixed(1)):'')+(ao&&ao.t?(g?' · ':'')+t('at_rec_p')+' '+ao.p:'')}" value="${esc(keep['f_'+k]??'')}"></label>`}).join('');
   $('pv').innerHTML=ava(s.username,s.name,'xl');
   $('svto').textContent=ex?'':t('save_to').replace('{n}',s.name).replace('{m}',m);
   LOCK=!!ex;$('no').disabled=!!ex;chk();
@@ -567,6 +617,8 @@ function exportCSV(){
   a.href=URL.createObjectURL(new Blob(['\ufeff'+EXP.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv;charset=utf-8'}));
   a.download='performance-'+($('mf').value||'all')+'.csv';a.click();
 }
+function attOf(u,m){const o={p:0,l:0,a:0,t:0};(D.attsum||[]).forEach(r=>{if(String(r.username)==String(u)&&(!m||r.month==m)){o.p+=r.p;o.l+=r.l;o.a+=r.a;}});o.t=o.p+o.l+o.a;o.pc=o.t?Math.round(o.p/o.t*100):null;return o;}
+const attTxt=o=>`${t('at_p')} ${o.p} · ${t('at_l')} ${o.l} · ${t('at_a')} ${o.a}`;
 const vl=(s,key)=>isAvg(key)?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
 function agg(list){const s={n:list.length,sum:{},cnt:{}};list.forEach(e=>{const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});s.none=!Object.keys(s.sum).length;return s;}
 function ovOf(s,cls,ms){
@@ -578,8 +630,9 @@ function ovOf(s,cls,ms){
 const hl=axis=>({id:'h100'+axis,afterDraw(ch){const sc=ch.scales[axis];if(!sc)return;const px=sc.getPixelForValue(100),a=ch.chartArea,g=ch.ctx;
   g.save();g.strokeStyle='#14201f66';g.setLineDash([5,4]);g.beginPath();if(axis=='x'){g.moveTo(px,a.top);g.lineTo(px,a.bottom);}else{g.moveTo(a.left,px);g.lineTo(a.right,px);}g.stroke();g.restore();}});
 const ovBadge=s=>s.ov==null?`<span class="bd mid">${t('no_nums')}</span>`:`<span class="bd ${lv(s.ov)}">${stl(lv(s.ov))}</span>`;
-function scorecard(s,ks,Tg){
+function scorecard(s,ks,Tg,at){
   const l=s.ov==null?'':lv(s.ov);
+  const ac=at&&at.t?`<div class="sc ${lv(at.pc)}"><small>${t('at_rec')}</small><b>${at.pc}%</b><div class="bar"><i class="${lv(at.pc)}" style="width:${Math.min(at.pc,100)}%"></i></div><div class="scf"><span class="note" style="margin:0">${attTxt(at)}</span></div></div>`:'';
   return `<div class="scs"><div class="sc big ${l}"><small>${t('overall')}</small><b>${s.ov==null?'—':s.ov+'%'}</b>${ovBadge(s)}</div>`+ks.map(x=>{
     const lb=`<small>${esc(L(x))}</small>`;
     if(s.none)return `<div class="sc">${lb}<b>—</b></div>`;
@@ -587,9 +640,10 @@ function scorecard(s,ks,Tg){
     if(!Tg[x])return `<div class="sc">${lb}<b>${n}</b><span class="of">${t('sc_nt')}</span></div>`;
     const p=Math.round(v/Tg[x]*100),q=lv(p);
     return `<div class="sc ${q}">${lb}<b><bdi dir="ltr">${n}<span class="of"> / ${+Tg[x].toFixed(1)}</span></bdi></b><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><div class="scf"><span class="pc ${q}">${p}%</span><span class="bd ${q}">${stl(q)}</span></div></div>`;
-  }).join('')+'</div>';
+  }).join('')+ac+'</div>';
 }
-function ptable(A,ks,Tg,tf){
+function ptable(A,ks,Tg,tf,m){
+  const hasAt=A.some(s=>attOf(s.u,m).t>0);
   const cell=(s,x)=>{
     if(s.none)return `<td><span class="of">—</span></td>`;
     const v=vl(s,x),n=+v.toFixed(1);
@@ -597,9 +651,10 @@ function ptable(A,ks,Tg,tf){
     const p=Math.round(v/Tg[x]*100),q=lv(p);
     return `<td><div class="c2"><div dir="ltr"><span class="num">${n}</span><span class="of"> / ${+Tg[x].toFixed(1)}</span></div><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><span class="pc ${q}">${p}%</span></div></td>`;
   };
+  const atc=s=>{const o=attOf(s.u,m);return o.t?`<td><div class="c2"><b class="pc ${lv(o.pc)}">${o.pc}%</b><small class="of" style="white-space:nowrap">${attTxt(o)}</small></div></td>`:`<td><span class="of">—</span></td>`;};
   return `<div class="t"><table><thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('entries')}</th>`+
-    ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}</th>`).join('')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
-    A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+
+    ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}</th>`).join('')+(hasAt?`<th>${t('at_rec')}</th>`:'')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
+    A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+
       (tf.length?(s.ov==null?`<td>${ovBadge(s)}</td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b>${ovBadge(s)}</div></td>`):'')+'</tr>').join('')+'</tbody></table></div>';
 }
 let PU=null;
@@ -617,14 +672,14 @@ function openProfile(u){
   const hist=[...new Set(all.map(mon))].sort().reverse().map(mm=>{
     const a2=agg(all.filter(e=>mon(e)==mm)),o2=ovOf(a2,s.class,[mm]);
     const det=ordk(new Set(Object.keys(a2.sum))).map(k=>`${esc(L(k))}: <b>${+vl(a2,k).toFixed(1)}</b>`).join(LG=='ur'?'، ':', ');
-    return `<tr><td class="l" style="white-space:nowrap">${esc(mm)}</td><td>${o2==null?'—':'<b class="pc '+lv(o2)+'">'+o2+'%</b>'}</td><td>${ovBadge({ov:o2})}</td><td class="l">${det||'—'}</td></tr>`;}).join('');
+    return `<tr><td class="l" style="white-space:nowrap">${esc(mm)}</td><td>${o2==null?'—':'<b class="pc '+lv(o2)+'">'+o2+'%</b>'}</td><td>${ovBadge({ov:o2})}</td><td class="l">${det||'—'}</td><td class="l">${(()=>{const o=attOf(s.username,mm);return o.t?o.pc+'% · '+attTxt(o):'—';})()}</td></tr>`;}).join('');
   const photo=D.photos[s.username];
   $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,s.name,'xxl')}</span>`+
     `<div><h2>${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext">${esc(s.class)} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div>`+
     `<div class="row" style="margin-bottom:6px"><label class="btn ghost sm">${t('chg_photo')}<input type="file" accept="image/*" hidden onchange="pick(this,PU)"></label>`+
     `<button class="btn sm" onclick="goStudent()">${t('pf_open')}</button></div>`+
-    `<h4>${t('pf_period')} — ${esc(m||t('pf_all'))}</h4>`+(list.length?scorecard(a,ks,Tg):`<div class="empty">${t('empty')}</div>`)+
-    (hist?`<h4>${t('pf_hist')}</h4><div class="t"><table><thead><tr><th class="l">${t('month')}</th><th>${t('overall')}</th><th></th><th class="l">${t('details')}</th></tr></thead><tbody>${hist}</tbody></table></div>`:'');
+    `<h4>${t('pf_period')} — ${esc(m||t('pf_all'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+
+    (hist?`<h4>${t('pf_hist')}</h4><div class="t"><table><thead><tr><th class="l">${t('month')}</th><th>${t('overall')}</th><th></th><th class="l">${t('details')}</th><th class="l">${t('at_rec')}</th></tr></thead><tbody>${hist}</tbody></table></div>`:'');
   $('pm').hidden=false;
 }
 function goStudent(){
@@ -643,7 +698,7 @@ function render(){
   const by={};
   E.forEach(e=>{((by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
   const allk=D.keys.filter(k=>k!='photo');
-  EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L)]];
+  EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
   let h='';const items=[],ALL=[];
   Object.keys(by).forEach((k,i)=>{
     const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
@@ -652,12 +707,12 @@ function render(){
     E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
     const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
     const tf=ks.filter(x=>Tg[x]>0);
-    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):'')]);});
+    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
     A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
     const live=A.filter(s=>!s.none);
     const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
     h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
-    h+=A.length==1?scorecard(A[0],ks,Tg):ptable(A,ks,Tg,tf);
+    h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
     let cg='';
     if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
     if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
