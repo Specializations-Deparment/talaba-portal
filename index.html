@@ -135,6 +135,23 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 #lb img{max-width:90vw;max-height:78vh;border-radius:14px;border:6px solid #fff;background:#fff;object-fit:contain}
 #lb figcaption{margin-top:10px;font-weight:600;unicode-bidi:plaintext}
 .btn.danger{background:var(--low)}
+.atbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}
+.dstep{display:flex;gap:6px;align-items:center}.dstep input{flex:1;min-width:0;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-size:16px}
+.atk{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0 4px}
+.at-t{border:1px solid var(--line);border-top:4px solid var(--pri);border-radius:12px;padding:8px 14px;background:#fff}
+.at-t small{display:block;color:var(--mute);font-weight:600;font-size:13px}.at-t b{font:700 26px/1.25 var(--serif)}
+.at-t.ok{border-top-color:var(--ok)}.at-t.mid{border-top-color:var(--mid)}.at-t.low{border-top-color:var(--low)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.seg button{border:0;background:transparent;padding:7px 20px;font-weight:600;color:var(--mute);cursor:pointer;border-inline-start:1px solid var(--line)}
+.seg button:first-child{border-inline-start:0}.seg button:hover{background:var(--tint)}
+.seg button.on.p{background:var(--ok);color:#fff}.seg button.on.l{background:var(--mid);color:#fff}.seg button.on.a{background:var(--low);color:#fff}
+tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-child{border-inline-start:4px solid var(--mid)}tr.st-a td:first-child{border-inline-start:4px solid var(--low)}
+.stick{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;margin-top:14px}
+.attcard{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:18px;background:#fff}
+.attcard .hd{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between}
+.attcard h3{font-size:19px;color:var(--pri)}
+.nmchip{display:inline-flex;align-items:center;border-radius:20px;padding:0 14px;font-weight:600;cursor:pointer;unicode-bidi:plaintext}
+.nmchip.a{background:#f8e1de;color:var(--low)}.nmchip.l{background:#fbf0d9;color:#8a5d0c}
 .at3{display:inline-flex;gap:6px;flex-wrap:wrap}
 .ab{border:1px solid var(--line);background:#fff;border-radius:20px;padding:2px 16px;cursor:pointer;font-weight:600;color:var(--mute)}
 .ab.p.on{background:var(--ok);border-color:var(--ok);color:#fff}.ab.l.on{background:var(--mid);border-color:var(--mid);color:#fff}.ab.a.on{background:var(--low);border-color:var(--low);color:#fff}
@@ -199,6 +216,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
       <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
       <button class="btn ghost sm" onclick="exportCSV()" data-i="export"></button>
     </div>
+    <div id="attcard"></div>
     <div id="out"></div>
     <h4 data-i="recent"></h4>
     <div class="t"><table id="log"></table></div>
@@ -212,6 +230,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
     </div>
     <div id="flds" class="grid" style="margin-top:12px"></div>
     <div id="svto" class="note" style="margin-top:10px"></div>
+    <div id="autoat" class="note" style="margin-top:6px"></div>
     <div id="lockmsg" class="hint" hidden></div>
     <div class="row">
       <label class="f" style="flex:1;min-width:200px"><span data-i="note"></span><input id="no"></label>
@@ -227,13 +246,15 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
   <section id="p_at" class="panel" hidden>
     <h2 data-i="at_h"></h2>
     <p class="note" data-i="at_note"></p>
-    <div class="grid" style="margin-top:12px">
+    <div class="atbar">
       <label class="f"><span data-i="cls"></span><select id="ac" onchange="loadAtt()"></select></label>
-      <label class="f"><span data-i="at_date"></span><input id="ad" type="date" onchange="loadAtt()"></label>
+      <label class="f"><span data-i="at_date"></span><div class="dstep" dir="ltr"><button class="btn ghost sm" onclick="stepDay(-1)">‹</button><input id="ad" type="date" onchange="loadAtt()"><button class="btn ghost sm" onclick="stepDay(1)">›</button><button class="btn ghost sm" onclick="goToday()" data-i="at_today"></button></div></label>
+      <label class="f"><span data-i="at_search"></span><input id="aq" oninput="drawAtt()" autocomplete="off" style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;font-weight:400"></label>
     </div>
-    <div class="row"><button class="btn ghost sm" onclick="allPresent()" data-i="at_allp"></button><span id="atcnt" class="attc"></span></div>
+    <div id="atk" class="atk"></div>
+    <div class="row" style="margin-top:6px"><button class="btn ghost sm" onclick="allPresent()" data-i="at_allp"></button><button class="btn ghost sm" onclick="clearAtt()" data-i="at_clear"></button><span id="atday" class="note" style="align-self:center"></span></div>
     <div class="t" style="margin-top:12px"><table id="attbl"></table></div>
-    <div class="row"><button class="btn" id="atsave" onclick="saveAtt()" data-i="at_save"></button><span id="atmsg" class="note" style="align-self:center"></span></div>
+    <div class="stick"><span id="atmsg" class="note"></span><button class="btn" id="atsave" onclick="saveAtt()" data-i="at_save"></button></div>
   </section>
 
   <section id="tg" class="panel" hidden>
@@ -300,7 +321,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='19';
+const VER='20';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -344,8 +365,8 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
-Object.assign(T.en,{t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
-Object.assign(T.ur,{t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+Object.assign(T.en,{at_today:'Today',at_clear:'Clear all',at_search:'Search student',at_marked:'Marked',at_card_h:'Attendance',at_not_yet:'Attendance has not been marked for this date.',at_last:'Show last recorded day',at_rate:'Present rate',at_auto:'Attendance is counted automatically from the daily attendance, so it is not asked here.',t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{at_today:'آج',at_clear:'سب صاف کریں',at_search:'طالب علم تلاش کریں',at_marked:'نشان لگے',at_card_h:'حاضری',at_not_yet:'اس تاریخ کی حاضری ابھی نہیں لگی۔',at_last:'آخری درج دن دکھائیں',at_rate:'حاضری کی شرح',at_auto:'حاضری روزانہ حاضری سے خود شمار ہوتی ہے، اس لیے یہاں نہیں پوچھی جاتی۔',t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
 const MSG={'آپ اپنا اکاؤنٹ خود حذف نہیں کر سکتے':'You cannot delete your own account','یوزر نہیں ملا':'User not found','اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے':'This student already has an entry for this month. The admin or teacher can edit it.','یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -460,7 +481,7 @@ async function doDelUser(){
   D=r;fill();toast(t('ok_delU'));
 }
 let AT={};
-const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+const dayLabel=d=>d?new Date(d+'T00:00:00').toLocaleDateString(LG=='ur'?'ur-PK':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'';
 function attOpen(){
   const cl=[...new Set(D.students.map(s=>s.class))],cv=$('ac').value;
   $('ac').innerHTML=cl.map(c=>`<option>${esc(c)}</option>`).join('');if(cl.includes(cv))$('ac').value=cv;
@@ -472,25 +493,36 @@ async function loadAtt(){
   const r=await call({action:'getAtt',cls:c,date:d});if(!r.ok){AT={};drawAtt();return toast(r.msg,1);}
   AT={...r.attday};drawAtt();
 }
+function stepDay(n){
+  const d=new Date($('ad').value+'T00:00:00');d.setDate(d.getDate()+n);
+  const s=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  if(s>todayStr())return;$('ad').value=s;loadAtt();
+}
+function goToday(){$('ad').value=todayStr();loadAtt();}
 function drawAtt(){
-  const c=$('ac').value,L2=D.students.filter(s=>s.class==c);
+  const c=$('ac').value,L2=D.students.filter(s=>s.class==c),q=($('aq').value||'').trim().toLowerCase();
   const cnt={P:0,L:0,A:0};L2.forEach(s=>{if(AT[s.username])cnt[AT[s.username]]++;});
   const un=L2.length-cnt.P-cnt.L-cnt.A;
+  $('atk').innerHTML=`<div class="at-t"><small>${t('k_stu')}</small><b>${L2.length}</b></div><div class="at-t ok"><small>${t('at_p')}</small><b>${cnt.P}</b></div><div class="at-t mid"><small>${t('at_l')}</small><b>${cnt.L}</b></div><div class="at-t low"><small>${t('at_a')}</small><b>${cnt.A}</b></div><div class="at-t"><small>${t('at_unm')}</small><b>${un}</b></div>`;
+  const shown=L2.map((s,j)=>[s,j]).filter(([s])=>!q||String(s.name).toLowerCase().includes(q));
   $('attbl').innerHTML=L2.length?`<thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('t_at')}</th></tr></thead><tbody>`+
-    L2.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm">${ava(s.username,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td><div class="at3">`+
-      [['P','p'],['L','l'],['A','a']].map(([k,c2])=>`<button class="ab ${c2} ${AT[s.username]==k?'on':''}" data-u="${esc(s.username)}" onclick="setAtt(this.dataset.u,'${k}')">${t('at_'+c2)}</button>`).join('')+`</div></td></tr>`).join('')+'</tbody>':`<tbody><tr><td>${t('at_none')}</td></tr></tbody>`;
-  $('atcnt').innerHTML=`<span class="bd ok">${t('at_p')} ${cnt.P}</span><span class="bd mid">${t('at_l')} ${cnt.L}</span><span class="bd low">${t('at_a')} ${cnt.A}</span><span class="chip">${t('at_unm')} ${un}</span>`;
-  $('atsave').disabled=!L2.length||un>0;$('atmsg').textContent=L2.length&&un>0?t('at_need'):'';
+    shown.map(([s,j])=>`<tr class="st-${AT[s.username]?AT[s.username].toLowerCase():'n'}"><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${ava(s.username,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td><div class="seg">`+
+      [['P','p'],['L','l'],['A','a']].map(([k,c2])=>`<button class="${c2} ${AT[s.username]==k?'on':''}" data-u="${esc(s.username)}" onclick="setAtt(this.dataset.u,'${k}')">${t('at_'+c2)}</button>`).join('')+`</div></td></tr>`).join('')+'</tbody>':`<tbody><tr><td>${t('at_none')}</td></tr></tbody>`;
+  $('atday').textContent=dayLabel($('ad').value);
+  $('atsave').disabled=!L2.length||un>0;
+  $('atmsg').textContent=L2.length?(un>0?t('at_need')+' ('+t('at_marked')+' '+(L2.length-un)+' / '+L2.length+')':t('at_marked')+' '+L2.length+' / '+L2.length):'';
 }
 function setAtt(u,s){AT[u]=s;drawAtt();}
 function allPresent(){D.students.filter(s=>s.class==$('ac').value).forEach(s=>{if(!AT[s.username])AT[s.username]='P';});drawAtt();}
+function clearAtt(){D.students.filter(s=>s.class==$('ac').value).forEach(s=>{delete AT[s.username];});drawAtt();}
 async function saveAtt(){
   const c=$('ac').value,L2=D.students.filter(s=>s.class==c);
   if(L2.some(s=>!AT[s.username]))return toast(t('at_need'),1);
   const r=await call({action:'saveAtt',cls:c,date:$('ad').value,marks:AT});if(!r.ok)return toast(r.msg,1);
   const ids=new Set(L2.map(s=>String(s.username)));D.attsum=(D.attsum||[]).filter(x=>!ids.has(String(x.username))).concat(r.attsum||[]);
-  render();toast(t('at_ok'));
+  ADC={};D.attlast=null;ADT.date=$('ad').value;render();toast(t('at_ok'));
 }
+async function fetchDay(d){const r=await call({action:'attDay',date:d});if(!r.ok)throw new Error(r.msg);return r.attday||{};}
 let LOCK=false;
 function chk(){
   const ins=[...document.querySelectorAll('#flds input')],ok=ins.filter(i=>!isNaN(num(i.value))).length;
@@ -500,12 +532,14 @@ function chk(){
 }
 function fields(){
   const s=D.students.find(x=>x.username==$('st').value);
-  if(!s){$('flds').innerHTML='';$('pv').innerHTML='';$('svto').textContent='';$('lockmsg').hidden=true;return;}
+  if(!s){$('flds').innerHTML='';$('pv').innerHTML='';$('svto').textContent='';$('autoat').textContent='';$('lockmsg').hidden=true;return;}
   const m=$('dt').value,keep={};
   const ex=D.entries.find(x=>String(x.username)==String(s.username)&&mon(x)==m);
   if(fields.u===s.username)document.querySelectorAll('#flds input').forEach(i=>{if(i.value!=='')keep[i.id]=i.value;});
   fields.u=s.username;
-  $('flds').innerHTML=ordk(new Set(fset(s.class,m))).map(k=>{const g=tgt(s.class,k,[m]),ao=k=='hazri'?attOf(s.username,m):null;return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" oninput="chk()" ${ex?'disabled':''} placeholder="${(g?t('target')+' '+(+g.toFixed(1)):'')+(ao&&ao.t?(g?' · ':'')+t('at_rec_p')+' '+ao.p:'')}" value="${esc(keep['f_'+k]??'')}"></label>`}).join('');
+  const fs=fset(s.class,m),ao=attOf(s.username,m);
+  $('flds').innerHTML=ordk(new Set(fs)).filter(k=>k!='hazri').map(k=>{const g=tgt(s.class,k,[m]);return `<label class="f"><span>${esc(L(k))}</span><input id="f_${k}" inputmode="decimal" autocomplete="off" oninput="chk()" ${ex?'disabled':''} placeholder="${g?t('target')+' '+(+g.toFixed(1)):''}" value="${esc(keep['f_'+k]??'')}"></label>`}).join('');
+  $('autoat').textContent=fs.includes('hazri')?t('at_auto')+(ao.t?' ('+attTxt(ao)+')':''):'';
   $('pv').innerHTML=ava(s.username,s.name,'xl');
   $('svto').textContent=ex?'':t('save_to').replace('{n}',s.name).replace('{m}',m);
   LOCK=!!ex;$('no').disabled=!!ex;chk();
@@ -567,7 +601,7 @@ async function add(){
   if($('savebtn').disabled)return toast(t('locked'),1);
   const vals={};D.keys.forEach(k=>{const el=$('f_'+k);if(el){const v=num(el.value);if(!isNaN(v))vals[k]=v;}});
   if(!Object.keys(vals).length)return toast(t('need_val'),1);
-  const sx=D.students.find(x=>x.username==$('st').value),need=sx?ordk(new Set(fset(sx.class,$('dt').value))):[],miss=need.filter(k=>!(k in vals));
+  const sx=D.students.find(x=>x.username==$('st').value),need=sx?ordk(new Set(fset(sx.class,$('dt').value))).filter(k=>k!='hazri'):[],miss=need.filter(k=>!(k in vals));
   if(miss.length){miss.forEach(k=>$('f_'+k)&&$('f_'+k).classList.add('bad'));return toast(t('fill_all')+' '+miss.map(L).join(', '),1);}
   const r=await call({action:'add',student:$('st').value,date:$('dt').value,vals,note:$('no').value});
   if(!r.ok)return toast(r.msg,1);
@@ -596,7 +630,7 @@ const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.cl
 function editE(id){
   const e=D.entries.find(x=>x.id==id);if(!e)return;EID=id;const v=V(e);
   $('e_h').textContent=e.name+' — '+e.class;$('e_m').value=mon(e);$('e_n').value=e.note||'';
-  $('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).map(k=>`<label class="f"><span>${esc(L(k))}</span><input id="e_${k}" inputmode="decimal" autocomplete="off" value="${v[k]??''}"></label>`).join('');
+  $('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).filter(k=>k!='hazri'||v.hazri!==undefined).map(k=>`<label class="f"><span>${esc(L(k))}</span><input id="e_${k}" inputmode="decimal" autocomplete="off" value="${v[k]??''}"></label>`).join('');
   $('md').hidden=false;
 }
 async function saveE(){
@@ -619,6 +653,41 @@ function exportCSV(){
 }
 function attOf(u,m){const o={p:0,l:0,a:0,t:0};(D.attsum||[]).forEach(r=>{if(String(r.username)==String(u)&&(!m||r.month==m)){o.p+=r.p;o.l+=r.l;o.a+=r.a;}});o.t=o.p+o.l+o.a;o.pc=o.t?Math.round(o.p/o.t*100):null;return o;}
 const attTxt=o=>`${t('at_p')} ${o.p} · ${t('at_l')} ${o.l} · ${t('at_a')} ${o.a}`;
+let ADC={},ADT={date:null};
+const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+// the monthly "Attendance" performance is the number of present days in the daily attendance (typed entries are only a fallback)
+function withAtt(s,ms,u,list){
+  let tot=0,any=false;
+  ms.forEach(mm=>{const o=attOf(u,mm);
+    if(o.t>0){tot+=o.p;any=true;}
+    else list.filter(e=>mon(e)==mm).forEach(e=>{const hv=V(e).hazri;if(hv!==undefined){tot+=hv;any=true;}});});
+  if(any){s.sum.hazri=tot;s.cnt.hazri=1;s.none=false;}
+}
+async function attCard(){
+  if(!$('attcard'))return;
+  const d=ADT.date||(D.attlast&&D.attlast.date)||todayStr();ADT.date=d;
+  if(!ADC[d]){
+    if(D.attlast&&D.attlast.date==d)ADC[d]=D.attlast.marks;
+    else{try{ADC[d]=await fetchDay(d);}catch(e){ADC[d]={};}}
+  }
+  drawAttCard(d,ADC[d]);
+}
+function drawAttCard(d,marks){
+  const c=$('cf').value,sv=$('sf').value,q=($('q')&&$('q').value||'').trim().toLowerCase();
+  const L2=D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||String(s.name).toLowerCase().includes(q)));
+  const ab=[],lvv=[];let P=0,Lc=0,A=0;
+  L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
+  const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
+  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}</span>`;
+  let body;
+  if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
+  else if(!mk)body=`<p class="note">${t('at_not_yet')}</p>`+(D.attlast&&D.attlast.date!=d?`<button class="btn ghost sm" onclick="attPick('${D.attlast.date}')">${t('at_last')} (${D.attlast.date})</button>`:'');
+  else body=`<div class="atk"><div class="at-t ok"><small>${t('at_p')}</small><b>${P}</b></div><div class="at-t mid"><small>${t('at_l')}</small><b>${Lc}</b></div><div class="at-t low"><small>${t('at_a')}</small><b>${A}</b></div><div class="at-t"><small>${t('at_unm')}</small><b>${un}</b></div><div class="at-t ${lv(rate)}"><small>${t('at_rate')}</small><b>${rate}%</b></div></div>`+
+    (ab.length?`<div class="note" style="margin-top:8px">${t('at_a')}:</div><div class="ckg">${ab.map(s=>chip(s,'a')).join('')}</div>`:'')+
+    (lvv.length?`<div class="note" style="margin-top:8px">${t('at_l')}:</div><div class="ckg">${lvv.map(s=>chip(s,'l')).join('')}</div>`:'');
+  $('attcard').innerHTML=`<div class="attcard"><div class="hd"><h3>${t('at_card_h')} — ${esc(dayLabel(d))}${d==todayStr()?` <span class="chip">${t('at_today')}</span>`:''}</h3><div class="dstep" dir="ltr"><input type="date" value="${d}" max="${todayStr()}" onchange="attPick(this.value)"><button class="btn ghost sm" onclick="attPick(todayStr())">${t('at_today')}</button></div></div>${body}</div>`;
+}
+function attPick(d){if(!d)return;ADT.date=d;attCard();}
 const vl=(s,key)=>isAvg(key)?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
 function agg(list){const s={n:list.length,sum:{},cnt:{}};list.forEach(e=>{const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});s.none=!Object.keys(s.sum).length;return s;}
 function ovOf(s,cls,ms){
@@ -666,11 +735,11 @@ function openPhoto(u){
 function openProfile(u){
   const s=D.students.find(x=>String(x.username)==String(u));if(!s)return;PU=s.username;
   const m=$('mf').value,all=D.entries.filter(e=>String(e.username)==String(u)),list=all.filter(e=>!m||mon(e)==m);
-  const ms=m?[m]:[...new Set(list.map(mon))].sort(),a=agg(list);a.ov=ovOf(a,s.class,ms);
+  const ms=m?[m]:[...new Set(list.map(mon))].sort(),a=agg(list);withAtt(a,ms,s.username,list);a.ov=ovOf(a,s.class,ms);
   const st=new Set();ms.forEach(x=>fset(s.class,x).forEach(y=>st.add(y)));list.forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
   const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(s.class,x,ms)});
   const hist=[...new Set(all.map(mon))].sort().reverse().map(mm=>{
-    const a2=agg(all.filter(e=>mon(e)==mm)),o2=ovOf(a2,s.class,[mm]);
+    const lm=all.filter(e=>mon(e)==mm),a2=agg(lm);withAtt(a2,[mm],s.username,lm);const o2=ovOf(a2,s.class,[mm]);
     const det=ordk(new Set(Object.keys(a2.sum))).map(k=>`${esc(L(k))}: <b>${+vl(a2,k).toFixed(1)}</b>`).join(LG=='ur'?'، ':', ');
     return `<tr><td class="l" style="white-space:nowrap">${esc(mm)}</td><td>${o2==null?'—':'<b class="pc '+lv(o2)+'">'+o2+'%</b>'}</td><td>${ovBadge({ov:o2})}</td><td class="l">${det||'—'}</td><td class="l">${(()=>{const o=attOf(s.username,mm);return o.t?o.pc+'% · '+attTxt(o):'—';})()}</td></tr>`;}).join('');
   const photo=D.photos[s.username];
@@ -703,6 +772,7 @@ function render(){
   Object.keys(by).forEach((k,i)=>{
     const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
     const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
+    A.forEach(s=>withAtt(s,ms,s.u,s.list));
     const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
     E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
     const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
@@ -718,7 +788,7 @@ function render(){
     if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
     const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
     const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
-      const o=Object.values(per).map(l=>ovOf(agg(l),k,[mm])).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
+      const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
     if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
     if(cg)h+=`<div class="cg">${cg}</div>`;
     if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`;
@@ -744,6 +814,7 @@ function render(){
     if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},
       options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
   });
+  attCard();
   $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
     E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
       Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
