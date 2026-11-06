@@ -217,7 +217,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
       <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
       <label><span data-i="sr_l"></span><select id="sr" onchange="srOpen(this)"></select></label>
-      <!-- YAHAN SEARCH BOX WAPAS ADD KAR DIYA GAYA HAI -->
       <input id="q" oninput="render()" autocomplete="off" placeholder="Search student..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:190px">
       <span class="sp"></span>
       <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
@@ -458,15 +457,38 @@ function ulist(){
   $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th></th></tr></thead><tbody>`+
     D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
 }
-const shareUrl=()=>new URL('dashboard.html',location.href).href.split('?')[0]+'?k='+D.share;
+const shareUrl=(cls)=>new URL('dashboard.html',location.href).href.split('?')[0]+'?k='+D.share+(cls?'&cls='+encodeURIComponent(cls):'');
 function shareBox(){
   const b=$('sharebox');if(!b)return;
   if(D.share===undefined){b.innerHTML=`<h5 style="margin:0 0 6px;font:700 17px var(--serif);color:var(--pri)">${t('pl_h')}</h5><p class="note">${t('pl_old')}</p>`;return;}
-  b.innerHTML=`<h5 style="margin:0 0 6px;font:700 17px var(--serif);color:var(--pri)">${t('pl_h')}</h5><p class="note">${t('pl_note')}</p>`+
-    (D.share?`<div class="row"><input id="shl" readonly dir="ltr" style="flex:1;min-width:260px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:#fff" value="${esc(shareUrl())}">`+
-      `<button class="btn sm" onclick="copyShare()">${t('pl_copy')}</button><a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(shareUrl())}">${t('pl_open')}</a></div>`+
-      `<div class="row"><button class="btn ghost sm" onclick="mkShare(true)">${t('pl_new')}</button><button class="btn danger sm" onclick="offShare()">${t('pl_off')}</button></div>`
-     :`<p class="note">${t('pl_none')}</p><div class="row"><button class="btn sm" onclick="mkShare(false)">${t('pl_create')}</button></div>`);
+  
+  let html = `<h5 style="margin:0 0 6px;font:700 17px var(--serif);color:var(--pri)">${t('pl_h')}</h5><p class="note">${t('pl_note')}</p>`;
+  
+  if(D.share){
+    html += `<div class="row"><input id="shl" readonly dir="ltr" style="flex:1;min-width:260px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:#fff" value="${esc(shareUrl())}">`+
+      `<button class="btn sm" onclick="copyShare('shl')">${t('pl_copy')}</button><a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(shareUrl())}">${t('pl_open')}</a></div>`+
+      `<div class="row"><button class="btn ghost sm" onclick="mkShare(true)">${t('pl_new')}</button><button class="btn danger sm" onclick="offShare()">${t('pl_off')}</button></div>`;
+      
+    // HAR CLASS KE LIYE ALAG LINK
+    if(D.classes && D.classes.length) {
+        html += `<h5 style="margin:24px 0 6px;font:700 17px var(--serif);color:var(--pri)">Class-wise Links (Har Class ka Alag Dashboard)</h5><p class="note">In links ko copy karke apni marzi se share karein. Har link sirf apni class ka data dikhayega.</p>`;
+        html += `<div class="grid" style="margin-top:12px">`;
+        D.classes.forEach(c => {
+            const link = shareUrl(c.class);
+            html += `<div class="cbox" style="padding:12px; background:var(--paper)"><b style="font-size:15px; color:var(--pri)">${esc(c.class)}</b>
+                     <div class="row" style="margin-top:8px">
+                       <input readonly value="${esc(link)}" onclick="this.select()" style="flex:1; font-size:13px; border:1px solid var(--line); border-radius:6px; padding:4px 8px; background:#fff">
+                     </div>
+                     <button class="btn sm" style="margin-top:8px; width:100%" onclick="copyShare('link_${esc(c.class)}')" id="link_${esc(c.class)}" data-url="${esc(link)}">Copy Link</button>
+                     </div>`;
+        });
+        html += `</div>`;
+    }
+  } else {
+    html += `<p class="note">${t('pl_none')}</p><div class="row"><button class="btn sm" onclick="mkShare(false)">${t('pl_create')}</button></div>`;
+  }
+  
+  b.innerHTML = html;
 }
 async function mkShare(ask){
   if(ask&&!confirm(t('pl_confirm_new')))return;
@@ -476,9 +498,18 @@ async function offShare(){
   if(!confirm(t('pl_confirm_off')))return;
   const r=await call({action:'delShare'});if(!r.ok)return toast(r.msg,1);D=r;fill();toast(t('pl_done'));
 }
-function copyShare(){
-  const i=$('shl');i.select();
-  (navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).catch(()=>document.execCommand('copy')).then(()=>toast(t('pl_copied')));
+function copyShare(id){
+  const el = typeof id === 'string' ? $(id) : id;
+  let val = el.value;
+  if(!val && el.getAttribute('data-url')) val = el.getAttribute('data-url');
+  
+  if(!val) return;
+  const doCopy = () => {
+    if(navigator.clipboard) navigator.clipboard.writeText(val);
+    else { el.select(); document.execCommand('copy'); }
+    toast(t('pl_copied'));
+  };
+  doCopy();
 }
 let DU=null;
 function askDelUser(i){DU=D.users[i];$('du_t').textContent=DU.name+' ('+DU.username+')';$('du_all').checked=false;$('dm').hidden=false;}
@@ -805,83 +836,70 @@ function goStudent(){
   $('pm').hidden=true;$('cf').value=s.class;fsf();$('sf').value=s.username;render();show('an');window.scrollTo({top:0,behavior:'smooth'});
 }
 function render(){
-  try{
-    CH.forEach(c=>c.destroy());CH=[];srFill();
-    if(typeof Chart!='undefined'){
-      Chart.defaults.font.family=LG=='ur'?UF:EF;
-      Chart.defaults.color='#5d6e6b';
-    }
-    const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
-    // Yahan $('q') ko safe bana diya gaya hai
-    const q=($('q')&&$('q').value||'').trim().toLowerCase();
-    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
-    const E=base.filter(e=>!m||mon(e)==m);
-    const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
-    const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
-    $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
-    if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
-    const by={};
-    E.forEach(e=>{((by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
-    const allk=D.keys.filter(k=>k!='photo');
-    EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
-    let h='';const items=[],ALL=[];
-    Object.keys(by).forEach((k,i)=>{
-      const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
-      const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
-      A.forEach(s=>withAtt(s,ms,s.u,s.list));
-      const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
-      E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
-      const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
-      const tf=ks.filter(x=>Tg[x]>0);
-      A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
-      A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
-      const live=A.filter(s=>!s.none);
-      const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
-      h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
-      h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
-      let cg='';
-      if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
-      if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
-      const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
-      const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
-        const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
-      if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
-      if(cg)h+=`<div class="cg">${cg}</div>`;
-      if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`;
-      if(A.some(s=>s.none))h+=`<div class="hint"><span>${t('empty_hint')}</span></div>`;
-      h+='</section>';
-      items.push({i,A,tf,Tg,bm,tr});
-    });
-    const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
-    const low=ovs.filter(s=>s.ov<LOW).length;
-    const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
-      `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
-      `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
-    $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
-    if(typeof Chart!='undefined'){
-      const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
-      const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
-        options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
-      items.forEach(({i,A,tf,Tg,bm,tr})=>{
-        try{
-          const o1=$('co'+i);
-          if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
-          const o2=$('cp'+i);
-          if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
-          const o3=$('ct'+i);
-          if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},
-            options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
-        }catch(e){console.error("Chart Error:",e);}
-      });
-    }
-    attCard();
-    $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
-      E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
-        Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
-  }catch(err){
-    console.error("Render Error: ",err);
-    $('out').innerHTML=`<div class="empty" style="color:red">Error loading data: ${err.message}</div>`;
-  }
+  CH.forEach(c=>c.destroy());CH=[];srFill();
+  Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b';
+  const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
+  const q=($('q')&&$('q').value||'').trim().toLowerCase();
+  const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
+  const E=base.filter(e=>!m||mon(e)==m);
+  const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
+  const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
+  $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
+  if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
+  const by={};
+  E.forEach(e=>{((by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
+  const allk=D.keys.filter(k=>k!='photo');
+  EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
+  let h='';const items=[],ALL=[];
+  Object.keys(by).forEach((k,i)=>{
+    const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
+    const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
+    A.forEach(s=>withAtt(s,ms,s.u,s.list));
+    const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
+    E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
+    const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
+    const tf=ks.filter(x=>Tg[x]>0);
+    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
+    A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
+    const live=A.filter(s=>!s.none);
+    const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
+    h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
+    h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
+    let cg='';
+    if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
+    if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
+    const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
+    const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
+      const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
+    if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
+    if(cg)h+=`<div class="cg">${cg}</div>`;
+    if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`;
+    if(A.some(s=>s.none))h+=`<div class="hint"><span>${t('empty_hint')}</span></div>`;
+    h+='</section>';
+    items.push({i,A,tf,Tg,bm,tr});
+  });
+  const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
+  const low=ovs.filter(s=>s.ov<LOW).length;
+  const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
+    `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
+    `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
+  $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
+  const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
+  const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
+    options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
+  items.forEach(({i,A,tf,Tg,bm,tr})=>{
+    const o1=$('co'+i);
+    if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
+    const o2=$('cp'+i);
+    if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
+    const o3=$('ct'+i);
+    if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},
+      options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
+  });
+  attCard();
+  $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
+    E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
+      Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
 }
 setLang(LG);setVer();
 </script>
