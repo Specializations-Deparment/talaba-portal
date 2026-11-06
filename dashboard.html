@@ -365,7 +365,7 @@ function drawAttCard(d,marks){
   const ab=[],lvv=[];let P=0,Lc=0,A=0;
   L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
   const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
-  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}</span>`;
+  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}${!c?' <span style="opacity:.7;font-size:12px">('+esc(s.class)+')</span>':''}</span>`;
   let body;
   if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
   else if(!mk)body=`<p class="note">${t('at_not_yet')}</p>`+(D.attlast&&D.attlast.date!=d?`<button class="btn ghost sm" onclick="attPick('${D.attlast.date}')">${t('at_last')} (${D.attlast.date})</button>`:'');
@@ -435,7 +435,6 @@ function openProfile(u,per){
   $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,s.name,'xxl')}</span>`+
     `<div><h2>${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext">${esc(s.class)} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div>`+
     `<div class="row" style="margin-bottom:6px">`+
-    `<button class="btn sm" onclick="goStudent()">${t('pf_open')}</button>`+
     `<label class="f" style="flex-direction:row;align-items:center;gap:8px"><span>${t('pf_pick')}</span><select class="pps" onchange="openProfile(PU,this.value)"><option value="">${t('pf_overall')}</option>${months.map(x=>`<option ${x==m?'selected':''}>${x}</option>`).join('')}</select></label></div>`+
     `<h4>${t('pf_period')} — ${esc(m||t('pf_overall'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+
     (trend.length>1?`<div class="cbox" style="margin-top:14px"><h5>${t('ch_trend')}</h5><div style="height:210px"><canvas id="pch"></canvas></div></div>`:'')+
@@ -448,10 +447,6 @@ function openProfile(u,per){
       options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]});
   }
   drawCal('pcal',s.username,calM);
-}
-function goStudent(){
-  const s=D.students.find(x=>String(x.username)==String(PU));if(!s)return;
-  $('pm').hidden=true;$('cf').value=s.class;fsf();$('sf').value=s.username;render();show('an');window.scrollTo({top:0,behavior:'smooth'});
 }
 function render(){
   CH.forEach(c=>c.destroy());CH=[];srFill();
