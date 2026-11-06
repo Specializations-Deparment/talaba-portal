@@ -39,18 +39,15 @@ td,option,.nm,.me b{unicode-bidi:plaintext}
 .lang{border:0;border-radius:10px;padding:6px 14px;cursor:pointer;font-weight:600}
 .lang:hover{background:rgba(255,255,255,.25)}
 .wrap{max-width:1120px;margin:0 auto;padding:16px}
-/* login */
 .login{max-width:820px;margin:48px auto;display:grid;grid-template-columns:1fr 1fr;background:var(--card);border-radius:18px;overflow:hidden;border:1px solid var(--line)}
 .login .side{background:var(--pri);color:#fff;padding:36px 30px;display:flex;flex-direction:column;justify-content:center}
 .lg{width:150px;height:150px;object-fit:contain;background:#fff;border-radius:24px;padding:10px;margin-bottom:18px;align-self:flex-start}
 .login .side h1{font-size:28px}.login .side p{opacity:.8;margin:10px 0 0}
 .login form{padding:36px 30px;display:flex;flex-direction:column;gap:12px}
 .err{color:var(--low);min-height:1.5em;font-weight:600}
-/* fields */
 label.f{display:flex;flex-direction:column;font-size:14px;color:var(--mute);gap:3px;font-weight:600}
 label.f input,label.f select,.bar-tools select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-size:16px;color:var(--ink);width:100%;font-weight:400}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-/* tabs */
 .tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin:8px 0 18px;overflow-x:auto}
 .tabs button{background:none;border:0;padding:9px 18px;cursor:pointer;color:var(--mute);font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
 .tabs button.on{color:var(--pri);border-color:var(--pri)}
@@ -61,20 +58,17 @@ label.f input,label.f select,.bar-tools select{border:1px solid var(--line);back
 .bar-tools label{display:flex;align-items:center;gap:8px;color:var(--mute);font-weight:600}
 .bar-tools select{width:auto;min-width:150px}
 .bar-tools .sp{flex:1}
-/* profile banner */
 .me{display:flex;align-items:center;gap:16px;background:var(--tint);border-radius:14px;padding:14px 18px;margin-bottom:16px}
 .me b{font:700 21px var(--serif)}
 .ava{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
 .ava.xl{width:84px;height:84px;font-size:34px}
 .ini{display:inline-grid;place-items:center;background:var(--tint);color:var(--pri);font-weight:700;border:1px solid var(--line)}
 .nm{display:flex;align-items:center;gap:10px;font-weight:600}
-/* KPI */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:26px}
 .kpi{border:1px solid var(--line);border-top:4px solid var(--pri);border-radius:12px;padding:12px 16px;background:#fff}
 .kpi.ok{border-top-color:var(--ok)}.kpi.mid{border-top-color:var(--mid)}.kpi.low{border-top-color:var(--low)}
 .kpi small{display:block;color:var(--mute);font-weight:600;font-size:13px;letter-spacing:.02em}
 .kpi b{display:block;font:700 30px/1.25 var(--serif)}
-/* class block */
 .cls{margin-bottom:34px}
 .clsh{display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-inline-start:5px solid var(--pri);padding-inline-start:12px;margin-bottom:12px}
 .clsh h3{font-size:20px;color:var(--pri);unicode-bidi:plaintext}
@@ -189,7 +183,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="mark"><img src="logo.png" alt="" onerror="this.replaceWith('SD')"></span><div><div class="ttl" data-i="dash_title"></div><small data-i="sub"></small></div></div>
+  <div class="brand"><span class="mark"><img src="logo.png" alt="" onerror="this.replaceWith('SD')"></span><div><div class="ttl" data-i="dash_title"></div><small data-i="sub" id="sub_ttl"></small></div></div>
   <div class="tr">
     <span class="vtag" id="upd"></span>
     <button class="lang" onclick="load()" data-i="refresh"></button>
@@ -201,10 +195,10 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
   <section id="p_an" class="panel">
     <div id="mine" class="me" hidden></div>
     <div class="bar-tools">
-      <label><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
-      <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
-      <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
-      <label><span data-i="sr_l"></span><select id="sr" onchange="srOpen(this)"></select></label>
+      <label id="mf_lbl"><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
+      <label id="cf_lbl"><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
+      <label id="sf_lbl"><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
+      <label id="sr_lbl"><span data-i="sr_l"></span><select id="sr" onchange="srOpen(this)"></select></label>
       <input id="q" oninput="render()" autocomplete="off" style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:190px">
       <span class="sp"></span>
       <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
@@ -365,7 +359,6 @@ function drawAttCard(d,marks){
   const ab=[],lvv=[];let P=0,Lc=0,A=0;
   L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
   const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
-  // Yahan Class ka naam add kiya gaya hai (!c ? ...)
   const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}${!c?' <span style="opacity:.7;font-size:12px">('+esc(s.class)+')</span>':''}</span>`;
   let body;
   if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
@@ -433,15 +426,13 @@ function openProfile(u,per){
   const months=[...new Set([...all.map(mon),...(D.attsum||[]).filter(r=>String(r.username)==String(u)).map(r=>r.month)])].sort().reverse();
   const photo=D.photos[s.username],calM=m||lastAttMonth(s.username)||(hs.length?hs[hs.length-1].mm:todayStr().slice(0,7));
   const trend=hs.filter(x=>x.o2!=null);
-  
-  // Dashboard (Public View) mein Photo Change aur Full Analysis ke buttons nahi honge
   $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,s.name,'xxl')}</span>`+
-    `<div><h2 style="font-size:26px;margin-bottom:4px">${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext;font-size:15px">${esc(s.class)} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div>`+
-    `<div class="row" style="margin-bottom:16px;justify-content:flex-end">`+
+    `<div><h2>${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext">${esc(s.class)} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div>`+
+    `<div class="row" style="margin-bottom:6px">`+
     `<label class="f" style="flex-direction:row;align-items:center;gap:8px"><span>${t('pf_pick')}</span><select class="pps" onchange="openProfile(PU,this.value)"><option value="">${t('pf_overall')}</option>${months.map(x=>`<option ${x==m?'selected':''}>${x}</option>`).join('')}</select></label></div>`+
     `<h4>${t('pf_period')} — ${esc(m||t('pf_overall'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+
-    (trend.length>1?`<div class="cbox" style="margin-top:20px"><h5>${t('ch_trend')}</h5><div style="height:210px"><canvas id="pch"></canvas></div></div>`:'')+
-    `<div id="pcal" style="margin-top:20px"></div>`+
+    (trend.length>1?`<div class="cbox" style="margin-top:14px"><h5>${t('ch_trend')}</h5><div style="height:210px"><canvas id="pch"></canvas></div></div>`:'')+
+    `<div id="pcal" style="margin-top:14px"></div>`+
     (hist?`<h4>${t('pf_hist')}</h4><div class="t"><table><thead><tr><th class="l">${t('month')}</th><th>${t('overall')}</th><th></th><th class="l">${t('details')}</th><th class="l">${t('at_rec')}</th></tr></thead><tbody>${hist}</tbody></table></div>`:'');
   $('pm').hidden=false;
   if(PCH){PCH.destroy();PCH=null;}
@@ -455,7 +446,7 @@ function render(){
   CH.forEach(c=>c.destroy());CH=[];srFill();
   Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b';
   const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
-  const q=($('q').value||'').trim().toLowerCase();
+  const q=($('q')&&$('q').value||'').trim().toLowerCase();
   const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
   const E=base.filter(e=>!m||mon(e)==m);
   const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
@@ -520,7 +511,11 @@ function render(){
 
 Object.assign(T.en,{dash_title:'Live Dashboard',updated:'Updated',refresh:'Refresh',search:'Search student',bad_link:'This link is not valid or has been turned off. Please ask the department for a new link.',load_err:'Could not load the data. Please check your internet connection and try again.',loading:'Loading…'});
 Object.assign(T.ur,{dash_title:'لائیو ڈیش بورڈ',updated:'آخری تازہ کاری',refresh:'تازہ کریں',search:'طالب علم تلاش کریں',bad_link:'یہ لنک درست نہیں یا بند کر دیا گیا ہے۔ براہِ کرم شعبے سے نیا لنک لے لیں۔',load_err:'ڈیٹا نہیں آ سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔',loading:'لوڈ ہو رہا ہے…'});
-const KEY=new URLSearchParams(location.search).get('k')||'';
+
+// Yahan URL se Class name uthaya ja raha hai
+const URL_PARAMS = new URLSearchParams(location.search);
+const KEY = URL_PARAMS.get('k') || '';
+const LOCK_CLS = URL_PARAMS.get('cls') || ''; 
 const canE=()=>false;
 function show(){}
 function setVer(){}
@@ -530,21 +525,33 @@ async function fetchDay(d){const r=await(await fetch(API,{method:'POST',body:JSO
 function setLang(l){
   LG=l;try{localStorage.setItem('lg',l)}catch(e){}
   document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
-  document.title=t('dash_title');$('lgb').textContent=l=='en'?'اردو':'English';
+  document.title=LOCK_CLS? (LOCK_CLS + ' Dashboard') : t('dash_title');$('lgb').textContent=l=='en'?'اردو':'English';
   document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i));
   if($('q'))$('q').placeholder=t('search');
   if(D)fill();
 }
 let FIRST=true;
 function fill(){
-  const cv=$('cf').value,mv=$('mf').value;
-  const cl=[...new Set(D.students.map(s=>s.class))];
-  $('cf').innerHTML=`<option value="">${t('all_c')}</option>`+cl.map(c=>`<option>${esc(c)}</option>`).join('');
-  $('cf').value=cv;
+  if(LOCK_CLS) {
+    $('cf').innerHTML = `<option>${esc(LOCK_CLS)}</option>`;
+    $('cf').value = LOCK_CLS;
+    $('cf_lbl').style.display = 'none'; // Hide class dropdown label
+    $('sf_lbl').style.display = 'none'; // Hide student dropdown label
+    $('sub_ttl').textContent = LOCK_CLS;
+    document.title = LOCK_CLS + " - Live Dashboard";
+  } else {
+    const cl=[...new Set(D.students.map(s=>s.class))];
+    $('cf').innerHTML=`<option value="">${t('all_c')}</option>`+cl.map(c=>`<option>${esc(c)}</option>`).join('');
+  }
+  
+  const cv=LOCK_CLS || $('cf').value;
+  const mv=$('mf').value;
   const ms=[...new Set(D.entries.map(mon))].sort().reverse();
   $('mf').innerHTML=`<option value="">${t('all_m')}</option>`+ms.map(m=>`<option>${m}</option>`).join('');
   $('mf').value=FIRST?(ms[0]||''):(mv===''||ms.includes(mv)?mv:(ms[0]||''));
   FIRST=false;
+  
+  if(LOCK_CLS) $('cf').value = LOCK_CLS;
   fsf();render();
 }
 function msg(k,bad){$('app').hidden=true;$('err').hidden=false;$('errm').textContent=t(k);$('errm').style.color=bad?'var(--low)':'';}
