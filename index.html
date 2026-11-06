@@ -815,7 +815,7 @@ function render(){
   $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
   if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
   const by={};
-  E.forEach(e=>{((by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
+  E.forEach(e=>{const cl=e.cls||e.class;((by[cl]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
   const allk=D.keys.filter(k=>k!='photo');
   EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
   let h='';const items=[],ALL=[];
