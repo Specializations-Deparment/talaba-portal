@@ -135,6 +135,16 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 #lb img{max-width:90vw;max-height:78vh;border-radius:14px;border:6px solid #fff;background:#fff;object-fit:contain}
 #lb figcaption{margin-top:10px;font-weight:600;unicode-bidi:plaintext}
 .btn.danger{background:var(--low)}
+.cal{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fff;margin-bottom:18px}
+.cal .hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.cal h3{font-size:19px;color:var(--pri)}
+.cleg{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.cgrid .w{text-align:center;color:var(--mute);font-size:12px;font-weight:700}
+.cgrid .d{min-height:42px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;background:#fafcfb;color:var(--mute)}
+.cgrid .d.e{border:0;background:transparent}
+.cgrid .d.p{background:var(--ok);border-color:var(--ok);color:#fff}.cgrid .d.l{background:var(--mid);border-color:var(--mid);color:#fff}.cgrid .d.a{background:var(--low);border-color:var(--low);color:#fff}
+.pps{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 12px;font-size:15px;font-weight:600}
 .atbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}
 .dstep{display:flex;gap:6px;align-items:center}.dstep input{flex:1;min-width:0;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-size:16px}
 .atk{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0 4px}
@@ -212,11 +222,13 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
       <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
       <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
+      <label><span data-i="sr_l"></span><select id="sr" onchange="srOpen(this)"></select></label>
       <span class="sp"></span>
       <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
       <button class="btn ghost sm" onclick="exportCSV()" data-i="export"></button>
     </div>
     <div id="attcard"></div>
+    <div id="mycal"></div>
     <div id="out"></div>
     <h4 data-i="recent"></h4>
     <div class="t"><table id="log"></table></div>
@@ -321,7 +333,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='20';
+const VER='21';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -365,8 +377,8 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
-Object.assign(T.en,{at_today:'Today',at_clear:'Clear all',at_search:'Search student',at_marked:'Marked',at_card_h:'Attendance',at_not_yet:'Attendance has not been marked for this date.',at_last:'Show last recorded day',at_rate:'Present rate',at_auto:'Attendance is counted automatically from the daily attendance, so it is not asked here.',t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
-Object.assign(T.ur,{at_today:'آج',at_clear:'سب صاف کریں',at_search:'طالب علم تلاش کریں',at_marked:'نشان لگے',at_card_h:'حاضری',at_not_yet:'اس تاریخ کی حاضری ابھی نہیں لگی۔',at_last:'آخری درج دن دکھائیں',at_rate:'حاضری کی شرح',at_auto:'حاضری روزانہ حاضری سے خود شمار ہوتی ہے، اس لیے یہاں نہیں پوچھی جاتی۔',t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+Object.assign(T.en,{sr_l:'Student report',sr_ph:'Select a student…',pf_overall:'Overall (all months)',cal_h:'Attendance calendar',cal_my:'My attendance',cal_none:'No attendance recorded for this month.',pf_pick:'Period',at_today:'Today',at_clear:'Clear all',at_search:'Search student',at_marked:'Marked',at_card_h:'Attendance',at_not_yet:'Attendance has not been marked for this date.',at_last:'Show last recorded day',at_rate:'Present rate',at_auto:'Attendance is counted automatically from the daily attendance, so it is not asked here.',t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{sr_l:'طالب علم کی رپورٹ',sr_ph:'طالب علم منتخب کریں…',pf_overall:'مجموعی (تمام مہینے)',cal_h:'حاضری کا کیلنڈر',cal_my:'میری حاضری',cal_none:'اس ماہ کی کوئی حاضری درج نہیں۔',pf_pick:'مدت',at_today:'آج',at_clear:'سب صاف کریں',at_search:'طالب علم تلاش کریں',at_marked:'نشان لگے',at_card_h:'حاضری',at_not_yet:'اس تاریخ کی حاضری ابھی نہیں لگی۔',at_last:'آخری درج دن دکھائیں',at_rate:'حاضری کی شرح',at_auto:'حاضری روزانہ حاضری سے خود شمار ہوتی ہے، اس لیے یہاں نہیں پوچھی جاتی۔',t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
 const MSG={'آپ اپنا اکاؤنٹ خود حذف نہیں کر سکتے':'You cannot delete your own account','یوزر نہیں ملا':'User not found','اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے':'This student already has an entry for this month. The admin or teacher can edit it.','یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -520,8 +532,9 @@ async function saveAtt(){
   if(L2.some(s=>!AT[s.username]))return toast(t('at_need'),1);
   const r=await call({action:'saveAtt',cls:c,date:$('ad').value,marks:AT});if(!r.ok)return toast(r.msg,1);
   const ids=new Set(L2.map(s=>String(s.username)));D.attsum=(D.attsum||[]).filter(x=>!ids.has(String(x.username))).concat(r.attsum||[]);
-  ADC={};D.attlast=null;ADT.date=$('ad').value;render();toast(t('at_ok'));
+  ADC={};ACM={};D.attlast=null;ADT.date=$('ad').value;render();toast(t('at_ok'));
 }
+async function fetchMonth(u,mm){const r=await call({action:'attMonth',student:u,month:mm});if(!r.ok)throw new Error(r.msg);return r.days||{};}
 async function fetchDay(d){const r=await call({action:'attDay',date:d});if(!r.ok)throw new Error(r.msg);return r.attday||{};}
 let LOCK=false;
 function chk(){
@@ -653,7 +666,31 @@ function exportCSV(){
 }
 function attOf(u,m){const o={p:0,l:0,a:0,t:0};(D.attsum||[]).forEach(r=>{if(String(r.username)==String(u)&&(!m||r.month==m)){o.p+=r.p;o.l+=r.l;o.a+=r.a;}});o.t=o.p+o.l+o.a;o.pc=o.t?Math.round(o.p/o.t*100):null;return o;}
 const attTxt=o=>`${t('at_p')} ${o.p} · ${t('at_l')} ${o.l} · ${t('at_a')} ${o.a}`;
-let ADC={},ADT={date:null};
+let ADC={},ADT={date:null},ACM={},PP='',PCH=null;
+const lastAttMonth=u=>((D.attsum||[]).filter(r=>String(r.username)==String(u)).map(r=>r.month).sort().pop())||'';
+async function monthDays(u,mm){const k=u+'|'+mm;if(!ACM[k])ACM[k]=await fetchMonth(u,mm);return ACM[k];}
+async function drawCal(box,u,mm){
+  const el=$(box);if(!el)return;
+  let days={};try{days=await monthDays(u,mm);}catch(e){}
+  const [Y,Mo]=mm.split('-').map(Number),n=new Date(Y,Mo,0).getDate(),off=(new Date(Y,Mo-1,1).getDay()+6)%7,loc=LG=='ur'?'ur-PK':'en-GB';
+  const wd=[0,1,2,3,4,5,6].map(i=>new Date(2024,0,1+i).toLocaleDateString(loc,{weekday:'short'}));
+  let P=0,Lc=0,A=0;Object.values(days).forEach(x=>{if(x=='P')P++;else if(x=='L')Lc++;else if(x=='A')A++;});
+  const mk=P+Lc+A,rate=mk?Math.round(P/mk*100):null;
+  let cells='';for(let i=0;i<off;i++)cells+='<div class="d e"></div>';
+  for(let d=1;d<=n;d++){const key=mm+'-'+String(d).padStart(2,'0'),st=days[key];cells+=`<div class="d ${st?st.toLowerCase():''}" title="${key}${st?' — '+t('at_'+st.toLowerCase()):''}">${d}</div>`;}
+  const title=new Date(Y,Mo-1,1).toLocaleDateString(loc,{month:'long',year:'numeric'});
+  el.innerHTML=`<div class="cal" data-b="${box}" data-u="${esc(u)}" data-m="${mm}"><div class="hd"><h3>${box=='mycal'?t('cal_my'):t('cal_h')} — ${esc(title)}</h3><div class="dstep" dir="ltr"><button class="btn ghost sm" onclick="calGo(this,-1)">‹</button><button class="btn ghost sm" onclick="calGo(this,1)">›</button></div></div>`+
+    (mk?`<div class="cleg"><span class="bd ok">${t('at_p')} ${P}</span><span class="bd mid">${t('at_l')} ${Lc}</span><span class="bd low">${t('at_a')} ${A}</span><span class="chip">${t('at_rate')} ${rate}%</span></div>`:`<p class="note">${t('cal_none')}</p>`)+
+    `<div class="cgrid" dir="ltr">${wd.map(w=>`<div class="w">${esc(w)}</div>`).join('')}${cells}</div></div>`;
+}
+function calGo(btn,n){const c=btn.closest('.cal'),[Y,M]=c.dataset.m.split('-').map(Number),d=new Date(Y,M-1+n,1);drawCal(c.dataset.b,c.dataset.u,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
+function srFill(){
+  const sel=$('sr');if(!sel)return;
+  sel.parentElement.hidden=D.me.role=='student';
+  const by={};D.students.forEach(s=>{(by[s.class]??=[]).push(s);});
+  sel.innerHTML=`<option value="">${t('sr_ph')}</option>`+Object.keys(by).sort().map(c=>`<optgroup label="${esc(c)}">`+by[c].slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('')+'</optgroup>').join('');
+}
+function srOpen(sel){const u=sel.value;sel.value='';if(u)openProfile(u,'');}
 const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
 // the monthly "Attendance" performance is the number of present days in the daily attendance (typed entries are only a fallback)
 function withAtt(s,ms,u,list){
@@ -664,6 +701,12 @@ function withAtt(s,ms,u,list){
   if(any){s.sum.hazri=tot;s.cnt.hazri=1;s.none=false;}
 }
 async function attCard(){
+  if(D.me&&D.me.role=='student'){
+    if($('attcard'))$('attcard').innerHTML='';
+    const s=D.students[0];
+    if(s&&$('mycal'))drawCal('mycal',s.username,$('mf').value||lastAttMonth(s.username)||todayStr().slice(0,7));
+    return;
+  }
   if(!$('attcard'))return;
   const d=ADT.date||(D.attlast&&D.attlast.date)||todayStr();ADT.date=d;
   if(!ADC[d]){
@@ -732,31 +775,42 @@ function openPhoto(u){
   if(!D.photos[u])return toast(t('pf_nophoto'),1);
   $('lbi').src=D.photos[u];$('lbc').textContent=s?s.name:'';$('lb').hidden=false;
 }
-function openProfile(u){
-  const s=D.students.find(x=>String(x.username)==String(u));if(!s)return;PU=s.username;
-  const m=$('mf').value,all=D.entries.filter(e=>String(e.username)==String(u)),list=all.filter(e=>!m||mon(e)==m);
+function openProfile(u,per){
+  const s=D.students.find(x=>String(x.username)==String(u));if(!s)return;PU=s.username;PP=per===undefined?'':per;
+  const m=PP,all=D.entries.filter(e=>String(e.username)==String(u)),list=all.filter(e=>!m||mon(e)==m);
   const ms=m?[m]:[...new Set(list.map(mon))].sort(),a=agg(list);withAtt(a,ms,s.username,list);a.ov=ovOf(a,s.class,ms);
   const st=new Set();ms.forEach(x=>fset(s.class,x).forEach(y=>st.add(y)));list.forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
   const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(s.class,x,ms)});
-  const hist=[...new Set(all.map(mon))].sort().reverse().map(mm=>{
-    const lm=all.filter(e=>mon(e)==mm),a2=agg(lm);withAtt(a2,[mm],s.username,lm);const o2=ovOf(a2,s.class,[mm]);
+  const hs=[...new Set(all.map(mon))].sort().map(mm=>{const lm=all.filter(e=>mon(e)==mm),a2=agg(lm);withAtt(a2,[mm],s.username,lm);return {mm,a2,o2:ovOf(a2,s.class,[mm])};});
+  const hist=[...hs].reverse().map(({mm,a2,o2})=>{
     const det=ordk(new Set(Object.keys(a2.sum))).map(k=>`${esc(L(k))}: <b>${+vl(a2,k).toFixed(1)}</b>`).join(LG=='ur'?'، ':', ');
     return `<tr><td class="l" style="white-space:nowrap">${esc(mm)}</td><td>${o2==null?'—':'<b class="pc '+lv(o2)+'">'+o2+'%</b>'}</td><td>${ovBadge({ov:o2})}</td><td class="l">${det||'—'}</td><td class="l">${(()=>{const o=attOf(s.username,mm);return o.t?o.pc+'% · '+attTxt(o):'—';})()}</td></tr>`;}).join('');
-  const photo=D.photos[s.username];
+  const months=[...new Set([...all.map(mon),...(D.attsum||[]).filter(r=>String(r.username)==String(u)).map(r=>r.month)])].sort().reverse();
+  const photo=D.photos[s.username],calM=m||lastAttMonth(s.username)||(hs.length?hs[hs.length-1].mm:todayStr().slice(0,7));
+  const trend=hs.filter(x=>x.o2!=null);
   $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,s.name,'xxl')}</span>`+
     `<div><h2>${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext">${esc(s.class)} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div>`+
     `<div class="row" style="margin-bottom:6px"><label class="btn ghost sm">${t('chg_photo')}<input type="file" accept="image/*" hidden onchange="pick(this,PU)"></label>`+
-    `<button class="btn sm" onclick="goStudent()">${t('pf_open')}</button></div>`+
-    `<h4>${t('pf_period')} — ${esc(m||t('pf_all'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+
+    `<button class="btn sm" onclick="goStudent()">${t('pf_open')}</button>`+
+    `<label class="f" style="flex-direction:row;align-items:center;gap:8px"><span>${t('pf_pick')}</span><select class="pps" onchange="openProfile(PU,this.value)"><option value="">${t('pf_overall')}</option>${months.map(x=>`<option ${x==m?'selected':''}>${x}</option>`).join('')}</select></label></div>`+
+    `<h4>${t('pf_period')} — ${esc(m||t('pf_overall'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+
+    (trend.length>1?`<div class="cbox" style="margin-top:14px"><h5>${t('ch_trend')}</h5><div style="height:210px"><canvas id="pch"></canvas></div></div>`:'')+
+    `<div id="pcal" style="margin-top:14px"></div>`+
     (hist?`<h4>${t('pf_hist')}</h4><div class="t"><table><thead><tr><th class="l">${t('month')}</th><th>${t('overall')}</th><th></th><th class="l">${t('details')}</th><th class="l">${t('at_rec')}</th></tr></thead><tbody>${hist}</tbody></table></div>`:'');
   $('pm').hidden=false;
+  if(PCH){PCH.destroy();PCH=null;}
+  if(trend.length>1&&typeof Chart!='undefined'){
+    PCH=new Chart($('pch'),{type:'line',data:{labels:trend.map(x=>x.mm),datasets:[{data:trend.map(x=>x.o2),borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a'}]},
+      options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]});
+  }
+  drawCal('pcal',s.username,calM);
 }
 function goStudent(){
   const s=D.students.find(x=>String(x.username)==String(PU));if(!s)return;
   $('pm').hidden=true;$('cf').value=s.class;fsf();$('sf').value=s.username;render();show('an');window.scrollTo({top:0,behavior:'smooth'});
 }
 function render(){
-  CH.forEach(c=>c.destroy());CH=[];
+  CH.forEach(c=>c.destroy());CH=[];srFill();
   Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b';
   const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
   const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv));
