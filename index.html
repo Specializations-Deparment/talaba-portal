@@ -217,6 +217,8 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
       <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
       <label><span data-i="sr_l"></span><select id="sr" onchange="srOpen(this)"></select></label>
+      <!-- YAHAN SEARCH BOX WAPAS ADD KAR DIYA GAYA HAI -->
+      <input id="q" oninput="render()" autocomplete="off" placeholder="Search student..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:190px">
       <span class="sp"></span>
       <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
       <button class="btn ghost sm" onclick="exportCSV()" data-i="export"></button>
@@ -810,7 +812,8 @@ function render(){
       Chart.defaults.color='#5d6e6b';
     }
     const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
-    const q=($('q').value||'').trim().toLowerCase();
+    // Yahan $('q') ko safe bana diya gaya hai
+    const q=($('q')&&$('q').value||'').trim().toLowerCase();
     const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
     const E=base.filter(e=>!m||mon(e)==m);
     const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
