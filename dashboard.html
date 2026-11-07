@@ -168,7 +168,10 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
         <span class="sp"></span>
         <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
       </div>
+      
+      <!-- Attendance Card Container -->
       <div id="attcard"></div>
+      
       <div id="mycal"></div>
       <div id="out"></div>
       <h4 data-i="recent"></h4>
@@ -189,11 +192,12 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let SHARE_KEY = null, URL_CLS = null;
 let D, CH=[], TT;
+let ADC={},ADT={date:null},ACM={};
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans 3','Noto Naskh Arabic',sans-serif";
 const CLR={ok:'#1f8a63',mid:'#c98a1b',low:'#b5453a'};
 
-// 👇 SIRF IN 5 STUDENTS KI CLASS CHANGE KARNE KA LOGIC 👇
+// 👇 5 Students ki class fix karne ka logic 👇
 function fixSpecificClasses() {
   if (!D) return;
   const targetUsernames = ["73872", "73699", "78664", "74286", "74522"];
@@ -296,7 +300,7 @@ async function init() {
         }
 
         D = r;
-        fixSpecificClasses(); // 👈 YAHAN CLASS FIX LAGAYA HAI
+        fixSpecificClasses(); 
         $('app').hidden = false;
         $('ver').textContent = 'Read-Only View · Shared Dashboard';
         
@@ -384,7 +388,9 @@ function ptable(A,ks,Tg,tf,m){
     const p=Math.round(v/Tg[x]*100),q=lv(p);
     return `<td><div class="c2"><div dir="ltr"><span class="num">${n}</span><span class="of"> / ${+Tg[x].toFixed(1)}</span></div><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><span class="pc ${q}">${p}%</span></div></td>`;
   };
-  const atc=s=>{const o=attOf(s.u,m);return o.t?`<td><div class="c2"><b class="pc ${lv(o.pc)}">${o.pc}%</b><small class="of" style="white-space:nowrap">${attTxt(o)}</small></div></td>`:`<td><span class="of">—</span></td>`;};
+  
+  const atc=s=>{const o=attOf(s.u,m);return o.t?`<td><div class="c2"><b class="pc ${lv(o.pc)}">${o.pc}%</b><div class="bar"><i class="${lv(o.pc)}" style="width:${Math.min(o.pc,100)}%"></i></div><small class="of" style="white-space:nowrap">${attTxt(o)}</small></div></td>`:`<td><span class="of">—</span></td>`;};
+
   return `<div class="t"><table><thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('entries')}</th>`+
     ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}</th>`).join('')+(hasAt?`<th>${t('at_rec')}</th>`:'')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
     A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+
@@ -429,14 +435,18 @@ function openProfile(u,per){
   drawCal('pcal',s.username,calM);
 }
 
+const dayLabel=d=>d?new Date(d+'T00:00:00').toLocaleDateString(LG=='ur'?'ur-PK':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'';
 const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
 async function fetchMonth(u,mm){const r=await call({action:'attMonth',student:u,month:mm});if(!r.ok)throw new Error(r.msg);return r.days||{};}
+async function fetchDay(d){const r=await call({action:'attDay',date:d});if(!r.ok)throw new Error(r.msg);return r.attday||{};}
+
 async function call(o){
   try {
       const r = await (await fetch(API, {method:'POST', body:JSON.stringify({k:SHARE_KEY, ...o})})).json();
       return r;
   } catch(e){ return {ok:false, msg:'Error'}; }
 }
+
 async function drawCal(box,u,mm){
   const el=$(box);if(!el)return;
   let days={};try{days=await fetchMonth(u,mm);}catch(e){}
@@ -452,6 +462,35 @@ async function drawCal(box,u,mm){
     `<div class="cgrid" dir="ltr">${wd.map(w=>`<div class="w">${esc(w)}</div>`).join('')}${cells}</div></div>`;
 }
 function calGo(btn,n){const c=btn.closest('.cal'),[Y,M]=c.dataset.m.split('-').map(Number),d=new Date(Y,M-1+n,1);drawCal(c.dataset.b,c.dataset.u,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
+
+// 👇 YEH NAYA CODE ATTENDANCE SUMMARY KE LIYE ADD KIYA HAI 👇
+async function attCard(){
+  if(!$('attcard'))return;
+  const d=ADT.date||(D.attlast&&D.attlast.date)||todayStr();ADT.date=d;
+  if(!ADC[d]){
+    if(D.attlast&&D.attlast.date==d)ADC[d]=D.attlast.marks;
+    else{try{ADC[d]=await fetchDay(d);}catch(e){ADC[d]={};}}
+  }
+  drawAttCard(d,ADC[d]);
+}
+
+function drawAttCard(d,marks){
+  const c=$('cf').value,sv=$('sf').value,q=($('q')&&$('q').value||'').trim().toLowerCase();
+  const L2=D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||String(s.name).toLowerCase().includes(q)));
+  const ab=[],lvv=[];let P=0,Lc=0,A=0;
+  L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
+  const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
+  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)} <span style="opacity:.7;font-size:12px">(${esc(s.class)})</span></span>`;
+  let body;
+  if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
+  else if(!mk)body=`<p class="note">${t('at_not_yet')}</p>`+(D.attlast&&D.attlast.date!=d?`<button class="btn ghost sm" onclick="attPick('${D.attlast.date}')">${t('at_last')} (${D.attlast.date})</button>`:'');
+  else body=`<div class="atk"><div class="at-t ok"><small>${t('at_p')}</small><b>${P}</b></div><div class="at-t mid"><small>${t('at_l')}</small><b>${Lc}</b></div><div class="at-t low"><small>${t('at_a')}</small><b>${A}</b></div><div class="at-t"><small>${t('at_unm')}</small><b>${un}</b></div><div class="at-t ${lv(rate)}"><small>${t('at_rate')}</small><b>${rate}%</b></div></div>`+
+    (ab.length?`<div class="note" style="margin-top:8px">${t('at_a')}:</div><div class="ckg">${ab.map(s=>chip(s,'a')).join('')}</div>`:'')+
+    (lvv.length?`<div class="note" style="margin-top:8px">${t('at_l')}:</div><div class="ckg">${lvv.map(s=>chip(s,'l')).join('')}</div>`:'');
+  $('attcard').innerHTML=`<div class="attcard"><div class="hd"><h3>${t('at_card_h')} — ${esc(dayLabel(d))}${d==todayStr()?` <span class="chip">${t('at_today')}</span>`:''}</h3><div class="dstep" dir="ltr"><input type="date" value="${d}" max="${todayStr()}" onchange="attPick(this.value)"><button class="btn ghost sm" onclick="attPick(todayStr())">${t('at_today')}</button></div></div>${body}</div>`;
+}
+function attPick(d){if(!d)return;ADT.date=d;attCard();}
+// 👆 ================================================= 👆
 
 function render(){
   CH.forEach(c=>c.destroy());CH=[];
@@ -521,6 +560,10 @@ function render(){
       options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
   });
   
+  // 👇 ATTENDANCE CARD KO CALL KIYA HAI 👇
+  attCard();
+  // 👆 ================================ 👆
+
   $('log').innerHTML=`<thead><tr><th>${t('cls')}</th><th>${t('user_l')}</th><th class="l">${t('name')}</th></tr></thead><tbody>`+
     E.slice(-60).reverse().map(e=>`<tr>
       <td>${esc(e.class)}</td>
