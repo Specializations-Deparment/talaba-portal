@@ -335,6 +335,20 @@ const TK=['mutalia','hazri','madaniPhool'];
 const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans 3','Noto Naskh Arabic',sans-serif";
 const CLR={ok:'#1f8a63',mid:'#c98a1b',low:'#b5453a'};
 const COL=['#0e3b3a','#2f6fa3','#1f8a63','#c98a1b','#8a4f7d','#b5453a','#5d6e6b','#3aa0a0'];
+
+// 👇 YAHAN CLASS NAME FIX KARNE KA FUNCTION ADD KIYA HAI 👇
+const fixClass = (c) => {
+  if(!c) return c;
+  let s = String(c);
+  s = s.replace(/تخصص فی الفقہ/g, 'تخصص فی الحدیث')
+       .replace(/تخصص فی الفقہ/g, 'تخصص فی الحدیث')
+       .replace(/تخصص فی الفقہ سال دوم/g, 'تخصص فی الحدیث سال دوم')
+       .replace(/تخصص فی الفقہ سال دوم/g, 'تخصص فی الحدیث سال دوم')
+       .replace(/Takhassus fil Fiqh/gi, 'Takhassus fil Hadith');
+  return s;
+};
+// 👆 ========================================= 👆
+
 const T={
 en:{title:'Student Performance Portal',sub:'Specializations Department',logout:'Log out',signin:'Sign in',user_l:'Username',pass_l:'Password',
 side_h:"Every student's monthly performance",side_p:'Study, attendance, Madani Phool and class-specific work, all in one place.',
@@ -433,12 +447,12 @@ async function login(){
 function fill(){
   setVer();
   const sv=$('st').value,cv=$('cf').value,mv=$('mf').value,tv=$('tc').value;
-  $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(s.name)} (${esc(s.class)})</option>`).join('');
+  $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(s.name)} (${esc(fixClass(s.class))})</option>`).join('');
   if(sv)$('st').value=sv;
   const cl=[...new Set(D.students.map(s=>s.class))];
-  $('cf').innerHTML=`<option value="">${t('all_c')}</option>`+cl.map(c=>`<option>${esc(c)}</option>`).join('');
+  $('cf').innerHTML=`<option value="">${t('all_c')}</option>`+cl.map(c=>`<option value="${esc(c)}">${esc(fixClass(c))}</option>`).join('');
   $('cf').value=cv;
-  $('tc').innerHTML=cl.map(c=>`<option>${esc(c)}</option>`).join('');if(tv)$('tc').value=tv;
+  $('tc').innerHTML=cl.map(c=>`<option value="${esc(c)}">${esc(fixClass(c))}</option>`).join('');if(tv)$('tc').value=tv;
   const ms=[...new Set(D.entries.map(mon))].sort().reverse();
   $('mf').innerHTML=`<option value="">${t('all_m')}</option>`+ms.map(m=>`<option>${m}</option>`).join('');
   const want=FORCEM&&ms.includes(FORCEM)?FORCEM:null;FORCEM=null;
@@ -455,7 +469,7 @@ function ulist(){
   if(!D.users){$('ul').innerHTML=`<tr><td>${t('u_nolist')}</td></tr>`;$('uc').textContent='';return;}
   $('uc').textContent=t('u_tot')+' '+D.users.length;
   $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th></th></tr></thead><tbody>`+
-    D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
+    D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(fixClass(u.class))}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
 }
 const shareUrl=(cls)=>new URL('dashboard.html',location.href).href.split('?')[0]+'?k='+D.share+(cls?'&cls='+encodeURIComponent(cls):'');
 function shareBox(){
@@ -469,13 +483,12 @@ function shareBox(){
       `<button class="btn sm" onclick="copyShare('shl')">${t('pl_copy')}</button><a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(shareUrl())}">${t('pl_open')}</a></div>`+
       `<div class="row"><button class="btn ghost sm" onclick="mkShare(true)">${t('pl_new')}</button><button class="btn danger sm" onclick="offShare()">${t('pl_off')}</button></div>`;
       
-    // HAR CLASS KE LIYE ALAG LINK
     if(D.classes && D.classes.length) {
         html += `<h5 style="margin:24px 0 6px;font:700 17px var(--serif);color:var(--pri)">Class-wise Links (Har Class ka Alag Dashboard)</h5><p class="note">In links ko copy karke apni marzi se share karein. Har link sirf apni class ka data dikhayega.</p>`;
         html += `<div class="grid" style="margin-top:12px">`;
         D.classes.forEach(c => {
             const link = shareUrl(c.class);
-            html += `<div class="cbox" style="padding:12px; background:var(--paper)"><b style="font-size:15px; color:var(--pri)">${esc(c.class)}</b>
+            html += `<div class="cbox" style="padding:12px; background:var(--paper)"><b style="font-size:15px; color:var(--pri)">${esc(fixClass(c.class))}</b>
                      <div class="row" style="margin-top:8px">
                        <input readonly value="${esc(link)}" onclick="this.select()" style="flex:1; font-size:13px; border:1px solid var(--line); border-radius:6px; padding:4px 8px; background:#fff">
                      </div>
@@ -523,7 +536,7 @@ let AT={};
 const dayLabel=d=>d?new Date(d+'T00:00:00').toLocaleDateString(LG=='ur'?'ur-PK':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'';
 function attOpen(){
   const cl=[...new Set(D.students.map(s=>s.class))],cv=$('ac').value;
-  $('ac').innerHTML=cl.map(c=>`<option>${esc(c)}</option>`).join('');if(cl.includes(cv))$('ac').value=cv;
+  $('ac').innerHTML=cl.map(c=>`<option value="${esc(c)}">${esc(fixClass(c))}</option>`).join('');if(cl.includes(cv))$('ac').value=cv;
   $('ad').max=todayStr();if(!$('ad').value)$('ad').value=todayStr();
   loadAtt();
 }
@@ -609,7 +622,7 @@ function tlist(){
   if(!TL.length){$('tlist').innerHTML='<tr><td>—</td></tr>';return;}
   $('tlist').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('cls')}</th><th class="l">${t('perfs')}</th><th class="l">${t('targets')}</th><th></th></tr></thead><tbody>`+
     TL.map((r,i)=>{const on=r.fields?String(r.fields).split(','):fk(cfg(r.class)),tv=tjo(r);
-      return `<tr><td class="l" style="white-space:nowrap">${esc(String(r.month).slice(0,7))}</td><td class="l">${esc(r.class)}</td><td class="l">${on.map(k=>esc(L(k))).join(', ')}</td><td class="l">${Object.entries(tv).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(', ')||'—'}</td><td style="white-space:nowrap"><button class="ib" title="${t('edit')}" onclick="editT(${i})">✏️</button><button class="ib" title="${t('del')}" onclick="delT(${i})">🗑️</button></td></tr>`}).join('')+'</tbody>';
+      return `<tr><td class="l" style="white-space:nowrap">${esc(String(r.month).slice(0,7))}</td><td class="l">${esc(fixClass(r.class))}</td><td class="l">${on.map(k=>esc(L(k))).join(', ')}</td><td class="l">${Object.entries(tv).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(', ')||'—'}</td><td style="white-space:nowrap"><button class="ib" title="${t('edit')}" onclick="editT(${i})">✏️</button><button class="ib" title="${t('del')}" onclick="delT(${i})">🗑️</button></td></tr>`}).join('')+'</tbody>';
 }
 function editT(i){const r=TL[i];$('tc').value=r.class;$('tm').value=String(r.month).slice(0,7);loadT();window.scrollTo({top:0,behavior:'smooth'});toast(t('edit_loaded'));}
 async function delT(i){
@@ -669,7 +682,7 @@ async function addUser(){
 const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.class));
 function editE(id){
   const e=D.entries.find(x=>x.id==id);if(!e)return;EID=id;const v=V(e);
-  $('e_h').textContent=e.name+' — '+e.class;$('e_m').value=mon(e);$('e_n').value=e.note||'';
+  $('e_h').textContent=e.name+' — '+fixClass(e.class);$('e_m').value=mon(e);$('e_n').value=e.note||'';
   $('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).filter(k=>k!='hazri'||v.hazri!==undefined).map(k=>`<label class="f"><span>${esc(L(k))}</span><input id="e_${k}" inputmode="decimal" autocomplete="off" value="${v[k]??''}"></label>`).join('');
   $('md').hidden=false;
 }
@@ -715,7 +728,7 @@ function srFill(){
   const sel=$('sr');if(!sel)return;
   sel.parentElement.hidden=D.me.role=='student';
   const by={};D.students.forEach(s=>{(by[s.class]??=[]).push(s);});
-  sel.innerHTML=`<option value="">${t('sr_ph')}</option>`+Object.keys(by).sort().map(c=>`<optgroup label="${esc(c)}">`+by[c].slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('')+'</optgroup>').join('');
+  sel.innerHTML=`<option value="">${t('sr_ph')}</option>`+Object.keys(by).sort().map(c=>`<optgroup label="${esc(fixClass(c))}">`+by[c].slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('')+'</optgroup>').join('');
 }
 function srOpen(sel){const u=sel.value;sel.value='';if(u)openProfile(u,'');}
 const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
@@ -747,7 +760,7 @@ function drawAttCard(d,marks){
   const ab=[],lvv=[];let P=0,Lc=0,A=0;
   L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
   const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
-  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}${!c?' <span style="opacity:.7;font-size:12px">('+esc(s.class)+')</span>':''}</span>`;
+  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}${!c?' <span style="opacity:.7;font-size:12px">('+esc(fixClass(s.class))+')</span>':''}</span>`;
   let body;
   if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
   else if(!mk)body=`<p class="note">${t('at_not_yet')}</p>`+(D.attlast&&D.attlast.date!=d?`<button class="btn ghost sm" onclick="attPick('${D.attlast.date}')">${t('at_last')} (${D.attlast.date})</button>`:'');
@@ -815,7 +828,7 @@ function openProfile(u,per){
   const photo=D.photos[s.username],calM=m||lastAttMonth(s.username)||(hs.length?hs[hs.length-1].mm:todayStr().slice(0,7));
   const trend=hs.filter(x=>x.o2!=null);
   $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,s.name,'xxl')}</span>`+
-    `<div><h2>${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext">${esc(s.class)} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div>`+
+    `<div><h2>${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext">${esc(fixClass(s.class))} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div>`+
     `<div class="row" style="margin-bottom:6px"><label class="btn ghost sm">${t('chg_photo')}<input type="file" accept="image/*" hidden onchange="pick(this,PU)"></label>`+
     `<button class="btn sm" onclick="goStudent()">${t('pf_open')}</button>`+
     `<label class="f" style="flex-direction:row;align-items:center;gap:8px"><span>${t('pf_pick')}</span><select class="pps" onchange="openProfile(PU,this.value)"><option value="">${t('pf_overall')}</option>${months.map(x=>`<option ${x==m?'selected':''}>${x}</option>`).join('')}</select></label></div>`+
@@ -845,7 +858,7 @@ function render(){
   const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
   const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
   $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
-  if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
+  if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(fixClass(bs.class))}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
   const by={};
   E.forEach(e=>{((by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
   const allk=D.keys.filter(k=>k!='photo');
@@ -859,11 +872,11 @@ function render(){
     E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
     const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
     const tf=ks.filter(x=>Tg[x]>0);
-    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
+    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([fixClass(k),s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
     A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
     const live=A.filter(s=>!s.none);
     const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
-    h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
+    h+=`<section class="cls"><div class="clsh"><h3>${esc(fixClass(k))}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
     h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
     let cg='';
     if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
@@ -897,9 +910,16 @@ function render(){
       options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
   });
   attCard();
-  $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
-    E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
-      Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
+  
+  // 👇 YAHAN RECENT ENTRIES KO AAPKI IMAGE JAISA BANA DIYA HAI 👇
+  $('log').innerHTML=`<thead><tr><th class="rk" style="width:50px">🗑️</th><th>${t('cls')}</th><th>${t('user_l')}</th><th class="l">${t('name')}</th></tr></thead><tbody>`+
+    E.slice(-60).reverse().map(e=>`<tr>
+      <td class="rk">${canE(e)?`<button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td>
+      <td>${esc(fixClass(e.class))}</td>
+      <td>${esc(e.username)}</td>
+      <td class="l">${esc(e.name)}</td>
+    </tr>`).join('')+'</tbody>';
+  // 👆 ======================================================= 👆
 }
 setLang(LG);setVer();
 </script>
