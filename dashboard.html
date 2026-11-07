@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Live Dashboard - Student Performance</title>
+<meta name="robots" content="noindex,nofollow">
+<title>Live Dashboard</title>
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -29,6 +30,7 @@ td,option,.nm,.me b{unicode-bidi:plaintext}
 .brand small{opacity:.75;display:block;line-height:1.3}
 .ttl{font-size:21px}
 .tr{display:flex;align-items:center;gap:10px;font-size:15px}
+.user{display:flex;align-items:center;gap:10px}
 .btn{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:8px 18px;cursor:pointer;font-weight:600;display:inline-block}
 .btn:hover{background:var(--pri2)}
 .btn.ghost{background:transparent;color:var(--pri);border:1px solid currentColor}
@@ -37,23 +39,42 @@ td,option,.nm,.me b{unicode-bidi:plaintext}
 .lang{border:0;border-radius:10px;padding:6px 14px;cursor:pointer;font-weight:600}
 .lang:hover{background:rgba(255,255,255,.25)}
 .wrap{max-width:1120px;margin:0 auto;padding:16px}
+/* login */
+.login{max-width:820px;margin:48px auto;display:grid;grid-template-columns:1fr 1fr;background:var(--card);border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+.login .side{background:var(--pri);color:#fff;padding:36px 30px;display:flex;flex-direction:column;justify-content:center}
+.lg{width:150px;height:150px;object-fit:contain;background:#fff;border-radius:24px;padding:10px;margin-bottom:18px;align-self:flex-start}
+.login .side h1{font-size:28px}.login .side p{opacity:.8;margin:10px 0 0}
+.login form{padding:36px 30px;display:flex;flex-direction:column;gap:12px}
+.err{color:var(--low);min-height:1.5em;font-weight:600}
+/* fields */
+label.f{display:flex;flex-direction:column;font-size:14px;color:var(--mute);gap:3px;font-weight:600}
+label.f input,label.f select,.bar-tools select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-size:16px;color:var(--ink);width:100%;font-weight:400}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin:8px 0 18px;overflow-x:auto}
+.tabs button{background:none;border:0;padding:9px 18px;cursor:pointer;color:var(--mute);font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tabs button.on{color:var(--pri);border-color:var(--pri)}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
 .panel>h2{font-size:21px;color:var(--pri);margin-bottom:6px}
 .row{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-top:12px}
 .bar-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px;padding:12px 14px;background:var(--paper);border-radius:12px}
 .bar-tools label{display:flex;align-items:center;gap:8px;color:var(--mute);font-weight:600}
-.bar-tools select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-size:16px;color:var(--ink);width:auto;min-width:150px;font-weight:400}
+.bar-tools select{width:auto;min-width:150px}
 .bar-tools .sp{flex:1}
+/* profile banner */
+.me{display:flex;align-items:center;gap:16px;background:var(--tint);border-radius:14px;padding:14px 18px;margin-bottom:16px}
+.me b{font:700 21px var(--serif)}
 .ava{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
 .ava.xl{width:84px;height:84px;font-size:34px}
 .ini{display:inline-grid;place-items:center;background:var(--tint);color:var(--pri);font-weight:700;border:1px solid var(--line)}
 .nm{display:flex;align-items:center;gap:10px;font-weight:600}
+/* KPI */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:26px}
 .kpi{border:1px solid var(--line);border-top:4px solid var(--pri);border-radius:12px;padding:12px 16px;background:#fff}
 .kpi.ok{border-top-color:var(--ok)}.kpi.mid{border-top-color:var(--mid)}.kpi.low{border-top-color:var(--low)}
 .kpi small{display:block;color:var(--mute);font-weight:600;font-size:13px;letter-spacing:.02em}
 .kpi b{display:block;font:700 30px/1.25 var(--serif)}
+/* class block */
 .cls{margin-bottom:34px}
 .clsh{display:flex;flex-wrap:wrap;align-items:center;gap:10px;border-inline-start:5px solid var(--pri);padding-inline-start:12px;margin-bottom:12px}
 .clsh h3{font-size:20px;color:var(--pri);unicode-bidi:plaintext}
@@ -66,6 +87,7 @@ td:first-child,th:first-child,td.l,th.l{text-align:start}
 tbody tr:hover td{background:#f1f7f6}
 small.tg{display:block;font-weight:400;color:var(--mute)}
 .rk{color:var(--mute);font-weight:700;width:36px}
+.cell{display:flex;align-items:baseline;justify-content:center;gap:5px}
 .num{font-weight:700;font-size:17px}
 .of{color:var(--mute);font-size:13px}
 .pc{font-size:13px;font-weight:700}
@@ -113,6 +135,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 #lb figure{margin:0;text-align:center;color:#fff}
 #lb img{max-width:90vw;max-height:78vh;border-radius:14px;border:6px solid #fff;background:#fff;object-fit:contain}
 #lb figcaption{margin-top:10px;font-weight:600;unicode-bidi:plaintext}
+.btn.danger{background:var(--low)}
 .cal{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fff;margin-bottom:18px}
 .cal .hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
 .cal h3{font-size:19px;color:var(--pri)}
@@ -123,114 +146,132 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 .cgrid .d.e{border:0;background:transparent}
 .cgrid .d.p{background:var(--ok);border-color:var(--ok);color:#fff}.cgrid .d.l{background:var(--mid);border-color:var(--mid);color:#fff}.cgrid .d.a{background:var(--low);border-color:var(--low);color:#fff}
 .pps{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 12px;font-size:15px;font-weight:600}
+.atbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}
+.dstep{display:flex;gap:6px;align-items:center}.dstep input{flex:1;min-width:0;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-size:16px}
 .atk{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0 4px}
 .at-t{border:1px solid var(--line);border-top:4px solid var(--pri);border-radius:12px;padding:8px 14px;background:#fff}
 .at-t small{display:block;color:var(--mute);font-weight:600;font-size:13px}.at-t b{font:700 26px/1.25 var(--serif)}
 .at-t.ok{border-top-color:var(--ok)}.at-t.mid{border-top-color:var(--mid)}.at-t.low{border-top-color:var(--low)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.seg button{border:0;background:transparent;padding:7px 20px;font-weight:600;color:var(--mute);cursor:pointer;border-inline-start:1px solid var(--line)}
+.seg button:first-child{border-inline-start:0}.seg button:hover{background:var(--tint)}
+.seg button.on.p{background:var(--ok);color:#fff}.seg button.on.l{background:var(--mid);color:#fff}.seg button.on.a{background:var(--low);color:#fff}
+tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-child{border-inline-start:4px solid var(--mid)}tr.st-a td:first-child{border-inline-start:4px solid var(--low)}
+.stick{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;margin-top:14px}
 .attcard{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:18px;background:#fff}
 .attcard .hd{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between}
 .attcard h3{font-size:19px;color:var(--pri)}
 .nmchip{display:inline-flex;align-items:center;border-radius:20px;padding:0 14px;font-weight:600;cursor:pointer;unicode-bidi:plaintext}
 .nmchip.a{background:#f8e1de;color:var(--low)}.nmchip.l{background:#fbf0d9;color:#8a5d0c}
+.at3{display:inline-flex;gap:6px;flex-wrap:wrap}
+.ab{border:1px solid var(--line);background:#fff;border-radius:20px;padding:2px 16px;cursor:pointer;font-weight:600;color:var(--mute)}
+.ab.p.on{background:var(--ok);border-color:var(--ok);color:#fff}.ab.l.on{background:var(--mid);border-color:var(--mid);color:#fff}.ab.a.on{background:var(--low);border-color:var(--low);color:#fff}
+.attc{display:flex;gap:6px;flex-wrap:wrap}
+.f input.bad{border-color:var(--low);background:#fdf3f2}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.ib{background:none;border:0;cursor:pointer;font-size:17px;padding:0 4px}
+.ckg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.ck{display:flex;align-items:center;gap:6px;background:var(--tint);color:var(--pri);border-radius:20px;padding:2px 14px;cursor:pointer;font-weight:600}
+.ck input{width:auto;margin:0}
+.plist{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:10px;margin-top:8px}
+.pr{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 14px;background:#fff}
+.pr.off{background:var(--paper);opacity:.6}
+.pr .lb{flex:1;display:flex;align-items:center;gap:10px;font-weight:600;cursor:pointer}
+.pr .lb input{width:18px;height:18px;margin:0;accent-color:var(--pri)}
+.pr input.tin{width:120px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
 .vtag{font-size:12px;opacity:.75;border:1px solid #ffffff55;border-radius:20px;padding:0 10px;white-space:nowrap}
 .vr{text-align:center;color:var(--mute);font-size:12px;padding:18px 10px 26px}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 22px;border-radius:12px;z-index:9;font-weight:600}
 #toast.bad{background:var(--low)}
-@media(max-width:700px){.top{padding:8px 12px}.panel{padding:14px}.ttl{font-size:17px}.bar-tools .sp{display:none}}
-@media(prefers-reduced-motion:no-preference){.lang{transition:color .15s,background .15s}}
+@media(max-width:700px){.login{grid-template-columns:1fr;margin:16px}.top{padding:8px 12px}.panel{padding:14px}.ttl{font-size:17px}.bar-tools .sp{display:none}}
+@media(prefers-reduced-motion:no-preference){.tabs button,.lang{transition:color .15s,background .15s}}
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="brand">
-    <span class="mark"><img src="logo.png" alt="" onerror="this.replaceWith('SD')"></span>
-    <div>
-      <div class="ttl" data-i="title"></div>
-      <small data-i="sub"></small>
-    </div>
-  </div>
+  <div class="brand"><span class="mark"><img src="logo.png" alt="" onerror="this.replaceWith('SD')"></span><div><div class="ttl" data-i="dash_title"></div><small data-i="sub"></small></div></div>
   <div class="tr">
-    <span class="vtag">Live View</span>
+    <span class="vtag" id="upd"></span>
+    <button class="lang" onclick="load()" data-i="refresh"></button>
     <button class="lang" id="lgb" onclick="setLang(LG=='en'?'ur':'en')"></button>
   </div>
 </header>
-
-<div class="wrap">
-  <div id="err" class="empty" hidden style="color:var(--low); font-weight:bold; font-size:18px; padding: 50px 20px; text-align: center;"></div>
-  
-  <div id="app" hidden>
-    <section class="panel">
-      <div class="bar-tools">
-        <label><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
-        <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
-        <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
-        <input id="q" oninput="render()" autocomplete="off" placeholder="Search student..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:190px">
-        <span class="sp"></span>
-        <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
-      </div>
-      <div id="attcard"></div>
-      <div id="mycal"></div>
-      <div id="out"></div>
-      <h4 data-i="recent"></h4>
-      <div class="t"><table id="log"></table></div>
-    </section>
-  </div>
+<div id="err" class="wrap"><div id="errm" class="panel empty" data-i="loading"></div></div>
+<div id="app" class="wrap" hidden>
+  <section id="p_an" class="panel">
+    <div id="mine" class="me" hidden></div>
+    <div class="bar-tools">
+      <label><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
+      <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
+      <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
+      <label><span data-i="sr_l"></span><select id="sr" onchange="srOpen(this)"></select></label>
+      <input id="q" oninput="render()" autocomplete="off" style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:190px">
+      <span class="sp"></span>
+      <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
+      <button class="btn ghost sm" onclick="exportCSV()" data-i="export"></button>
+    </div>
+    <div id="attcard"></div>
+    <div id="out"></div>
+    <h4 data-i="recent"></h4>
+    <div class="t"><table id="log"></table></div>
+  </section>
 </div>
-
-<div id="ver" class="vr"></div>
 <div id="pm" class="md" hidden><div class="mb pmb">
-  <button class="btn ghost pmx" style="border:0; font-size:22px;" onclick="$('pm').hidden=true" title="Close">✕</button>
+  <button class="ib pmx" onclick="$('pm').hidden=true" title="Close">✕</button>
   <div id="pm_in"></div>
 </div></div>
 <div id="lb" class="md" hidden onclick="this.hidden=true"><figure><img id="lbi" alt=""><figcaption id="lbc"></figcaption></figure></div>
 <div id="toast" hidden></div>
-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
-let SHARE_KEY = null, URL_CLS = null;
-let D, CH=[], TT;
+let U,P,D,CH=[],TT,EXP=[],EID;
+const VER='21';
+let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
+const TK=['mutalia','hazri','madaniPhool'];
 const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans 3','Noto Naskh Arabic',sans-serif";
 const CLR={ok:'#1f8a63',mid:'#c98a1b',low:'#b5453a'};
-
-// 👇 SPECIFIC STUDENTS CLASS FIX 👇
-const specialData = [
-    { roll: "73872", name: "نوشاد احمد" },
-    { roll: "73699", name: "غلام رسول" },
-    { roll: "78664", name: "ریاض خان" },
-    { roll: "74286", name: "عارف" },
-    { roll: "74522", name: "محمد ثاقب" }
-];
-function applyClassCorrections() {
-    if (!D) return;
-    const targetClass = "تخصص فی الحدیث سال دوم";
-    const isSpecial = (userObj) => {
-        if (!userObj) return false;
-        const uStr = String(userObj.username || '');
-        const nStr = String(userObj.name || '');
-        return specialData.some(d => uStr.includes(d.roll) || nStr.includes(d.name) || uStr.includes(d.name));
-    };
-    if (D.students) D.students.forEach(s => { if (isSpecial(s)) s.class = targetClass; });
-    if (D.entries) D.entries.forEach(e => { if (isSpecial(e)) e.class = targetClass; });
-}
-// 👆 ================================== 👆
-
+const COL=['#0e3b3a','#2f6fa3','#1f8a63','#c98a1b','#8a4f7d','#b5453a','#5d6e6b','#3aa0a0'];
 const T={
-en:{title:'Student Performance Portal',sub:'Specializations Department',print:'Print',month:'Month',cls:'Class',stu:'Student',all_m:'All months',all_c:'All classes',all_s:'All students',
-recent:'Recent Entries',details:'Details',note:'Note',empty:'No records for this selection.',k_stu:'Students',k_ent:'Entries',k_ach:'Average achievement',k_att:'Need attention',
-entries:'Entries',overall:'Overall',target:'Target',avg:'Avg',st_ex:'Excellent',st_ok:'On track',st_low:'Need attention',
-chart_none:'Set monthly targets in the main portal to see percentages.',name:'Name',user_l:'Roll No / User',
-f_deeni12:'12 Deeni Kaam',f_mutalia:'Mutalia (Study)',f_madaniPhool:'Madani Phool',f_hazri:'Attendance',f_qafila:'Madani Qafila',f_test:'Monthly Test Result',f_takhrij:'Takhrij-e-Hadith',f_tahqeeq:'Tahqeeq-e-Hadith',f_fatwe:'Fatawa',f_photo:'Student Photo',
-sc_nt:'No target set',no_nums:'No numbers saved',pf_overall:'Overall (all months)',pf_pick:'Period',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',
-cal_h:'Attendance calendar',cal_my:'My attendance',cal_none:'No attendance recorded for this month.',at_p:'Present',at_l:'Leave',at_a:'Absent',at_rate:'Present rate',at_rec:'Daily attendance',at_none:'No students in this class',at_today:'Today'},
-ur:{title:'طلبہ کارکردگی پورٹل',sub:'شعبہ تخصصات',print:'پرنٹ',month:'ماہ',cls:'جماعت',stu:'طالب علم',all_m:'تمام مہینے',all_c:'تمام جماعتیں',all_s:'تمام طلبہ',
-recent:'حالیہ اندراجات',details:'تفصیل',note:'نوٹ',empty:'اس انتخاب کا کوئی ریکارڈ نہیں۔',k_stu:'طلبہ',k_ent:'اندراجات',k_ach:'اوسط کارکردگی',k_att:'توجہ طلب طلبہ',
-entries:'اندراجات',overall:'مجموعی',target:'ہدف',avg:'اوسط',st_ex:'عمدہ',st_ok:'بہتر',st_low:'توجہ طلب',
-chart_none:'فیصد اور گراف دیکھنے کے لیے مین پورٹل میں ماہانہ ہدف مقرر کریں۔',name:'نام',user_l:'رول نمبر / یوزر',
-f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر',
-sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',pf_overall:'مجموعی (تمام مہینے)',pf_pick:'مدت',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',
-cal_h:'حاضری کا کیلنڈر',cal_my:'میری حاضری',cal_none:'اس ماہ کی کوئی حاضری درج نہیں۔',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_rate:'حاضری کی شرح',at_rec:'روزانہ حاضری',at_none:'اس جماعت میں کوئی طالب علم نہیں',at_today:'آج'}};
-
+en:{title:'Student Performance Portal',sub:'Specializations Department',logout:'Log out',signin:'Sign in',user_l:'Username',pass_l:'Password',
+side_h:"Every student's monthly performance",side_p:'Study, attendance, Madani Phool and class-specific work, all in one place.',
+t_an:'Analysis',t_en:'Enter Performance',t_tg:'Monthly Setup',t_us:'Users',
+month:'Month',cls:'Class',stu:'Student',all_m:'All months',all_c:'All classes',all_s:'All students',export:'Export CSV',
+k_stu:'Students',k_ent:'Entries',k_ach:'Average achievement',k_att:'Need attention',
+name:'Name',entries:'Entries',overall:'Overall',target:'Target',avg:'Avg',st_ex:'Excellent',st_ok:'On track',st_low:'Need attention',
+chart_h:'Achievement against target (%)',chart_none:'Set monthly targets to see percentages, status and achievement charts.',go_setup:'Open Monthly Setup',
+empty:'No records for this selection. Add the first entry in “Enter Performance”.',recent:'Recent Entries',details:'Details',note:'Note',edit:'Edit',del:'Delete',
+e_h:'Enter new performance',save:'Save',add_photo:'Add photo',photo_hint:' — add your photo from “Enter Performance”',
+s_h:'Monthly targets and performance setup',s_note:'Choose a class and month. Percentages are calculated against these targets.',s_mut:'Mutalia target (pages)',s_att:'Attendance target (days)',s_mad:'Madani Phool target',
+s_pick:'Which performance is taken this month',s_pick_n:'Untick any performance you will not take this month. Tick it again next month when needed. Saved entries are never deleted.',s_save:'Save setup',
+u_h:'Add new user',role:'Role',u_add:'Add user',u_all:'All users',u_tot:'Total',u_nolist:'Deploy the new Code.gs to see the list of users',
+r_admin:'Admin',r_teacher:'Teacher',r_student:'Student',m_save:'Save changes',m_cancel:'Cancel',
+ok_perf:'Performance saved',ok_setup:'Setup saved',ok_photo:'Photo saved',bad_photo:'This image could not be opened. Choose a JPG or PNG',ok_user:'User added',ok_upd:'Entry updated',ok_del:'Entry deleted',
+sel_one:'Select at least one performance',confirm_del:'Are you sure you want to delete this entry?',
+no_resp:'No response from the server. Did you paste the new Code.gs, run setup and deploy a New version?',not_dep:'The new version of Code.gs is not deployed',
+f_deeni12:'12 Deeni Kaam',f_mutalia:'Mutalia (Study)',f_madaniPhool:'Madani Phool',f_hazri:'Attendance',f_qafila:'Madani Qafila',f_test:'Monthly Test Result',f_takhrij:'Takhrij-e-Hadith',f_tahqeeq:'Tahqeeq-e-Hadith',f_fatwe:'Fatawa',f_photo:'Student Photo'},
+ur:{title:'طلبہ کارکردگی پورٹل',sub:'شعبہ تخصصات',logout:'لاگ آؤٹ',signin:'لاگ اِن',user_l:'یوزر نیم',pass_l:'پاس ورڈ',
+side_h:'ہر طالب علم کی ماہانہ کارکردگی',side_p:'مطالعہ، حاضری، مدنی پھول اور جماعت کے مطابق باقی کام، ایک ہی جگہ۔',
+t_an:'تجزیہ',t_en:'کارکردگی درج کریں',t_tg:'ماہانہ ترتیب',t_us:'یوزرز',
+month:'ماہ',cls:'جماعت',stu:'طالب علم',all_m:'تمام مہینے',all_c:'تمام جماعتیں',all_s:'تمام طلبہ',export:'CSV ڈاؤنلوڈ کریں',
+k_stu:'طلبہ',k_ent:'اندراجات',k_ach:'اوسط کارکردگی',k_att:'توجہ طلب طلبہ',
+name:'نام',entries:'اندراجات',overall:'مجموعی',target:'ہدف',avg:'اوسط',st_ex:'عمدہ',st_ok:'بہتر',st_low:'توجہ طلب',
+chart_h:'ہدف کے مقابلے میں کارکردگی (%)',chart_none:'فیصد، حیثیت اور گراف دیکھنے کے لیے ماہانہ ہدف مقرر کریں۔',go_setup:'ماہانہ ترتیب کھولیں',
+empty:'اس انتخاب کا کوئی ریکارڈ نہیں۔ «کارکردگی درج کریں» میں پہلی اندراج کریں۔',recent:'حالیہ اندراجات',details:'تفصیل',note:'نوٹ',edit:'تبدیل کریں',del:'حذف کریں',
+e_h:'نئی کارکردگی درج کریں',save:'محفوظ کریں',add_photo:'تصویر لگائیں',photo_hint:' — «کارکردگی درج کریں» میں اپنی تصویر لگائیں',
+s_h:'ماہانہ ہدف اور کارکردگی کی ترتیب',s_note:'جماعت اور ماہ منتخب کریں۔ ہدف کے مطابق فیصد نکلے گا۔',s_mut:'مطالعہ ہدف (صفحات)',s_att:'حاضری ہدف (دن)',s_mad:'مدنی پھول ہدف',
+s_pick:'اس ماہ کون سی کارکردگی لینی ہے',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں۔ آئندہ ماہ لینی ہو تو نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',s_save:'ترتیب محفوظ کریں',
+u_h:'نیا یوزر شامل کریں',role:'کردار',u_add:'یوزر شامل کریں',u_all:'تمام یوزرز',u_tot:'کل',u_nolist:'یوزرز کی فہرست کے لیے نیا Code.gs لگا کر Deploy کریں',
+r_admin:'منتظم',r_teacher:'استاد',r_student:'طالب علم',m_save:'تبدیلی محفوظ کریں',m_cancel:'منسوخ کریں',
+ok_perf:'کارکردگی محفوظ ہو گئی',ok_setup:'ترتیب محفوظ ہو گئی',ok_photo:'تصویر محفوظ ہو گئی',bad_photo:'یہ تصویر کھل نہیں سکی، JPG یا PNG چنیں',ok_user:'یوزر شامل ہو گیا',ok_upd:'اندراج درست ہو گئی',ok_del:'اندراج حذف ہو گئی',
+sel_one:'کم از کم ایک کارکردگی منتخب کریں',confirm_del:'کیا آپ واقعی یہ اندراج حذف کرنا چاہتے ہیں؟',
+no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code.gs لگا کر setup چلایا اور New version Deploy کیا ہے؟',not_dep:'Code.gs کا نیا ورژن Deploy نہیں ہوا',
+f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
+Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
+Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
+Object.assign(T.en,{sr_l:'Student report',sr_ph:'Select a student…',pf_overall:'Overall (all months)',cal_h:'Attendance calendar',cal_my:'My attendance',cal_none:'No attendance recorded for this month.',pf_pick:'Period',at_today:'Today',at_clear:'Clear all',at_search:'Search student',at_marked:'Marked',at_card_h:'Attendance',at_not_yet:'Attendance has not been marked for this date.',at_last:'Show last recorded day',at_rate:'Present rate',at_auto:'Attendance is counted automatically from the daily attendance, so it is not asked here.',t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
+Object.assign(T.ur,{sr_l:'طالب علم کی رپورٹ',sr_ph:'طالب علم منتخب کریں…',pf_overall:'مجموعی (تمام مہینے)',cal_h:'حاضری کا کیلنڈر',cal_my:'میری حاضری',cal_none:'اس ماہ کی کوئی حاضری درج نہیں۔',pf_pick:'مدت',at_today:'آج',at_clear:'سب صاف کریں',at_search:'طالب علم تلاش کریں',at_marked:'نشان لگے',at_card_h:'حاضری',at_not_yet:'اس تاریخ کی حاضری ابھی نہیں لگی۔',at_last:'آخری درج دن دکھائیں',at_rate:'حاضری کی شرح',at_auto:'حاضری روزانہ حاضری سے خود شمار ہوتی ہے، اس لیے یہاں نہیں پوچھی جاتی۔',t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+const MSG={'آپ اپنا اکاؤنٹ خود حذف نہیں کر سکتے':'You cannot delete your own account','یوزر نہیں ملا':'User not found','اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے':'This student already has an entry for this month. The admin or teacher can edit it.','یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
@@ -242,7 +283,7 @@ const mon=e=>String(e.date).slice(0,7);
 const fk=f=>D.keys.filter(k=>k!='photo'&&k in f);
 const V=e=>{const o={};['mutalia','test','madaniPhool','fatwe'].forEach(k=>{if(e[k]!==''&&e[k]!=null)o[k]=+e[k]});
   try{Object.assign(o,JSON.parse(e.data||'{}'))}catch(_){}return o;};
-const TK=['mutalia','hazri','madaniPhool'];
+const num=s=>{const x=String(s??'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٫,]/g,'.').trim();return x===''?NaN:+x;};
 const tjo=r=>{let o={};try{o=JSON.parse(r.tjson||'{}')}catch(_){}TK.forEach(k=>{if(o[k]===undefined&&+r[k]>0)o[k]=+r[k]});return o;};
 const trow=(cl,m)=>D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);
 const tgt=(cl,key,ms)=>{const v=ms.map(m=>{const r=trow(cl,m);return r?(+tjo(r)[key]||0):0});
@@ -253,101 +294,49 @@ const HIGH=85,LOW=60;
 const lv=p=>p>=HIGH?'ok':p>=LOW?'mid':'low';
 const stl=l=>t({ok:'st_ex',mid:'st_ok',low:'st_low'}[l]);
 const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
-
 function toast(m,bad){const x=$('toast');x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,2800);}
-function setLang(l){
-  LG=l;try{localStorage.setItem('lg',l)}catch(e){}
-  document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
-  document.title=t('title');$('lgb').textContent=l=='en'?'اردو':'English';
-  document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i));
-  if(D) fill(); else init();
-}
-
-// 👇 MAIN INITIALIZATION (UPDATED) 👇
-async function init() {
-    const params = new URLSearchParams(window.location.search);
-    SHARE_KEY = params.get('k');
-    URL_CLS = params.get('cls');
-
-    if (!SHARE_KEY) {
-        $('err').hidden = false;
-        $('err').textContent = 'No share key found in the URL. Please use the complete link provided by the admin.';
-        return;
-    }
-
-    try {
-        // Use standard 'list' action but pass 'k' for authentication
-        const res = await fetch(API, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'list', k: SHARE_KEY })
-        });
-        const r = await res.json();
-        
-        if (!r.ok) {
-            $('err').hidden = false;
-            // If backend says invalid user, it means Code.gs is not updated for sharing
-            if(r.msg === 'یوزر نیم یا پاس ورڈ غلط ہے' || r.msg === 'Incorrect username or password') {
-                $('err').innerHTML = `
-                    <div style="font-size:22px; margin-bottom:10px;">Dashboard Access Error</div>
-                    <div style="font-size:16px; font-weight:normal; color:var(--ink);">
-                        Aapke Google Apps Script (Code.gs) mein public sharing ka feature nahi hai, isliye ye error aa raha hai.<br><br>
-                        <b>Solution:</b> Apne Code.gs ko update karein taake wo <code>k</code> (Share Key) ko pehchaan sake. Agar aapne Code.gs pehle update kiya tha, toh Admin panel se <b>"Create new link"</b> par click karke naya link banayein.
-                    </div>`;
-            } else {
-                $('err').textContent = r.msg || 'Invalid or expired link. Please request a new link from the Admin.';
-            }
-            return;
-        }
-
-        D = r;
-        $('app').hidden = false;
-        applyClassCorrections();
-        
-        $('ver').textContent = 'Read-Only View · Shared Dashboard';
-        
-        fill();
-        
-    } catch (e) {
-        $('err').hidden = false;
-        $('err').textContent = 'Error connecting to the server. Please try again later.';
-    }
-}
-// 👆 ================================== 👆
-
-function fill(){
-  const sv=$('sf') ? $('sf').value : '';
-  const cv=$('cf') ? $('cf').value : '';
-  const mv=$('mf') ? $('mf').value : '';
-
-  let cl=[...new Set(D.students.map(s=>s.class))];
-  if (URL_CLS) cl = cl.filter(c => c === URL_CLS);
-
-  if($('cf')) {
-      $('cf').innerHTML=`<option value="">${t('all_c')}</option>`+cl.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
-      if(URL_CLS && cl.includes(URL_CLS)) $('cf').value = URL_CLS;
-      else if(cl.includes(cv)) $('cf').value=cv;
-  }
-
-  const ms=[...new Set(D.entries.map(mon))].sort().reverse();
-  if($('mf')) {
-      $('mf').innerHTML=`<option value="">${t('all_m')}</option>`+ms.map(m=>`<option>${m}</option>`).join('');
-      $('mf').value = (ms.includes(mv)?mv:(ms[0]||''));
-  }
-  
-  fsf();
-  render();
-}
-
 function fsf(){
-  if(!$('sf')) return;
-  const c=$('cf').value,v=$('sf').value;
-  const ss=D.students.filter(s=>(!c||s.class==c) && (!URL_CLS || s.class===URL_CLS));
+  const c=$('cf').value,v=$('sf').value,ss=D.students.filter(s=>!c||s.class==c);
   $('sf').innerHTML=`<option value="">${t('all_s')}</option>`+ss.map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('');
   if(ss.some(s=>s.username==v))$('sf').value=v;
+  $('sf').parentElement.hidden=D.me.role=='student';
 }
-
+function exportCSV(){
+  if(!EXP.length)return;
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+EXP.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv;charset=utf-8'}));
+  a.download='performance-'+($('mf').value||'all')+'.csv';a.click();
+}
 function attOf(u,m){const o={p:0,l:0,a:0,t:0};(D.attsum||[]).forEach(r=>{if(String(r.username)==String(u)&&(!m||r.month==m)){o.p+=r.p;o.l+=r.l;o.a+=r.a;}});o.t=o.p+o.l+o.a;o.pc=o.t?Math.round(o.p/o.t*100):null;return o;}
 const attTxt=o=>`${t('at_p')} ${o.p} · ${t('at_l')} ${o.l} · ${t('at_a')} ${o.a}`;
+let ADC={},ADT={date:null},ACM={},PP='',PCH=null;
+const lastAttMonth=u=>((D.attsum||[]).filter(r=>String(r.username)==String(u)).map(r=>r.month).sort().pop())||'';
+async function monthDays(u,mm){const k=u+'|'+mm;if(!ACM[k])ACM[k]=await fetchMonth(u,mm);return ACM[k];}
+async function drawCal(box,u,mm){
+  const el=$(box);if(!el)return;
+  let days={};try{days=await monthDays(u,mm);}catch(e){}
+  const [Y,Mo]=mm.split('-').map(Number),n=new Date(Y,Mo,0).getDate(),off=(new Date(Y,Mo-1,1).getDay()+6)%7,loc=LG=='ur'?'ur-PK':'en-GB';
+  const wd=[0,1,2,3,4,5,6].map(i=>new Date(2024,0,1+i).toLocaleDateString(loc,{weekday:'short'}));
+  let P=0,Lc=0,A=0;Object.values(days).forEach(x=>{if(x=='P')P++;else if(x=='L')Lc++;else if(x=='A')A++;});
+  const mk=P+Lc+A,rate=mk?Math.round(P/mk*100):null;
+  let cells='';for(let i=0;i<off;i++)cells+='<div class="d e"></div>';
+  for(let d=1;d<=n;d++){const key=mm+'-'+String(d).padStart(2,'0'),st=days[key];cells+=`<div class="d ${st?st.toLowerCase():''}" title="${key}${st?' — '+t('at_'+st.toLowerCase()):''}">${d}</div>`;}
+  const title=new Date(Y,Mo-1,1).toLocaleDateString(loc,{month:'long',year:'numeric'});
+  el.innerHTML=`<div class="cal" data-b="${box}" data-u="${esc(u)}" data-m="${mm}"><div class="hd"><h3>${box=='mycal'?t('cal_my'):t('cal_h')} — ${esc(title)}</h3><div class="dstep" dir="ltr"><button class="btn ghost sm" onclick="calGo(this,-1)">‹</button><button class="btn ghost sm" onclick="calGo(this,1)">›</button></div></div>`+
+    (mk?`<div class="cleg"><span class="bd ok">${t('at_p')} ${P}</span><span class="bd mid">${t('at_l')} ${Lc}</span><span class="bd low">${t('at_a')} ${A}</span><span class="chip">${t('at_rate')} ${rate}%</span></div>`:`<p class="note">${t('cal_none')}</p>`)+
+    `<div class="cgrid" dir="ltr">${wd.map(w=>`<div class="w">${esc(w)}</div>`).join('')}${cells}</div></div>`;
+}
+function calGo(btn,n){const c=btn.closest('.cal'),[Y,M]=c.dataset.m.split('-').map(Number),d=new Date(Y,M-1+n,1);drawCal(c.dataset.b,c.dataset.u,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
+function srFill(){
+  const sel=$('sr');if(!sel)return;
+  sel.parentElement.hidden=D.me.role=='student';
+  const by={};D.students.forEach(s=>{(by[s.class]??=[]).push(s);});
+  sel.innerHTML=`<option value="">${t('sr_ph')}</option>`+Object.keys(by).sort().map(c=>`<optgroup label="${esc(c)}">`+by[c].slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('')+'</optgroup>').join('');
+}
+function srOpen(sel){const u=sel.value;sel.value='';if(u)openProfile(u,'');}
+const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+// the monthly "Attendance" performance is the number of present days in the daily attendance (typed entries are only a fallback)
 function withAtt(s,ms,u,list){
   let tot=0,any=false;
   ms.forEach(mm=>{const o=attOf(u,mm);
@@ -355,6 +344,37 @@ function withAtt(s,ms,u,list){
     else list.filter(e=>mon(e)==mm).forEach(e=>{const hv=V(e).hazri;if(hv!==undefined){tot+=hv;any=true;}});});
   if(any){s.sum.hazri=tot;s.cnt.hazri=1;s.none=false;}
 }
+async function attCard(){
+  if(D.me&&D.me.role=='student'){
+    if($('attcard'))$('attcard').innerHTML='';
+    const s=D.students[0];
+    if(s&&$('mycal'))drawCal('mycal',s.username,$('mf').value||lastAttMonth(s.username)||todayStr().slice(0,7));
+    return;
+  }
+  if(!$('attcard'))return;
+  const d=ADT.date||(D.attlast&&D.attlast.date)||todayStr();ADT.date=d;
+  if(!ADC[d]){
+    if(D.attlast&&D.attlast.date==d)ADC[d]=D.attlast.marks;
+    else{try{ADC[d]=await fetchDay(d);}catch(e){ADC[d]={};}}
+  }
+  drawAttCard(d,ADC[d]);
+}
+function drawAttCard(d,marks){
+  const c=$('cf').value,sv=$('sf').value,q=($('q')&&$('q').value||'').trim().toLowerCase();
+  const L2=D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||String(s.name).toLowerCase().includes(q)));
+  const ab=[],lvv=[];let P=0,Lc=0,A=0;
+  L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
+  const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
+  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}</span>`;
+  let body;
+  if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
+  else if(!mk)body=`<p class="note">${t('at_not_yet')}</p>`+(D.attlast&&D.attlast.date!=d?`<button class="btn ghost sm" onclick="attPick('${D.attlast.date}')">${t('at_last')} (${D.attlast.date})</button>`:'');
+  else body=`<div class="atk"><div class="at-t ok"><small>${t('at_p')}</small><b>${P}</b></div><div class="at-t mid"><small>${t('at_l')}</small><b>${Lc}</b></div><div class="at-t low"><small>${t('at_a')}</small><b>${A}</b></div><div class="at-t"><small>${t('at_unm')}</small><b>${un}</b></div><div class="at-t ${lv(rate)}"><small>${t('at_rate')}</small><b>${rate}%</b></div></div>`+
+    (ab.length?`<div class="note" style="margin-top:8px">${t('at_a')}:</div><div class="ckg">${ab.map(s=>chip(s,'a')).join('')}</div>`:'')+
+    (lvv.length?`<div class="note" style="margin-top:8px">${t('at_l')}:</div><div class="ckg">${lvv.map(s=>chip(s,'l')).join('')}</div>`:'');
+  $('attcard').innerHTML=`<div class="attcard"><div class="hd"><h3>${t('at_card_h')} — ${esc(dayLabel(d))}${d==todayStr()?` <span class="chip">${t('at_today')}</span>`:''}</h3><div class="dstep" dir="ltr"><input type="date" value="${d}" max="${todayStr()}" onchange="attPick(this.value)"><button class="btn ghost sm" onclick="attPick(todayStr())">${t('at_today')}</button></div></div>${body}</div>`;
+}
+function attPick(d){if(!d)return;ADT.date=d;attCard();}
 const vl=(s,key)=>isAvg(key)?(s.sum[key]||0)/(s.cnt[key]||1):(s.sum[key]||0);
 function agg(list){const s={n:list.length,sum:{},cnt:{}};list.forEach(e=>{const v=V(e);for(const k in v){s.sum[k]=(s.sum[k]||0)+v[k];s.cnt[k]=(s.cnt[k]||0)+1;}});s.none=!Object.keys(s.sum).length;return s;}
 function ovOf(s,cls,ms){
@@ -366,7 +386,6 @@ function ovOf(s,cls,ms){
 const hl=axis=>({id:'h100'+axis,afterDraw(ch){const sc=ch.scales[axis];if(!sc)return;const px=sc.getPixelForValue(100),a=ch.chartArea,g=ch.ctx;
   g.save();g.strokeStyle='#14201f66';g.setLineDash([5,4]);g.beginPath();if(axis=='x'){g.moveTo(px,a.top);g.lineTo(px,a.bottom);}else{g.moveTo(a.left,px);g.lineTo(a.right,px);}g.stroke();g.restore();}});
 const ovBadge=s=>s.ov==null?`<span class="bd mid">${t('no_nums')}</span>`:`<span class="bd ${lv(s.ov)}">${stl(lv(s.ov))}</span>`;
-
 function scorecard(s,ks,Tg,at){
   const l=s.ov==null?'':lv(s.ov);
   const ac=at&&at.t?`<div class="sc ${lv(at.pc)}"><small>${t('at_rec')}</small><b>${at.pc}%</b><div class="bar"><i class="${lv(at.pc)}" style="width:${Math.min(at.pc,100)}%"></i></div><div class="scf"><span class="note" style="margin:0">${attTxt(at)}</span></div></div>`:'';
@@ -379,7 +398,6 @@ function scorecard(s,ks,Tg,at){
     return `<div class="sc ${q}">${lb}<b><bdi dir="ltr">${n}<span class="of"> / ${+Tg[x].toFixed(1)}</span></bdi></b><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><div class="scf"><span class="pc ${q}">${p}%</span><span class="bd ${q}">${stl(q)}</span></div></div>`;
   }).join('')+ac+'</div>';
 }
-
 function ptable(A,ks,Tg,tf,m){
   const hasAt=A.some(s=>attOf(s.u,m).t>0);
   const cell=(s,x)=>{
@@ -395,17 +413,15 @@ function ptable(A,ks,Tg,tf,m){
     A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+
       (tf.length?(s.ov==null?`<td>${ovBadge(s)}</td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b>${ovBadge(s)}</div></td>`):'')+'</tr>').join('')+'</tbody></table></div>';
 }
-
 let PU=null;
 function openPhoto(u){
   const s=D.students.find(x=>String(x.username)==String(u));
   if(!D.photos[u])return toast(t('pf_nophoto'),1);
   $('lbi').src=D.photos[u];$('lbc').textContent=s?s.name:'';$('lb').hidden=false;
 }
-
 function openProfile(u,per){
-  const s=D.students.find(x=>String(x.username)==String(u));if(!s)return;PU=s.username;per=per===undefined?'':per;
-  const m=per,all=D.entries.filter(e=>String(e.username)==String(u)),list=all.filter(e=>!m||mon(e)==m);
+  const s=D.students.find(x=>String(x.username)==String(u));if(!s)return;PU=s.username;PP=per===undefined?'':per;
+  const m=PP,all=D.entries.filter(e=>String(e.username)==String(u)),list=all.filter(e=>!m||mon(e)==m);
   const ms=m?[m]:[...new Set(list.map(mon))].sort(),a=agg(list);withAtt(a,ms,s.username,list);a.ov=ovOf(a,s.class,ms);
   const st=new Set();ms.forEach(x=>fset(s.class,x).forEach(y=>st.add(y)));list.forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
   const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(s.class,x,ms)});
@@ -414,71 +430,44 @@ function openProfile(u,per){
     const det=ordk(new Set(Object.keys(a2.sum))).map(k=>`${esc(L(k))}: <b>${+vl(a2,k).toFixed(1)}</b>`).join(LG=='ur'?'، ':', ');
     return `<tr><td class="l" style="white-space:nowrap">${esc(mm)}</td><td>${o2==null?'—':'<b class="pc '+lv(o2)+'">'+o2+'%</b>'}</td><td>${ovBadge({ov:o2})}</td><td class="l">${det||'—'}</td><td class="l">${(()=>{const o=attOf(s.username,mm);return o.t?o.pc+'% · '+attTxt(o):'—';})()}</td></tr>`;}).join('');
   const months=[...new Set([...all.map(mon),...(D.attsum||[]).filter(r=>String(r.username)==String(u)).map(r=>r.month)])].sort().reverse();
-  const photo=D.photos[s.username],calM=m||(hs.length?hs[hs.length-1].mm:todayStr().slice(0,7));
+  const photo=D.photos[s.username],calM=m||lastAttMonth(s.username)||(hs.length?hs[hs.length-1].mm:todayStr().slice(0,7));
   const trend=hs.filter(x=>x.o2!=null);
   $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,s.name,'xxl')}</span>`+
     `<div><h2>${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext">${esc(s.class)} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div>`+
     `<div class="row" style="margin-bottom:6px">`+
+    `<button class="btn sm" onclick="goStudent()">${t('pf_open')}</button>`+
     `<label class="f" style="flex-direction:row;align-items:center;gap:8px"><span>${t('pf_pick')}</span><select class="pps" onchange="openProfile(PU,this.value)"><option value="">${t('pf_overall')}</option>${months.map(x=>`<option ${x==m?'selected':''}>${x}</option>`).join('')}</select></label></div>`+
     `<h4>${t('pf_period')} — ${esc(m||t('pf_overall'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+
     (trend.length>1?`<div class="cbox" style="margin-top:14px"><h5>${t('ch_trend')}</h5><div style="height:210px"><canvas id="pch"></canvas></div></div>`:'')+
     `<div id="pcal" style="margin-top:14px"></div>`+
     (hist?`<h4>${t('pf_hist')}</h4><div class="t"><table><thead><tr><th class="l">${t('month')}</th><th>${t('overall')}</th><th></th><th class="l">${t('details')}</th><th class="l">${t('at_rec')}</th></tr></thead><tbody>${hist}</tbody></table></div>`:'');
   $('pm').hidden=false;
-  
+  if(PCH){PCH.destroy();PCH=null;}
   if(trend.length>1&&typeof Chart!='undefined'){
-    new Chart($('pch'),{type:'line',data:{labels:trend.map(x=>x.mm),datasets:[{data:trend.map(x=>x.o2),borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a'}]},
+    PCH=new Chart($('pch'),{type:'line',data:{labels:trend.map(x=>x.mm),datasets:[{data:trend.map(x=>x.o2),borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a'}]},
       options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]});
   }
-  
   drawCal('pcal',s.username,calM);
 }
-
-const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
-async function fetchMonth(u,mm){const r=await call({action:'attMonth',student:u,month:mm});if(!r.ok)throw new Error(r.msg);return r.days||{};}
-async function call(o){
-  try {
-      const r = await (await fetch(API, {method:'POST', body:JSON.stringify({k:SHARE_KEY, ...o})})).json();
-      return r;
-  } catch(e){ return {ok:false, msg:'Error'}; }
+function goStudent(){
+  const s=D.students.find(x=>String(x.username)==String(PU));if(!s)return;
+  $('pm').hidden=true;$('cf').value=s.class;fsf();$('sf').value=s.username;render();show('an');window.scrollTo({top:0,behavior:'smooth'});
 }
-async function drawCal(box,u,mm){
-  const el=$(box);if(!el)return;
-  let days={};try{days=await fetchMonth(u,mm);}catch(e){}
-  const [Y,Mo]=mm.split('-').map(Number),n=new Date(Y,Mo,0).getDate(),off=(new Date(Y,Mo-1,1).getDay()+6)%7,loc=LG=='ur'?'ur-PK':'en-GB';
-  const wd=[0,1,2,3,4,5,6].map(i=>new Date(2024,0,1+i).toLocaleDateString(loc,{weekday:'short'}));
-  let P=0,Lc=0,A=0;Object.values(days).forEach(x=>{if(x=='P')P++;else if(x=='L')Lc++;else if(x=='A')A++;});
-  const mk=P+Lc+A,rate=mk?Math.round(P/mk*100):null;
-  let cells='';for(let i=0;i<off;i++)cells+='<div class="d e"></div>';
-  for(let d=1;d<=n;d++){const key=mm+'-'+String(d).padStart(2,'0'),st=days[key];cells+=`<div class="d ${st?st.toLowerCase():''}" title="${key}${st?' — '+t('at_'+st.toLowerCase()):''}">${d}</div>`;}
-  const title=new Date(Y,Mo-1,1).toLocaleDateString(loc,{month:'long',year:'numeric'});
-  el.innerHTML=`<div class="cal" data-b="${box}" data-u="${esc(u)}" data-m="${mm}"><div class="hd"><h3>${box=='mycal'?t('cal_my'):t('cal_h')} — ${esc(title)}</h3><div class="dstep" dir="ltr"><button class="btn ghost sm" onclick="calGo(this,-1)">‹</button><button class="btn ghost sm" onclick="calGo(this,1)">›</button></div></div>`+
-    (mk?`<div class="cleg"><span class="bd ok">${t('at_p')} ${P}</span><span class="bd mid">${t('at_l')} ${Lc}</span><span class="bd low">${t('at_a')} ${A}</span><span class="chip">${t('at_rate')} ${rate}%</span></div>`:`<p class="note">${t('cal_none')}</p>`)+
-    `<div class="cgrid" dir="ltr">${wd.map(w=>`<div class="w">${esc(w)}</div>`).join('')}${cells}</div></div>`;
-}
-function calGo(btn,n){const c=btn.closest('.cal'),[Y,M]=c.dataset.m.split('-').map(Number),d=new Date(Y,M-1+n,1);drawCal(c.dataset.b,c.dataset.u,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
-
 function render(){
-  CH.forEach(c=>c.destroy());CH=[];
+  CH.forEach(c=>c.destroy());CH=[];srFill();
   Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b';
   const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
-  const q=($('q')&&$('q').value||'').trim().toLowerCase();
+  const q=($('q').value||'').trim().toLowerCase();
   const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
   const E=base.filter(e=>!m||mon(e)==m);
-  
+  const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
+  const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
+  $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
+  if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
   const by={};
-  D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)) && (!URL_CLS || s.class === URL_CLS))
-    .forEach(s => {
-        if (!by[s.class]) by[s.class] = {};
-        by[s.class][s.username] = {u: s.username, name: s.name, list: []};
-    });
-  E.forEach(e => {
-      if (!by[e.class]) by[e.class] = {};
-      if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
-      by[e.class][e.username].list.push(e);
-  });
-
+  E.forEach(e=>{((by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
   const allk=D.keys.filter(k=>k!='photo');
+  EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
   let h='';const items=[],ALL=[];
   Object.keys(by).forEach((k,i)=>{
     const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
@@ -488,7 +477,7 @@ function render(){
     E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
     const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
     const tf=ks.filter(x=>Tg[x]>0);
-    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);});
+    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
     A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
     const live=A.filter(s=>!s.none);
     const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
@@ -503,6 +492,7 @@ function render(){
     if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
     if(cg)h+=`<div class="cg">${cg}</div>`;
     if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span></div>`;
+    if(A.some(s=>s.none))h+=`<div class="hint"><span>${t('empty_hint')}</span></div>`;
     h+='</section>';
     items.push({i,A,tf,Tg,bm,tr});
   });
@@ -512,7 +502,6 @@ function render(){
     `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
     `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
   $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
-  
   const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
   const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
     options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
@@ -525,15 +514,53 @@ function render(){
     if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},
       options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
   });
-  
-  $('log').innerHTML=`<thead><tr><th>${t('cls')}</th><th>${t('user_l')}</th><th class="l">${t('name')}</th></tr></thead><tbody>`+
-    E.slice(-60).reverse().map(e=>`<tr>
-      <td>${esc(e.class)}</td>
-      <td>${esc(e.username)}</td>
-      <td class="l">${esc(e.name)}</td>
-    </tr>`).join('')+'</tbody>';
+  attCard();
+  $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th></tr></thead><tbody>`+
+    E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
+      Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td></tr>`).join('')+'</tbody>';
 }
 
-setLang(LG);
+Object.assign(T.en,{dash_title:'Live Dashboard',updated:'Updated',refresh:'Refresh',search:'Search student',bad_link:'This link is not valid or has been turned off. Please ask the department for a new link.',load_err:'Could not load the data. Please check your internet connection and try again.',loading:'Loading…'});
+Object.assign(T.ur,{dash_title:'لائیو ڈیش بورڈ',updated:'آخری تازہ کاری',refresh:'تازہ کریں',search:'طالب علم تلاش کریں',bad_link:'یہ لنک درست نہیں یا بند کر دیا گیا ہے۔ براہِ کرم شعبے سے نیا لنک لے لیں۔',load_err:'ڈیٹا نہیں آ سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔',loading:'لوڈ ہو رہا ہے…'});
+const KEY=new URLSearchParams(location.search).get('k')||'';
+const canE=()=>false;
+function show(){}
+function setVer(){}
+const dayLabel=d=>d?new Date(d+'T00:00:00').toLocaleDateString(LG=='ur'?'ur-PK':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'';
+async function fetchMonth(u,mm){const r=await(await fetch(API,{method:'POST',body:JSON.stringify({action:'public',k:KEY,stu:u,month:mm})})).json();if(!r.ok)throw new Error(r.msg);return r.days||{};}
+async function fetchDay(d){const r=await(await fetch(API,{method:'POST',body:JSON.stringify({action:'public',k:KEY,day:d})})).json();if(!r.ok)throw new Error(r.msg);return r.attday||{};}
+function setLang(l){
+  LG=l;try{localStorage.setItem('lg',l)}catch(e){}
+  document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
+  document.title=t('dash_title');$('lgb').textContent=l=='en'?'اردو':'English';
+  document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i));
+  $('q').placeholder=t('search');
+  if(D)fill();
+}
+let FIRST=true;
+function fill(){
+  const cv=$('cf').value,mv=$('mf').value;
+  const cl=[...new Set(D.students.map(s=>s.class))];
+  $('cf').innerHTML=`<option value="">${t('all_c')}</option>`+cl.map(c=>`<option>${esc(c)}</option>`).join('');
+  $('cf').value=cv;
+  const ms=[...new Set(D.entries.map(mon))].sort().reverse();
+  $('mf').innerHTML=`<option value="">${t('all_m')}</option>`+ms.map(m=>`<option>${m}</option>`).join('');
+  $('mf').value=FIRST?(ms[0]||''):(mv===''||ms.includes(mv)?mv:(ms[0]||''));
+  FIRST=false;
+  fsf();render();
+}
+function msg(k,bad){$('app').hidden=true;$('err').hidden=false;$('errm').textContent=t(k);$('errm').style.color=bad?'var(--low)':'';}
+async function load(){
+  if(!KEY)return msg('bad_link',1);
+  let r;
+  try{r=await(await fetch(API,{method:'POST',body:JSON.stringify({action:'public',k:KEY})})).json();}
+  catch(e){return D?toast(t('load_err'),1):msg('load_err',1);}
+  if(!r.ok)return msg(r.msg=='BAD_KEY'?'bad_link':'load_err',1);
+  r.me={role:'viewer',name:'',class:''};D=r;ADC={};ACM={};ADT.date=null;
+  $('err').hidden=true;$('app').hidden=false;
+  fill();$('upd').textContent=t('updated')+' '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(()=>{if(document.visibilityState=='visible'&&D)load();},60000);
+setLang(LG);load();
 </script>
 </body></html>
