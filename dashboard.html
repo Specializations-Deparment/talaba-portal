@@ -156,7 +156,7 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 </header>
 
 <div class="wrap">
-  <div id="err" class="empty" hidden style="color:var(--low); font-weight:bold; font-size:18px;">Invalid or expired link. Please request a new link from the Admin.</div>
+  <div id="err" class="empty" hidden style="color:var(--low); font-weight:bold; font-size:18px; padding: 50px 20px; text-align: center;"></div>
   
   <div id="app" hidden>
     <section class="panel">
@@ -242,8 +242,8 @@ const mon=e=>String(e.date).slice(0,7);
 const fk=f=>D.keys.filter(k=>k!='photo'&&k in f);
 const V=e=>{const o={};['mutalia','test','madaniPhool','fatwe'].forEach(k=>{if(e[k]!==''&&e[k]!=null)o[k]=+e[k]});
   try{Object.assign(o,JSON.parse(e.data||'{}'))}catch(_){}return o;};
-const tjo=r=>{let o={};try{o=JSON.parse(r.tjson||'{}')}catch(_){}TK.forEach(k=>{if(o[k]===undefined&&+r[k]>0)o[k]=+r[k]});return o;};
 const TK=['mutalia','hazri','madaniPhool'];
+const tjo=r=>{let o={};try{o=JSON.parse(r.tjson||'{}')}catch(_){}TK.forEach(k=>{if(o[k]===undefined&&+r[k]>0)o[k]=+r[k]});return o;};
 const trow=(cl,m)=>D.targets.find(x=>x.class==cl&&String(x.month).slice(0,7)==m);
 const tgt=(cl,key,ms)=>{const v=ms.map(m=>{const r=trow(cl,m);return r?(+tjo(r)[key]||0):0});
   if(isAvg(key)){const nz=v.filter(x=>x>0);return nz.length?nz.reduce((a,b)=>a+b,0)/nz.length:0;}return v.reduce((a,b)=>a+b,0);};
@@ -263,7 +263,7 @@ function setLang(l){
   if(D) fill(); else init();
 }
 
-// Main Initialization
+// 👇 MAIN INITIALIZATION (UPDATED) 👇
 async function init() {
     const params = new URLSearchParams(window.location.search);
     SHARE_KEY = params.get('k');
@@ -271,19 +271,31 @@ async function init() {
 
     if (!SHARE_KEY) {
         $('err').hidden = false;
+        $('err').textContent = 'No share key found in the URL. Please use the complete link provided by the admin.';
         return;
     }
 
     try {
+        // Use standard 'list' action but pass 'k' for authentication
         const res = await fetch(API, {
             method: 'POST',
-            body: JSON.stringify({ action: 'viewShare', k: SHARE_KEY })
+            body: JSON.stringify({ action: 'list', k: SHARE_KEY })
         });
         const r = await res.json();
         
         if (!r.ok) {
             $('err').hidden = false;
-            if(r.msg) $('err').textContent = r.msg;
+            // If backend says invalid user, it means Code.gs is not updated for sharing
+            if(r.msg === 'یوزر نیم یا پاس ورڈ غلط ہے' || r.msg === 'Incorrect username or password') {
+                $('err').innerHTML = `
+                    <div style="font-size:22px; margin-bottom:10px;">Dashboard Access Error</div>
+                    <div style="font-size:16px; font-weight:normal; color:var(--ink);">
+                        Aapke Google Apps Script (Code.gs) mein public sharing ka feature nahi hai, isliye ye error aa raha hai.<br><br>
+                        <b>Solution:</b> Apne Code.gs ko update karein taake wo <code>k</code> (Share Key) ko pehchaan sake. Agar aapne Code.gs pehle update kiya tha, toh Admin panel se <b>"Create new link"</b> par click karke naya link banayein.
+                    </div>`;
+            } else {
+                $('err').textContent = r.msg || 'Invalid or expired link. Please request a new link from the Admin.';
+            }
             return;
         }
 
@@ -300,6 +312,7 @@ async function init() {
         $('err').textContent = 'Error connecting to the server. Please try again later.';
     }
 }
+// 👆 ================================== 👆
 
 function fill(){
   const sv=$('sf') ? $('sf').value : '';
