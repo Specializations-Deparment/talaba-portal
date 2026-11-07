@@ -193,6 +193,27 @@ let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'e
 const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans 3','Noto Naskh Arabic',sans-serif";
 const CLR={ok:'#1f8a63',mid:'#c98a1b',low:'#b5453a'};
 
+// 👇 SIRF IN 5 STUDENTS KI CLASS CHANGE KARNE KA LOGIC 👇
+function fixSpecificClasses() {
+  if (!D) return;
+  const targetUsernames = ["73872", "73699", "78664", "74286", "74522"];
+  const newClass = "تخصص فی الحدیث سال دوم";
+  
+  const applyFix = (arr) => {
+    if (!arr) return;
+    arr.forEach(item => {
+      if (targetUsernames.includes(String(item.username))) {
+        item.class = newClass;
+      }
+    });
+  };
+  
+  applyFix(D.students);
+  applyFix(D.entries);
+  applyFix(D.users);
+}
+// 👆 ================================================= 👆
+
 const T={
 en:{title:'Student Performance Portal',sub:'Specializations Department',print:'Print',month:'Month',cls:'Class',stu:'Student',all_m:'All months',all_c:'All classes',all_s:'All students',
 recent:'Recent Entries',details:'Details',note:'Note',empty:'No records for this selection.',k_stu:'Students',k_ent:'Entries',k_ach:'Average achievement',k_att:'Need attention',
@@ -275,6 +296,7 @@ async function init() {
         }
 
         D = r;
+        fixSpecificClasses(); // 👈 YAHAN CLASS FIX LAGAYA HAI
         $('app').hidden = false;
         $('ver').textContent = 'Read-Only View · Shared Dashboard';
         
@@ -287,6 +309,7 @@ async function init() {
 }
 
 function fill(){
+  fixSpecificClasses();
   const sv=$('sf') ? $('sf').value : '';
   const cv=$('cf') ? $('cf').value : '';
   const mv=$('mf') ? $('mf').value : '';
