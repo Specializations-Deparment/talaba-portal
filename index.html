@@ -335,6 +335,28 @@ const TK=['mutalia','hazri','madaniPhool'];
 const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans 3','Noto Naskh Arabic',sans-serif";
 const CLR={ok:'#1f8a63',mid:'#c98a1b',low:'#b5453a'};
 const COL=['#0e3b3a','#2f6fa3','#1f8a63','#c98a1b','#8a4f7d','#b5453a','#5d6e6b','#3aa0a0'];
+
+// 👇 SIRF IN 5 STUDENTS KI CLASS CHANGE KARNE KA LOGIC 👇
+function fixSpecificClasses() {
+  if (!D) return;
+  const targetUsernames = ["73872", "73699", "78664", "74286", "74522"];
+  const newClass = "تخصص فی الحدیث سال دوم";
+  
+  const applyFix = (arr) => {
+    if (!arr) return;
+    arr.forEach(item => {
+      if (targetUsernames.includes(String(item.username))) {
+        item.class = newClass;
+      }
+    });
+  };
+  
+  applyFix(D.students);
+  applyFix(D.entries);
+  applyFix(D.users);
+}
+// 👆 ================================================= 👆
+
 const T={
 en:{title:'Student Performance Portal',sub:'Specializations Department',logout:'Log out',signin:'Sign in',user_l:'Username',pass_l:'Password',
 side_h:"Every student's monthly performance",side_p:'Study, attendance, Madani Phool and class-specific work, all in one place.',
@@ -424,13 +446,16 @@ async function login(){
   U=$('u').value.trim();P=$('p').value;$('msg').textContent='';
   const r=await call({action:'list'});
   if(!r.ok)return $('msg').textContent=r.msg;
-  D=r;$('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
+  D=r;
+  fixSpecificClasses(); // 👈 YAHAN CLASS FIX LAGAYA HAI
+  $('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
   $('tbU').hidden=D.me.role!='admin';$('tbA').hidden=D.me.role=='student';$('tbT').hidden=D.me.role=='student';
   $('dt').value=$('tm').value=new Date().toISOString().slice(0,7);
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
   fill();
 }
 function fill(){
+  fixSpecificClasses(); // 👈 AGAR DATA UPDATE HO TO BHI FIX RAHE
   setVer();
   const sv=$('st').value,cv=$('cf').value,mv=$('mf').value,tv=$('tc').value;
   $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(s.name)} (${esc(s.class)})</option>`).join('');
@@ -746,7 +771,7 @@ function drawAttCard(d,marks){
   const ab=[],lvv=[];let P=0,Lc=0,A=0;
   L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
   const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
-  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)} <span style="opacity:.7;font-size:12px">(${esc(s.class)})</span></span>`;
+  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}${!c?' <span style="opacity:.7;font-size:12px">('+esc(s.class)+')</span>':''}</span>`;
   let body;
   if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
   else if(!mk)body=`<p class="note">${t('at_not_yet')}</p>`+(D.attlast&&D.attlast.date!=d?`<button class="btn ghost sm" onclick="attPick('${D.attlast.date}')">${t('at_last')} (${D.attlast.date})</button>`:'');
