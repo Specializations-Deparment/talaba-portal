@@ -873,13 +873,11 @@ function render(){
   if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
   
   const by={};
-  // Include ALL students of the class first
   D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)))
     .forEach(s => {
         if (!by[s.class]) by[s.class] = {};
         by[s.class][s.username] = {u: s.username, name: s.name, list: []};
     });
-  // Then add entries
   E.forEach(e => {
       if (!by[e.class]) by[e.class] = {};
       if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
