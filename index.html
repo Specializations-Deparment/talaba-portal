@@ -279,6 +279,9 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <p class="note">Yahan mahine ke hisaab se unki salary calculate hogi. PDF download karne ke liye button dabayein.</p>
     <div class="bar-tools">
       <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
+      <!-- Naye Filters Yahan Add Kiye Gaye Hain -->
+      <label><span>Class</span><select id="salClass" onchange="renderSalary()"><option value="">All Classes</option></select></label>
+      <label><span>Search Student</span><input id="salSearch" oninput="renderSalary()" autocomplete="off" placeholder="Name or Roll No..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:200px"></label>
     </div>
     <div class="t"><table id="salTable"></table></div>
   </section>
@@ -608,21 +611,32 @@ let currentPreviewMonth = null;
 function renderSalary() {
   if(!D || !D.students) return;
   const m = $('salMonth').value || new Date().toISOString().slice(0,7);
+  const selectedClass = $('salClass') ? $('salClass').value : '';
+  const searchQ = $('salSearch') ? $('salSearch').value.trim().toLowerCase() : '';
   
   const [year, month] = m.split('-');
   const totalDaysInMonth = new Date(year, month, 0).getDate();
   
+  // Class Dropdown Populate Karein
+  if($('salClass').options.length <= 1) {
+     const cls = [...new Set(D.students.filter(s=>s.basicSalary).map(s=>s.class))].sort();
+     $('salClass').innerHTML = `<option value="">All Classes</option>` + cls.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  }
+
   let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Attendance</th><th>Action</th></tr></thead><tbody>`;
   
   let found = false;
   D.students.forEach(s => {
     if(s.basicSalary) {
+      // Filter Logic
+      if(selectedClass && s.class !== selectedClass) return;
+      if(searchQ && !String(s.name).toLowerCase().includes(searchQ) && !String(s.username).toLowerCase().includes(searchQ)) return;
+
       found = true;
       const att = (D.attendanceRaw || []).filter(a => String(a.username) === String(s.username) && String(a.date).slice(0,7) === m);
       const markedDays = att.length;
       
       let attColor = markedDays >= totalDaysInMonth ? 'var(--ok)' : 'var(--low)';
-      // Yahan clickable link laga diya gaya hai taake click karne par missing dates show hon
       let attText = `<b style="color:${attColor};cursor:pointer;text-decoration:underline;" onclick="showMissingDays('${s.username}', '${m}')" title="Click to see missing days">${markedDays} / ${totalDaysInMonth} days</b>`;
       
       html += `<tr>
@@ -635,7 +649,7 @@ function renderSalary() {
     }
   });
   
-  if(!found) html += `<tr><td colspan="5" class="empty">Kisi student ka Basic Salary set nahi hai.</td></tr>`;
+  if(!found) html += `<tr><td colspan="5" class="empty">Is filter ke mutabiq koi record nahi mila.</td></tr>`;
   
   html += '</tbody>';
   $('salTable').innerHTML = html;
