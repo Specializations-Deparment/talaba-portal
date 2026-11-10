@@ -402,7 +402,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='21';
+const VER='22';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -622,7 +622,8 @@ function renderSalary() {
       const markedDays = att.length;
       
       let attColor = markedDays >= totalDaysInMonth ? 'var(--ok)' : 'var(--low)';
-      let attText = `<b style="color:${attColor}">${markedDays} / ${totalDaysInMonth} days</b>`;
+      // Yahan clickable link laga diya gaya hai taake click karne par missing dates show hon
+      let attText = `<b style="color:${attColor};cursor:pointer;text-decoration:underline;" onclick="showMissingDays('${s.username}', '${m}')" title="Click to see missing days">${markedDays} / ${totalDaysInMonth} days</b>`;
       
       html += `<tr>
         <td class="l">${esc(s.name)}</td>
@@ -645,6 +646,9 @@ async function previewSalary(username, month) {
   const r = await call({action: 'getSalaryPreview', username: username, month: month});
   
   if(!r.ok) {
+    if(r.msg && r.msg.includes('Hazri adhoori')) {
+       return showMissingDays(username, month); 
+    }
     return toast(r.msg, 1); 
   }
   
@@ -655,6 +659,61 @@ async function previewSalary(username, month) {
   
   $('salPreviewContent').innerHTML = iframe;
   $('salPreviewModal').hidden = false;
+}
+
+function showMissingDays(username, month) {
+  const s = D.students.find(x => String(x.username) === String(username));
+  if (!s) return;
+  
+  const [year, m] = month.split('-').map(Number);
+  const totalDays = new Date(year, m, 0).getDate();
+  
+  const userAtt = (D.attendanceRaw || []).filter(a => String(a.username) === String(username) && String(a.date).slice(0,7) === month);
+  const markedDates = new Set(userAtt.map(a => String(a.date).slice(0,10)));
+  
+  let missing = [];
+  for(let d = 1; d <= totalDays; d++) {
+    const dateStr = `${year}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if(!markedDates.has(dateStr)) {
+      missing.push(d);
+    }
+  }
+  
+  let html = `<div style="background:var(--pri);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;">
+    <h3 style="margin:0;font:600 18px var(--serif);">Missing Days Details</h3>
+    <button onclick="document.getElementById('missingDaysModal').hidden=true" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">✕</button>
+  </div>
+  <div style="padding:20px;">`;
+  
+  html += `<p style="margin-bottom:10px;font-size:16px;"><b>Name:</b> ${esc(s.name)}</p>`;
+  html += `<p style="margin-bottom:15px;font-size:16px;"><b>Month:</b> ${month}</p>`;
+  
+  if(missing.length === 0) {
+    html += `<p style="color:var(--ok);font-weight:bold;font-size:16px;">Mubarak ho! Is mahine ki poori hazri lagi hui hai.</p>`;
+  } else {
+    html += `<p style="color:var(--low);font-weight:bold;margin-bottom:15px;">In ${missing.length} din ki hazri baqi hai:</p>`;
+    html += `<div style="display:flex;flex-wrap:wrap;gap:8px;">`;
+    missing.forEach(d => {
+      html += `<span style="background:#f8e1de;color:var(--low);padding:6px 12px;border-radius:8px;font-weight:bold;border:1px solid var(--low);">${d} ${new Date(year, m-1, d).toLocaleString('default', { month: 'short' })}</span>`;
+    });
+    html += `</div>`;
+  }
+  
+  html += `<div style="margin-top:20px;text-align:right;">
+    <button class="btn" onclick="document.getElementById('missingDaysModal').hidden=true">OK</button>
+  </div></div>`;
+  
+  let modal = document.getElementById('missingDaysModal');
+  if(!modal) {
+    modal = document.createElement('div');
+    modal.id = 'missingDaysModal';
+    modal.className = 'md';
+    modal.style.zIndex = '9999';
+    modal.innerHTML = `<div class="mb" style="padding:0;overflow:hidden;max-width:500px;"></div>`;
+    document.body.appendChild(modal);
+  }
+  modal.querySelector('.mb').innerHTML = html;
+  modal.hidden = false;
 }
 
 async function downloadPDF() {
