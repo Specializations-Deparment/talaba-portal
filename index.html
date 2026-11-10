@@ -210,7 +210,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <div id="app" class="wrap" hidden>
   <nav class="tabs">
     <button data-t="an" class="on" onclick="show('an')" data-i="t_an"></button>
-    <button data-t="stuatt" id="tbStuAtt" onclick="show('stuatt')">Mark Attendance</button>
+    <button data-t="stuatt" id="tbStuAtt" onclick="show('stuatt')">Time Attendance</button>
     <button data-t="en" onclick="show('en')" data-i="t_en"></button>
     <button data-t="at" id="tbA" onclick="show('at')" data-i="t_at"></button>
     <button data-t="sal" id="tbS" onclick="show('sal')" data-i="t_sal"></button>
@@ -239,7 +239,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 
   <section id="p_stuatt" class="panel" hidden>
     <div class="att-form-box">
-      <h2 style="color:var(--pri);margin-bottom:20px;text-align:center;">Submit Attendance</h2>
+      <h2 style="color:var(--pri);margin-bottom:20px;text-align:center;">Submit Time Attendance</h2>
       
       <div id="stuAttMsg" style="margin-bottom:15px;font-weight:bold;text-align:center;"></div>
 
@@ -251,22 +251,16 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
           <option value="Leave">Leave</option>
           <option value="Absent">Absent</option>
           <option value="Qafila">Madani Qafila</option>
-          <option value="Weekly Holiday">Weekly Holiday</option>
-          <option value="Ashura">Ashura</option>
-          <option value="Milad Celebration">Milad Celebration</option>
-          <option value="Gyarhveen Sharif">Gyarhveen Sharif</option>
-          <option value="Day of Arafah">Day of Arafah</option>
-          <option value="Eid-ul-Adha">Eid-ul-Adha</option>
-          <option value="Independence Day">Independence Day</option>
+          <option value="Haftawar Tatti">Haftawar Tatti (Weekly Holiday)</option>
         </select>
       </label>
 
-      <label class="f"><span>IN TIME (08:00 AM - 04:00 PM)</span><input type="time" id="sa_in" style="margin-bottom:15px;"></label>
-      <label class="f"><span>OUT TIME (AFTER IN TIME - 04:00 PM)</span><input type="time" id="sa_out" style="margin-bottom:15px;"></label>
+      <label class="f"><span>IN TIME (08:00 AM)</span><input type="time" id="sa_in" style="margin-bottom:15px;"></label>
+      <label class="f"><span>OUT TIME (04:00 PM)</span><input type="time" id="sa_out" style="margin-bottom:15px;"></label>
       
       <label class="f"><span>PRECAUTIONARY DEDUCTION (OPTIONAL)</span><input type="number" id="sa_precaution" placeholder="Enter amount" style="margin-bottom:20px;"></label>
 
-      <button class="btn" onclick="submitStuAttendance()">
+      <button class="btn" onclick="submitStuTimeAtt()">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         Submit Attendance
       </button>
@@ -310,7 +304,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 
   <section id="sal" class="panel" hidden>
     <h2>تنخواہ (Salary)</h2>
-    <p class="note">Yahan mahine ke hisaab se unki total hours aur salary calculate hogi. PDF download karne ke liye button dabayein.</p>
+    <p class="note">Yahan mahine ke hisaab se unki time attendance aur salary calculate hogi. PDF download karne ke liye button dabayein.</p>
     <div class="bar-tools">
       <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
     </div>
@@ -349,9 +343,10 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label class="f"><span data-i="pass_l"></span><input id="np"></label>
       <label class="f"><span data-i="role"></span><select id="nr"><option value="student" data-i="r_student"></option><option value="teacher" data-i="r_teacher"></option></select></label>
       <label class="f"><span data-i="cls"></span><input id="nc"></label>
-      <label class="f"><span>Salary (Per Hour ₹)</span><input id="nsal" type="number"></label>
+      <label class="f"><span>Basic Salary (₹)</span><input id="nsal" type="number"></label>
       <label class="f"><span>Account No</span><input id="nacc"></label>
       <label class="f"><span>IFSC Code</span><input id="nifsc"></label>
+      <label class="f"><span>Bank Name</span><input id="nbank"></label>
     </div>
     <div class="row"><button class="btn" onclick="addUser()" data-i="u_add"></button></div>
     <div id="sharebox" class="cbox" style="margin-top:22px"></div>
@@ -495,7 +490,6 @@ async function call(o){
   try{r=await(await fetch(API,{method:'POST',body:JSON.stringify({u:U,p:P,...o})})).json();}
   catch(e){return {ok:false,msg:t('no_resp')};}
   
-  // Yahan check fix kiya gaya hai: Sirf 'list' action par keys check karein
   if(r.ok && o.action === 'list' && !r.keys) {
     return {ok:false, msg:t('not_dep')};
   }
@@ -523,7 +517,7 @@ async function login(){
   fill();
 }
 
-async function submitStuAttendance() {
+async function submitStuTimeAtt() {
   const dt = $('sa_date').value;
   const st = $('sa_status').value;
   const inT = $('sa_in').value;
@@ -534,7 +528,7 @@ async function submitStuAttendance() {
   $('stuAttMsg').textContent = "Saving...";
   $('stuAttMsg').style.color = "var(--pri)";
   
-  const r = await call({action:'submitAttendance', student: D.students[0].username, date: dt, status: st, inTime: inT, outTime: outT, precaution: prec});
+  const r = await call({action:'submitTimeAtt', student: D.students[0].username, date: dt, status: st, inTime: inT, outTime: outT, precaution: prec});
   if(r.ok) {
     $('stuAttMsg').textContent = "Attendance Submitted Successfully!";
     $('stuAttMsg').style.color = "var(--ok)";
@@ -570,8 +564,8 @@ function fsf(){
 function ulist(){
   if(!D.users){$('ul').innerHTML=`<tr><td>${t('u_nolist')}</td></tr>`;$('uc').textContent='';return;}
   $('uc').textContent=t('u_tot')+' '+D.users.length;
-  $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Salary (₹/hr)</th><th></th></tr></thead><tbody>`+
-    D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.salary || '—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
+  $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Basic Salary</th><th></th></tr></thead><tbody>`+
+    D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.basicSalary || '—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
 }
 const shareUrl=(cls)=>new URL('dashboard.html',location.href).href.split('?')[0]+'?k='+D.share+(cls?'&cls='+encodeURIComponent(cls):'');
 function shareBox(){
@@ -777,9 +771,9 @@ function pick(inp,u){
   im.src=URL.createObjectURL(f);inp.value='';
 }
 async function addUser(){
-  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value,salary:$('nsal').value,account:$('nacc').value,ifsc:$('nifsc').value});
+  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value,basicSalary:$('nsal').value,account:$('nacc').value,ifsc:$('nifsc').value,bank:$('nbank').value});
   if(!r.ok)return toast(r.msg,1);
-  D=r;fill();['nn','nu','np','nc','nsal','nacc','nifsc'].forEach(i=>$(i).value='');toast(t('ok_user'));
+  D=r;fill();['nn','nu','np','nc','nsal','nacc','nifsc','nbank'].forEach(i=>$(i).value='');toast(t('ok_user'));
 }
 const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.class));
 function editE(id){
@@ -811,23 +805,17 @@ function renderSalary() {
   if(!D || !D.attendanceRaw) return;
   const m = $('salMonth').value || new Date().toISOString().slice(0,7);
   
-  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Total Hours</th><th>Rate (₹)</th><th>Total Salary (₹)</th><th>Action</th></tr></thead><tbody>`;
+  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Action</th></tr></thead><tbody>`;
   
   let found = false;
   D.students.forEach(s => {
-    const att = D.attendanceRaw.filter(a => a.username === s.username && a.date.slice(0,7) === m);
-    let hrs = 0;
-    att.forEach(a => hrs += (+a.totalHours || 0));
-    
-    if(hrs > 0 || s.salary) {
+    if(s.basicSalary) {
       found = true;
-      const rate = +(s.salary || 0);
-      const total = (hrs * rate).toFixed(2);
-      html += `<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td><b>${hrs.toFixed(2)}</b></td><td>${rate}</td><td><b>${total}</b></td><td><button class="btn sm" onclick="openPDF('${s.username}','${m}')">Download PDF</button></td></tr>`;
+      html += `<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td>₹ ${s.basicSalary}</td><td><button class="btn sm" onclick="openPDF('${s.username}','${m}')">Download PDF</button></td></tr>`;
     }
   });
   
-  if(!found) html += `<tr><td colspan="6" class="empty">Is mahine ke liye koi record nahi mila ya kisi student ka rate set nahi hai.</td></tr>`;
+  if(!found) html += `<tr><td colspan="4" class="empty">Kisi student ka Basic Salary set nahi hai.</td></tr>`;
   
   html += '</tbody>';
   $('salTable').innerHTML = html;
