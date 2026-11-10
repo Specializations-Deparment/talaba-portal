@@ -178,7 +178,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 @media(max-width:700px){.login{grid-template-columns:1fr;margin:16px}.top{padding:8px 12px}.panel{padding:14px}.ttl{font-size:17px}.bar-tools .sp{display:none}}
 @media(prefers-reduced-motion:no-preference){.tabs button,.lang{transition:color .15s,background .15s}}
 
-/* Attandance Form Style */
 .att-form-box{max-width:500px;margin:0 auto;padding:20px;}
 .att-form-box label.f {font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--mute);margin-bottom:4px;font-weight:700;}
 .att-form-box input, .att-form-box select {padding:12px;border-radius:8px;background:#f8faf9;border:1px solid var(--line);}
@@ -238,7 +237,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <div class="t"><table id="log"></table></div>
   </section>
 
-  <!-- NAYA TAB: Mark Attendance -->
   <section id="p_stuatt" class="panel" hidden>
     <div class="att-form-box">
       <h2 style="color:var(--pri);margin-bottom:20px;text-align:center;">Submit Time Attendance</h2>
@@ -268,7 +266,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     </div>
   </section>
 
-  <!-- NAYA TAB: Hazri Summary -->
   <section id="p_sum" class="panel" hidden>
     <h2>Hazri Summary</h2>
     <div class="bar-tools">
@@ -277,7 +274,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <div id="sumOut"></div>
   </section>
 
-  <!-- NAYA TAB: Salary Sheet -->
   <section id="p_sal" class="panel" hidden>
     <h2>تنخواہ (Salary)</h2>
     <p class="note">Yahan mahine ke hisaab se unki salary calculate hogi. PDF download karne ke liye button dabayein.</p>
@@ -366,7 +362,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
   </section>
 </div>
 
-<!-- Salary Preview Modal -->
 <div id="salPreviewModal" class="md" hidden style="z-index: 9999; background: rgba(0,0,0,0.8);">
   <div class="mb" style="max-width: 800px; padding: 0; overflow: hidden;">
     <div style="background: var(--pri); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
@@ -374,7 +369,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <button onclick="document.getElementById('salPreviewModal').hidden=true" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
     </div>
     <div id="salPreviewContent" style="padding: 20px; max-height: 70vh; overflow-y: auto; background: #f4f6f9;">
-      <!-- HTML will be injected here -->
     </div>
     <div style="padding: 15px; background: #fff; border-top: 1px solid var(--line); text-align: right;">
       <button class="btn ghost" onclick="document.getElementById('salPreviewModal').hidden=true">Close</button>
@@ -615,17 +609,32 @@ function renderSalary() {
   if(!D || !D.students) return;
   const m = $('salMonth').value || new Date().toISOString().slice(0,7);
   
-  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Action</th></tr></thead><tbody>`;
+  const [year, month] = m.split('-');
+  const totalDaysInMonth = new Date(year, month, 0).getDate();
+  
+  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Attendance</th><th>Action</th></tr></thead><tbody>`;
   
   let found = false;
   D.students.forEach(s => {
     if(s.basicSalary) {
       found = true;
-      html += `<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td>₹ ${s.basicSalary}</td><td><button class="btn sm" onclick="previewSalary('${s.username}','${m}')">Check / Preview</button></td></tr>`;
+      const att = (D.attendanceRaw || []).filter(a => String(a.username) === String(s.username) && String(a.date).slice(0,7) === m);
+      const markedDays = att.length;
+      
+      let attColor = markedDays >= totalDaysInMonth ? 'var(--ok)' : 'var(--low)';
+      let attText = `<b style="color:${attColor}">${markedDays} / ${totalDaysInMonth} days</b>`;
+      
+      html += `<tr>
+        <td class="l">${esc(s.name)}</td>
+        <td class="l">${esc(s.class)}</td>
+        <td>₹ ${s.basicSalary}</td>
+        <td>${attText}</td>
+        <td><button class="btn sm" onclick="previewSalary('${s.username}','${m}')">Check / Preview</button></td>
+      </tr>`;
     }
   });
   
-  if(!found) html += `<tr><td colspan="4" class="empty">Kisi student ka Basic Salary set nahi hai.</td></tr>`;
+  if(!found) html += `<tr><td colspan="5" class="empty">Kisi student ka Basic Salary set nahi hai.</td></tr>`;
   
   html += '</tbody>';
   $('salTable').innerHTML = html;
