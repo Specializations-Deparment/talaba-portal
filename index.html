@@ -494,7 +494,12 @@ async function call(o){
   let r;
   try{r=await(await fetch(API,{method:'POST',body:JSON.stringify({u:U,p:P,...o})})).json();}
   catch(e){return {ok:false,msg:t('no_resp')};}
-  if(r.ok&&!r.keys)return {ok:false,msg:t('not_dep')};
+  
+  // Yahan check fix kiya gaya hai: Sirf 'list' action par keys check karein
+  if(r.ok && o.action === 'list' && !r.keys) {
+    return {ok:false, msg:t('not_dep')};
+  }
+  
   if(r.msg&&r.msg.indexOf('MISSING:')==0)r.msg=t('fill_all')+' '+r.msg.slice(8).split(',').map(L).join(', ');
   else if(r.msg=='BAD_DATE')r.msg=t('BAD_DATE');else if(r.msg=='NAME_NEEDED')r.msg=t('cu_need');else if(r.msg=='IN_USE')r.msg=t('cu_used');
   else if(r.msg&&LG=='en'&&MSG[r.msg])r.msg=MSG[r.msg];
