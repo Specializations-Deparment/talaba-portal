@@ -210,10 +210,11 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <div id="app" class="wrap" hidden>
   <nav class="tabs">
     <button data-t="an" class="on" onclick="show('an')" data-i="t_an"></button>
-    <button data-t="stuatt" id="tbStuAtt" onclick="show('stuatt')">Time Attendance</button>
+    <button data-t="stuatt" id="tbStuAtt" onclick="show('stuatt')">Mark Attendance</button>
+    <button data-t="sum" id="tbSum" onclick="show('sum')">Hazri Summary</button>
+    <button data-t="sal" id="tbS" onclick="show('sal')">Salary Sheet</button>
     <button data-t="en" onclick="show('en')" data-i="t_en"></button>
     <button data-t="at" id="tbA" onclick="show('at')" data-i="t_at"></button>
-    <button data-t="sal" id="tbS" onclick="show('sal')" data-i="t_sal"></button>
     <button data-t="tg" id="tbT" onclick="show('tg')" data-i="t_tg"></button>
     <button data-t="adm" id="tbU" onclick="show('adm')" data-i="t_us"></button>
   </nav>
@@ -237,10 +238,10 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <div class="t"><table id="log"></table></div>
   </section>
 
+  <!-- NAYA TAB: Mark Attendance -->
   <section id="p_stuatt" class="panel" hidden>
     <div class="att-form-box">
       <h2 style="color:var(--pri);margin-bottom:20px;text-align:center;">Submit Time Attendance</h2>
-      
       <div id="stuAttMsg" style="margin-bottom:15px;font-weight:bold;text-align:center;"></div>
 
       <label class="f"><span>Date</span><input type="date" id="sa_date" style="margin-bottom:15px;"></label>
@@ -265,6 +266,25 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
         Submit Attendance
       </button>
     </div>
+  </section>
+
+  <!-- NAYA TAB: Hazri Summary -->
+  <section id="p_sum" class="panel" hidden>
+    <h2>Hazri Summary</h2>
+    <div class="bar-tools">
+      <label><span>Month</span><input type="month" id="sumMonth" onchange="loadHazriSummary()"></label>
+    </div>
+    <div id="sumOut"></div>
+  </section>
+
+  <!-- NAYA TAB: Salary Sheet -->
+  <section id="p_sal" class="panel" hidden>
+    <h2>تنخواہ (Salary)</h2>
+    <p class="note">Yahan mahine ke hisaab se unki salary calculate hogi. PDF download karne ke liye button dabayein.</p>
+    <div class="bar-tools">
+      <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
+    </div>
+    <div class="t"><table id="salTable"></table></div>
   </section>
 
   <section id="p_en" class="panel" hidden>
@@ -300,15 +320,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <div class="row" style="margin-top:6px"><button class="btn ghost sm" onclick="allPresent()" data-i="at_allp"></button><button class="btn ghost sm" onclick="clearAtt()" data-i="at_clear"></button><span id="atday" class="note" style="align-self:center"></span></div>
     <div class="t" style="margin-top:12px"><table id="attbl"></table></div>
     <div class="stick"><span id="atmsg" class="note"></span><button class="btn" id="atsave" onclick="saveAtt()" data-i="at_save"></button></div>
-  </section>
-
-  <section id="sal" class="panel" hidden>
-    <h2>تنخواہ (Salary)</h2>
-    <p class="note">Yahan mahine ke hisaab se unki time attendance aur salary calculate hogi. PDF download karne ke liye button dabayein.</p>
-    <div class="bar-tools">
-      <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
-    </div>
-    <div class="t"><table id="salTable"></table></div>
   </section>
 
   <section id="tg" class="panel" hidden>
@@ -473,10 +484,11 @@ const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" al
 function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');
   $('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
 function toast(m,bad){const x=$('toast');x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,2800);}
-function show(x){['an','stuatt','en','at','sal','tg','adm'].forEach(y=>{$(y=='an'||y=='stuatt'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
+function show(x){['an','stuatt','sum','sal','en','at','tg','adm'].forEach(y=>{$(y=='an'||y=='stuatt'||y=='sum'||y=='sal'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));
   if(x=='at')attOpen();
   if(x=='sal')renderSalary();
+  if(x=='sum')loadHazriSummary();
 }
 function setLang(l){
   LG=l;try{localStorage.setItem('lg',l)}catch(e){}
@@ -508,9 +520,10 @@ async function login(){
   $('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
   $('tbU').hidden=D.me.role!='admin';$('tbA').hidden=D.me.role=='student';$('tbT').hidden=D.me.role=='student';
   $('tbS').hidden=D.me.role=='student';
-  $('tbStuAtt').hidden=D.me.role!='student'; // Sirf student ko form dikhega
+  $('tbStuAtt').hidden=D.me.role!='student';
+  $('tbSum').hidden=D.me.role!='student';
   
-  $('dt').value=$('tm').value=$('salMonth').value=new Date().toISOString().slice(0,7);
+  $('dt').value=$('tm').value=$('salMonth').value=$('sumMonth').value=new Date().toISOString().slice(0,7);
   $('sa_date').value=new Date().toISOString().slice(0,10);
   
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
@@ -537,6 +550,43 @@ async function submitStuTimeAtt() {
     $('stuAttMsg').textContent = r.msg;
     $('stuAttMsg').style.color = "var(--low)";
   }
+}
+
+async function loadHazriSummary() {
+  const m = $('sumMonth').value || new Date().toISOString().slice(0,7);
+  $('sumOut').innerHTML = '<div class="empty">Loading...</div>';
+  
+  const r = await call({action:'getTimeSummary', username: D.students[0].username, month: m});
+  if(!r.ok) return $('sumOut').innerHTML = `<div class="empty">${r.msg}</div>`;
+  
+  const summary = r.summary;
+  let html = `<div class="scs">`;
+  
+  let p=0, l=0, a=0, q=0;
+  if(summary['Present']) p = summary['Present'].length;
+  if(summary['Leave']) l = summary['Leave'].length;
+  if(summary['Absent']) a = summary['Absent'].length;
+  if(summary['Qafila']) q = summary['Qafila'].length;
+  
+  html += `<div class="sc ok"><small>Present</small><b>${p}</b></div>`;
+  html += `<div class="sc mid"><small>Leave</small><b>${l}</b></div>`;
+  html += `<div class="sc low"><small>Absent</small><b>${a}</b></div>`;
+  html += `<div class="sc"><small>Qafila / Others</small><b>${q}</b></div>`;
+  html += `</div>`;
+
+  html += `<h4>Daily Details</h4><div class="t"><table><thead><tr><th>Date</th><th>Status</th><th>In Time</th><th>Out Time</th><th>Hours</th></tr></thead><tbody>`;
+  let allRecs = [];
+  for(let st in summary) {
+    summary[st].forEach(rec => allRecs.push({...rec, status: st}));
+  }
+  allRecs.sort((a,b)=>new Date(a.date) - new Date(b.date));
+  
+  allRecs.forEach(rec => {
+    html += `<tr><td>${rec.date}</td><td><b>${rec.status}</b></td><td>${rec.inTime}</td><td>${rec.outTime}</td><td>${rec.hours}</td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  $('sumOut').innerHTML = html;
 }
 
 function fill(){
@@ -802,7 +852,7 @@ function exportCSV(){
 }
 
 function renderSalary() {
-  if(!D || !D.attendanceRaw) return;
+  if(!D || !D.students) return;
   const m = $('salMonth').value || new Date().toISOString().slice(0,7);
   
   let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Action</th></tr></thead><tbody>`;
