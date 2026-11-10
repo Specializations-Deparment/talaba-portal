@@ -211,7 +211,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
   </nav>
 
   <section id="p_an" class="panel">
-    <!-- Attendance Punch In/Out for Student -->
     <div id="punchBox" class="me" hidden style="background:var(--pri); color:#fff; justify-content:space-between;">
       <div><b style="font:700 20px var(--serif);">Attendance (Hazri)</b><br><small style="opacity:.8;">Mark your daily check-in and check-out</small></div>
       <div style="display:flex; gap:10px;">
@@ -275,11 +274,9 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 
   <section id="sal" class="panel" hidden>
     <h2>تنخواہ (Salary)</h2>
-    <p class="note">Yahan mahine ke hisaab se unki total hours aur salary calculate hogi.</p>
+    <p class="note">Yahan mahine ke hisaab se unki total hours aur salary calculate hogi. PDF download karne ke liye button dabayein.</p>
     <div class="bar-tools">
       <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
-      <span class="sp"></span>
-      <button class="btn" onclick="downloadSalary()">Download Salary CSV</button>
     </div>
     <div class="t"><table id="salTable"></table></div>
   </section>
@@ -316,7 +313,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label class="f"><span data-i="pass_l"></span><input id="np"></label>
       <label class="f"><span data-i="role"></span><select id="nr"><option value="student" data-i="r_student"></option><option value="teacher" data-i="r_teacher"></option></select></label>
       <label class="f"><span data-i="cls"></span><input id="nc"></label>
-      <label class="f"><span>Salary (Per Hour)</span><input id="nsal" type="number"></label>
+      <label class="f"><span>Salary (Per Hour ₹)</span><input id="nsal" type="number"></label>
     </div>
     <div class="row"><button class="btn" onclick="addUser()" data-i="u_add"></button></div>
     <div id="sharebox" class="cbox" style="margin-top:22px"></div>
@@ -357,7 +354,6 @@ const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans
 const CLR={ok:'#1f8a63',mid:'#c98a1b',low:'#b5453a'};
 const COL=['#0e3b3a','#2f6fa3','#1f8a63','#c98a1b','#8a4f7d','#b5453a','#5d6e6b','#3aa0a0'];
 
-// 👇 5 Students ki class fix karne ka logic 👇
 const specialData = [
     { roll: "73872", name: "نوشاد احمد" },
     { roll: "73699", name: "غلام رسول" },
@@ -378,7 +374,6 @@ function applyClassCorrections() {
     if (D.entries) D.entries.forEach(e => { if (isSpecial(e)) e.class = targetClass; });
     if (D.users) D.users.forEach(u => { if (isSpecial(u)) u.class = targetClass; });
 }
-// 👆 ================================================= 👆
 
 const T={
 en:{title:'Student Performance Portal',sub:'Specializations Department',logout:'Log out',signin:'Sign in',user_l:'Username',pass_l:'Password',
@@ -479,7 +474,6 @@ async function login(){
   $('dt').value=$('tm').value=new Date().toISOString().slice(0,7);
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
   
-  // Show Punch In/Out for students
   if(D.me.role=='student'){
     $('punchBox').hidden=false;
   }
@@ -487,7 +481,6 @@ async function login(){
   fill();
 }
 
-// PUNCH IN/OUT FUNCTION
 async function punch(action){
   const r = await call({action});
   if(r.ok) {
@@ -522,7 +515,7 @@ function fsf(){
 function ulist(){
   if(!D.users){$('ul').innerHTML=`<tr><td>${t('u_nolist')}</td></tr>`;$('uc').textContent='';return;}
   $('uc').textContent=t('u_tot')+' '+D.users.length;
-  $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Salary</th><th></th></tr></thead><tbody>`+
+  $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Salary (₹/hr)</th><th></th></tr></thead><tbody>`+
     D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.salary || '—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
 }
 const shareUrl=(cls)=>new URL('dashboard.html',location.href).href.split('?')[0]+'?k='+D.share+(cls?'&cls='+encodeURIComponent(cls):'');
@@ -759,53 +752,40 @@ function exportCSV(){
   a.download='performance-'+($('mf').value||'all')+'.csv';a.click();
 }
 
-// DOWNLOAD SALARY CSV
-function downloadSalary() {
-  if(!D.attendanceRaw) return;
-  const m = $('salMonth').value;
-  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
-  let csv = [[t('name'), 'Class', 'Total Hours', 'Hourly Rate', 'Total Salary'].map(q).join(',')];
+function downloadSalaryPDF() {
+  const m = $('salMonth').value || new Date().toISOString().slice(0,7);
+  const rows = D.students.map(s => {
+      const att = D.attendanceRaw.filter(a => a.username === s.username && a.date.slice(0,7) === m);
+      let hrs = 0;
+      att.forEach(a => hrs += (+a.totalHours || 0));
+      if(hrs === 0) return '';
+      const rate = +(s.salary || 0);
+      const total = (hrs * rate).toFixed(2);
+      return `<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td>${hrs.toFixed(2)}</td><td>${rate}</td><td>${total}</td><td><button class="btn sm" onclick="openPDF('${s.username}','${m}')">Download PDF</button></td></tr>`;
+  }).join('');
   
-  const grouped = {};
-  D.attendanceRaw.forEach(r => {
-    if(m && String(r.date).slice(0,7) !== m) return;
-    if(!grouped[r.username]) grouped[r.username] = { hours: 0, user: D.students.find(s=>s.username===r.username) || {} };
-    grouped[r.username].hours += (+r.totalHours || 0);
-  });
-
-  Object.keys(grouped).forEach(u => {
-    const data = grouped[u];
-    const rate = +(data.user.salary || 0);
-    const total = (data.hours * rate).toFixed(2);
-    csv.push([data.user.name || u, data.user.class || '', data.hours.toFixed(2), rate, total].map(q).join(','));
-  });
-
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob(['\ufeff' + csv.join('\n')], {type:'text/csv;charset=utf-8'}));
-  a.download = 'Salary_' + (m || 'All') + '.csv';
-  a.click();
+  $('salTable').innerHTML = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Total Hours</th><th>Rate (₹)</th><th>Total Salary (₹)</th><th>Action</th></tr></thead><tbody>${rows}</tbody>`;
 }
 
-// RENDER SALARY TABLE
-function renderSalary() {
-  if(!D.attendanceRaw) return;
-  const m = $('salMonth').value;
-  const grouped = {};
-  D.attendanceRaw.forEach(r => {
-    if(m && String(r.date).slice(0,7) !== m) return;
-    if(!grouped[r.username]) grouped[r.username] = { hours: 0, user: D.students.find(s=>s.username===r.username) || {} };
-    grouped[r.username].hours += (+r.totalHours || 0);
-  });
-
-  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Total Hours</th><th>Hourly Rate</th><th>Total Salary</th></tr></thead><tbody>`;
-  Object.keys(grouped).forEach(u => {
-    const data = grouped[u];
-    const rate = +(data.user.salary || 0);
-    const total = (data.hours * rate).toFixed(2);
-    html += `<tr><td class="l">${esc(data.user.name || u)}</td><td class="l">${esc(data.user.class || '')}</td><td><b>${data.hours.toFixed(2)}</b></td><td>${rate}</td><td><b>${total}</b></td></tr>`;
-  });
-  html += '</tbody>';
-  $('salTable').innerHTML = html;
+async function openPDF(username, month) {
+  toast('Generating PDF...');
+  const r = await call({action: 'downloadSalaryPDF', username: username, month: month});
+  if(!r.ok) return toast(r.msg, 1);
+  
+  const byteCharacters = atob(r.data);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], {type: 'application/pdf'});
+  
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = r.filename;
+  a.click();
+  window.URL.revokeObjectURL(url);
 }
 
 function attOf(u,m){const o={p:0,l:0,a:0,t:0};(D.attsum||[]).forEach(r=>{if(String(r.username)==String(u)&&(!m||r.month==m)){o.p+=r.p;o.l+=r.l;o.a+=r.a;}});o.t=o.p+o.l+o.a;o.pc=o.t?Math.round(o.p/o.t*100):null;return o;}
