@@ -365,6 +365,24 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <div class="t"><table id="ul"></table></div>
   </section>
 </div>
+
+<!-- Salary Preview Modal -->
+<div id="salPreviewModal" class="md" hidden style="z-index: 9999; background: rgba(0,0,0,0.8);">
+  <div class="mb" style="max-width: 800px; padding: 0; overflow: hidden;">
+    <div style="background: var(--pri); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin:0; font: 600 18px var(--serif);">Salary Preview</h3>
+      <button onclick="document.getElementById('salPreviewModal').hidden=true" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">✕</button>
+    </div>
+    <div id="salPreviewContent" style="padding: 20px; max-height: 70vh; overflow-y: auto; background: #f4f6f9;">
+      <!-- HTML will be injected here -->
+    </div>
+    <div style="padding: 15px; background: #fff; border-top: 1px solid var(--line); text-align: right;">
+      <button class="btn ghost" onclick="document.getElementById('salPreviewModal').hidden=true">Close</button>
+      <button class="btn" id="downloadSalBtn" onclick="downloadPDF()">Download PDF</button>
+    </div>
+  </div>
+</div>
+
 <div id="md" class="md" hidden><div class="mb">
   <h2 id="e_h" style="color:var(--pri);unicode-bidi:plaintext"></h2>
   <div class="grid" style="margin-top:10px"><label class="f"><span data-i="month"></span><input id="e_m" type="month"></label></div>
@@ -587,6 +605,77 @@ async function loadHazriSummary() {
   html += `</tbody></table></div>`;
 
   $('sumOut').innerHTML = html;
+}
+
+// SALARY PREVIEW AND DOWNLOAD LOGIC
+let currentPreviewUser = null;
+let currentPreviewMonth = null;
+
+function renderSalary() {
+  if(!D || !D.students) return;
+  const m = $('salMonth').value || new Date().toISOString().slice(0,7);
+  
+  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Action</th></tr></thead><tbody>`;
+  
+  let found = false;
+  D.students.forEach(s => {
+    if(s.basicSalary) {
+      found = true;
+      html += `<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td>₹ ${s.basicSalary}</td><td><button class="btn sm" onclick="previewSalary('${s.username}','${m}')">Check / Preview</button></td></tr>`;
+    }
+  });
+  
+  if(!found) html += `<tr><td colspan="4" class="empty">Kisi student ka Basic Salary set nahi hai.</td></tr>`;
+  
+  html += '</tbody>';
+  $('salTable').innerHTML = html;
+}
+
+async function previewSalary(username, month) {
+  toast('Loading Preview...');
+  const r = await call({action: 'getSalaryPreview', username: username, month: month});
+  
+  if(!r.ok) {
+    return toast(r.msg, 1); 
+  }
+  
+  currentPreviewUser = username;
+  currentPreviewMonth = month;
+  
+  const iframe = `<iframe style="width:100%; height:65vh; border:none; background:white;" srcdoc="${r.html.replace(/"/g, '&quot;')}"></iframe>`;
+  
+  $('salPreviewContent').innerHTML = iframe;
+  $('salPreviewModal').hidden = false;
+}
+
+async function downloadPDF() {
+  if(!currentPreviewUser) return;
+  const btn = $('downloadSalBtn');
+  btn.disabled = true;
+  btn.textContent = 'Downloading...';
+  
+  const r = await call({action: 'downloadSalaryPDF', username: currentPreviewUser, month: currentPreviewMonth});
+  
+  btn.disabled = false;
+  btn.textContent = 'Download PDF';
+  
+  if(!r.ok) return toast(r.msg, 1);
+  
+  const byteCharacters = atob(r.data);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], {type: 'application/pdf'});
+  
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = r.filename;
+  a.click();
+  window.URL.revokeObjectURL(url);
+  toast('PDF Downloaded!');
 }
 
 function fill(){
@@ -849,47 +938,6 @@ function exportCSV(){
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['\ufeff'+EXP.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv;charset=utf-8'}));
   a.download='performance-'+($('mf').value||'all')+'.csv';a.click();
-}
-
-function renderSalary() {
-  if(!D || !D.students) return;
-  const m = $('salMonth').value || new Date().toISOString().slice(0,7);
-  
-  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Action</th></tr></thead><tbody>`;
-  
-  let found = false;
-  D.students.forEach(s => {
-    if(s.basicSalary) {
-      found = true;
-      html += `<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td>₹ ${s.basicSalary}</td><td><button class="btn sm" onclick="openPDF('${s.username}','${m}')">Download PDF</button></td></tr>`;
-    }
-  });
-  
-  if(!found) html += `<tr><td colspan="4" class="empty">Kisi student ka Basic Salary set nahi hai.</td></tr>`;
-  
-  html += '</tbody>';
-  $('salTable').innerHTML = html;
-}
-
-async function openPDF(username, month) {
-  toast('Generating PDF...');
-  const r = await call({action: 'downloadSalaryPDF', username: username, month: month});
-  if(!r.ok) return toast(r.msg, 1);
-  
-  const byteCharacters = atob(r.data);
-  const byteNumbers = new Array(byteCharacters.length);
-  for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-  }
-  const byteArray = new Uint8Array(byteNumbers);
-  const blob = new Blob([byteArray], {type: 'application/pdf'});
-  
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = r.filename;
-  a.click();
-  window.URL.revokeObjectURL(url);
 }
 
 function attOf(u,m){const o={p:0,l:0,a:0,t:0};(D.attsum||[]).forEach(r=>{if(String(r.username)==String(u)&&(!m||r.month==m)){o.p+=r.p;o.l+=r.l;o.a+=r.a;}});o.t=o.p+o.l+o.a;o.pc=o.t?Math.round(o.p/o.t*100):null;return o;}
