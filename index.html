@@ -177,6 +177,13 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 #toast.bad{background:var(--low)}
 @media(max-width:700px){.login{grid-template-columns:1fr;margin:16px}.top{padding:8px 12px}.panel{padding:14px}.ttl{font-size:17px}.bar-tools .sp{display:none}}
 @media(prefers-reduced-motion:no-preference){.tabs button,.lang{transition:color .15s,background .15s}}
+
+/* Attandance Form Style */
+.att-form-box{max-width:500px;margin:0 auto;padding:20px;}
+.att-form-box label.f {font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--mute);margin-bottom:4px;font-weight:700;}
+.att-form-box input, .att-form-box select {padding:12px;border-radius:8px;background:#f8faf9;border:1px solid var(--line);}
+.att-form-box input[type="time"] {text-align:center;}
+.att-form-box .btn {width:100%;padding:14px;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;}
 </style>
 </head>
 <body>
@@ -203,6 +210,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <div id="app" class="wrap" hidden>
   <nav class="tabs">
     <button data-t="an" class="on" onclick="show('an')" data-i="t_an"></button>
+    <button data-t="stuatt" id="tbStuAtt" onclick="show('stuatt')">Mark Attendance</button>
     <button data-t="en" onclick="show('en')" data-i="t_en"></button>
     <button data-t="at" id="tbA" onclick="show('at')" data-i="t_at"></button>
     <button data-t="sal" id="tbS" onclick="show('sal')" data-i="t_sal"></button>
@@ -211,14 +219,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
   </nav>
 
   <section id="p_an" class="panel">
-    <div id="punchBox" class="me" hidden style="background:var(--pri); color:#fff; justify-content:space-between;">
-      <div><b style="font:700 20px var(--serif);">Attendance (Hazri)</b><br><small style="opacity:.8;">Mark your daily check-in and check-out</small></div>
-      <div style="display:flex; gap:10px;">
-        <button class="btn ghost" style="color:#fff; border-color:#fff;" onclick="punch('punchIn')">Check-In</button>
-        <button class="btn danger" onclick="punch('punchOut')">Check-Out</button>
-      </div>
-    </div>
-
     <div id="mine" class="me" hidden></div>
     <div class="bar-tools">
       <label><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
@@ -235,6 +235,42 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <div id="out"></div>
     <h4 data-i="recent"></h4>
     <div class="t"><table id="log"></table></div>
+  </section>
+
+  <section id="p_stuatt" class="panel" hidden>
+    <div class="att-form-box">
+      <h2 style="color:var(--pri);margin-bottom:20px;text-align:center;">Submit Attendance</h2>
+      
+      <div id="stuAttMsg" style="margin-bottom:15px;font-weight:bold;text-align:center;"></div>
+
+      <label class="f"><span>Date</span><input type="date" id="sa_date" style="margin-bottom:15px;"></label>
+      
+      <label class="f"><span>Status</span>
+        <select id="sa_status" style="margin-bottom:15px;">
+          <option value="Present">Present</option>
+          <option value="Leave">Leave</option>
+          <option value="Absent">Absent</option>
+          <option value="Qafila">Madani Qafila</option>
+          <option value="Weekly Holiday">Weekly Holiday</option>
+          <option value="Ashura">Ashura</option>
+          <option value="Milad Celebration">Milad Celebration</option>
+          <option value="Gyarhveen Sharif">Gyarhveen Sharif</option>
+          <option value="Day of Arafah">Day of Arafah</option>
+          <option value="Eid-ul-Adha">Eid-ul-Adha</option>
+          <option value="Independence Day">Independence Day</option>
+        </select>
+      </label>
+
+      <label class="f"><span>IN TIME (08:00 AM - 04:00 PM)</span><input type="time" id="sa_in" style="margin-bottom:15px;"></label>
+      <label class="f"><span>OUT TIME (AFTER IN TIME - 04:00 PM)</span><input type="time" id="sa_out" style="margin-bottom:15px;"></label>
+      
+      <label class="f"><span>PRECAUTIONARY DEDUCTION (OPTIONAL)</span><input type="number" id="sa_precaution" placeholder="Enter amount" style="margin-bottom:20px;"></label>
+
+      <button class="btn" onclick="submitStuAttendance()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Submit Attendance
+      </button>
+    </div>
   </section>
 
   <section id="p_en" class="panel" hidden>
@@ -314,6 +350,8 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label class="f"><span data-i="role"></span><select id="nr"><option value="student" data-i="r_student"></option><option value="teacher" data-i="r_teacher"></option></select></label>
       <label class="f"><span data-i="cls"></span><input id="nc"></label>
       <label class="f"><span>Salary (Per Hour ₹)</span><input id="nsal" type="number"></label>
+      <label class="f"><span>Account No</span><input id="nacc"></label>
+      <label class="f"><span>IFSC Code</span><input id="nifsc"></label>
     </div>
     <div class="row"><button class="btn" onclick="addUser()" data-i="u_add"></button></div>
     <div id="sharebox" class="cbox" style="margin-top:22px"></div>
@@ -440,7 +478,7 @@ const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" al
 function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');
   $('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
 function toast(m,bad){const x=$('toast');x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,2800);}
-function show(x){['an','en','at','sal','tg','adm'].forEach(y=>{$(y=='an'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
+function show(x){['an','stuatt','en','at','sal','tg','adm'].forEach(y=>{$(y=='an'||y=='stuatt'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));
   if(x=='at')attOpen();
   if(x=='sal')renderSalary();
@@ -471,22 +509,34 @@ async function login(){
   $('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
   $('tbU').hidden=D.me.role!='admin';$('tbA').hidden=D.me.role=='student';$('tbT').hidden=D.me.role=='student';
   $('tbS').hidden=D.me.role=='student';
-  $('dt').value=$('tm').value=new Date().toISOString().slice(0,7);
+  $('tbStuAtt').hidden=D.me.role!='student'; // Sirf student ko form dikhega
+  
+  $('dt').value=$('tm').value=$('salMonth').value=new Date().toISOString().slice(0,7);
+  $('sa_date').value=new Date().toISOString().slice(0,10);
+  
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
-  
-  if(D.me.role=='student'){
-    $('punchBox').hidden=false;
-  }
-  
   fill();
 }
 
-async function punch(action){
-  const r = await call({action});
+async function submitStuAttendance() {
+  const dt = $('sa_date').value;
+  const st = $('sa_status').value;
+  const inT = $('sa_in').value;
+  const outT = $('sa_out').value;
+  const prec = $('sa_precaution').value;
+  if(!dt) return toast('Date select karein', 1);
+  
+  $('stuAttMsg').textContent = "Saving...";
+  $('stuAttMsg').style.color = "var(--pri)";
+  
+  const r = await call({action:'submitAttendance', student: D.students[0].username, date: dt, status: st, inTime: inT, outTime: outT, precaution: prec});
   if(r.ok) {
-    toast(action=='punchIn'?'Check-In Successful':'Check-Out Successful');
+    $('stuAttMsg').textContent = "Attendance Submitted Successfully!";
+    $('stuAttMsg').style.color = "var(--ok)";
+    toast('Hazri lag gayi!');
   } else {
-    toast(r.msg,1);
+    $('stuAttMsg').textContent = r.msg;
+    $('stuAttMsg').style.color = "var(--low)";
   }
 }
 
@@ -722,9 +772,9 @@ function pick(inp,u){
   im.src=URL.createObjectURL(f);inp.value='';
 }
 async function addUser(){
-  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value,salary:$('nsal').value});
+  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value,salary:$('nsal').value,account:$('nacc').value,ifsc:$('nifsc').value});
   if(!r.ok)return toast(r.msg,1);
-  D=r;fill();['nn','nu','np','nc','nsal'].forEach(i=>$(i).value='');toast(t('ok_user'));
+  D=r;fill();['nn','nu','np','nc','nsal','nacc','nifsc'].forEach(i=>$(i).value='');toast(t('ok_user'));
 }
 const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.class));
 function editE(id){
@@ -752,19 +802,30 @@ function exportCSV(){
   a.download='performance-'+($('mf').value||'all')+'.csv';a.click();
 }
 
-function downloadSalaryPDF() {
+function renderSalary() {
+  if(!D || !D.attendanceRaw) return;
   const m = $('salMonth').value || new Date().toISOString().slice(0,7);
-  const rows = D.students.map(s => {
-      const att = D.attendanceRaw.filter(a => a.username === s.username && a.date.slice(0,7) === m);
-      let hrs = 0;
-      att.forEach(a => hrs += (+a.totalHours || 0));
-      if(hrs === 0) return '';
+  
+  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Total Hours</th><th>Rate (₹)</th><th>Total Salary (₹)</th><th>Action</th></tr></thead><tbody>`;
+  
+  let found = false;
+  D.students.forEach(s => {
+    const att = D.attendanceRaw.filter(a => a.username === s.username && a.date.slice(0,7) === m);
+    let hrs = 0;
+    att.forEach(a => hrs += (+a.totalHours || 0));
+    
+    if(hrs > 0 || s.salary) {
+      found = true;
       const rate = +(s.salary || 0);
       const total = (hrs * rate).toFixed(2);
-      return `<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td>${hrs.toFixed(2)}</td><td>${rate}</td><td>${total}</td><td><button class="btn sm" onclick="openPDF('${s.username}','${m}')">Download PDF</button></td></tr>`;
-  }).join('');
+      html += `<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td><b>${hrs.toFixed(2)}</b></td><td>${rate}</td><td><b>${total}</b></td><td><button class="btn sm" onclick="openPDF('${s.username}','${m}')">Download PDF</button></td></tr>`;
+    }
+  });
   
-  $('salTable').innerHTML = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Total Hours</th><th>Rate (₹)</th><th>Total Salary (₹)</th><th>Action</th></tr></thead><tbody>${rows}</tbody>`;
+  if(!found) html += `<tr><td colspan="6" class="empty">Is mahine ke liye koi record nahi mila ya kisi student ka rate set nahi hai.</td></tr>`;
+  
+  html += '</tbody>';
+  $('salTable').innerHTML = html;
 }
 
 async function openPDF(username, month) {
@@ -844,7 +905,7 @@ function drawAttCard(d,marks){
   const ab=[],lvv=[];let P=0,Lc=0,A=0;
   L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
   const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
-  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)}${!c?' <span style="opacity:.7;font-size:12px">('+esc(s.class)+')</span>':''}</span>`;
+  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)} <span style="opacity:.7;font-size:12px">(${esc(s.class)})</span></span>`;
   let body;
   if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
   else if(!mk)body=`<p class="note">${t('at_not_yet')}</p>`+(D.attlast&&D.attlast.date!=d?`<button class="btn ghost sm" onclick="attPick('${D.attlast.date}')">${t('at_last')} (${D.attlast.date})</button>`:'');
