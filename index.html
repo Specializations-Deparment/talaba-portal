@@ -80,7 +80,6 @@ td:first-child,th:first-child,td.l,th.l{text-align:start}
 tbody tr:hover td{background:#f1f7f6}
 small.tg{display:block;font-weight:400;color:var(--mute)}
 .rk{color:var(--mute);font-weight:700;width:36px}
-.cell{display:flex;align-items:baseline;justify-content:center;gap:5px}
 .num{font-weight:700;font-size:17px}
 .of{color:var(--mute);font-size:13px}
 .pc{font-size:13px;font-weight:700}
@@ -206,11 +205,21 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <button data-t="an" class="on" onclick="show('an')" data-i="t_an"></button>
     <button data-t="en" onclick="show('en')" data-i="t_en"></button>
     <button data-t="at" id="tbA" onclick="show('at')" data-i="t_at"></button>
+    <button data-t="sal" id="tbS" onclick="show('sal')" data-i="t_sal"></button>
     <button data-t="tg" id="tbT" onclick="show('tg')" data-i="t_tg"></button>
     <button data-t="adm" id="tbU" onclick="show('adm')" data-i="t_us"></button>
   </nav>
 
   <section id="p_an" class="panel">
+    <!-- Attendance Punch In/Out for Student -->
+    <div id="punchBox" class="me" hidden style="background:var(--pri); color:#fff; justify-content:space-between;">
+      <div><b style="font:700 20px var(--serif);">Attendance (Hazri)</b><br><small style="opacity:.8;">Mark your daily check-in and check-out</small></div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn ghost" style="color:#fff; border-color:#fff;" onclick="punch('punchIn')">Check-In</button>
+        <button class="btn danger" onclick="punch('punchOut')">Check-Out</button>
+      </div>
+    </div>
+
     <div id="mine" class="me" hidden></div>
     <div class="bar-tools">
       <label><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
@@ -264,6 +273,17 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <div class="stick"><span id="atmsg" class="note"></span><button class="btn" id="atsave" onclick="saveAtt()" data-i="at_save"></button></div>
   </section>
 
+  <section id="sal" class="panel" hidden>
+    <h2>تنخواہ (Salary)</h2>
+    <p class="note">Yahan mahine ke hisaab se unki total hours aur salary calculate hogi.</p>
+    <div class="bar-tools">
+      <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
+      <span class="sp"></span>
+      <button class="btn" onclick="downloadSalary()">Download Salary CSV</button>
+    </div>
+    <div class="t"><table id="salTable"></table></div>
+  </section>
+
   <section id="tg" class="panel" hidden>
     <h2 data-i="s_h"></h2>
     <p class="note" data-i="s_note"></p>
@@ -296,6 +316,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label class="f"><span data-i="pass_l"></span><input id="np"></label>
       <label class="f"><span data-i="role"></span><select id="nr"><option value="student" data-i="r_student"></option><option value="teacher" data-i="r_teacher"></option></select></label>
       <label class="f"><span data-i="cls"></span><input id="nc"></label>
+      <label class="f"><span>Salary (Per Hour)</span><input id="nsal" type="number"></label>
     </div>
     <div class="row"><button class="btn" onclick="addUser()" data-i="u_add"></button></div>
     <div id="sharebox" class="cbox" style="margin-top:22px"></div>
@@ -336,31 +357,33 @@ const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans
 const CLR={ok:'#1f8a63',mid:'#c98a1b',low:'#b5453a'};
 const COL=['#0e3b3a','#2f6fa3','#1f8a63','#c98a1b','#8a4f7d','#b5453a','#5d6e6b','#3aa0a0'];
 
-// 👇 SIRF IN 5 STUDENTS KI CLASS CHANGE KARNE KA LOGIC 👇
-function fixSpecificClasses() {
-  if (!D) return;
-  const targetUsernames = ["73872", "73699", "78664", "74286", "74522"];
-  const newClass = "تخصص فی الحدیث سال دوم";
-  
-  const applyFix = (arr) => {
-    if (!arr) return;
-    arr.forEach(item => {
-      if (targetUsernames.includes(String(item.username))) {
-        item.class = newClass;
-      }
-    });
-  };
-  
-  applyFix(D.students);
-  applyFix(D.entries);
-  applyFix(D.users);
+// 👇 5 Students ki class fix karne ka logic 👇
+const specialData = [
+    { roll: "73872", name: "نوشاد احمد" },
+    { roll: "73699", name: "غلام رسول" },
+    { roll: "78664", name: "ریاض خان" },
+    { roll: "74286", name: "عارف" },
+    { roll: "74522", name: "محمد ثاقب" }
+];
+function applyClassCorrections() {
+    if (!D) return;
+    const targetClass = "تخصص فی الحدیث سال دوم";
+    const isSpecial = (userObj) => {
+        if (!userObj) return false;
+        const uStr = String(userObj.username || '');
+        const nStr = String(userObj.name || '');
+        return specialData.some(d => uStr.includes(d.roll) || nStr.includes(d.name) || uStr.includes(d.name));
+    };
+    if (D.students) D.students.forEach(s => { if (isSpecial(s)) s.class = targetClass; });
+    if (D.entries) D.entries.forEach(e => { if (isSpecial(e)) e.class = targetClass; });
+    if (D.users) D.users.forEach(u => { if (isSpecial(u)) u.class = targetClass; });
 }
 // 👆 ================================================= 👆
 
 const T={
 en:{title:'Student Performance Portal',sub:'Specializations Department',logout:'Log out',signin:'Sign in',user_l:'Username',pass_l:'Password',
 side_h:"Every student's monthly performance",side_p:'Study, attendance, Madani Phool and class-specific work, all in one place.',
-t_an:'Analysis',t_en:'Enter Performance',t_tg:'Monthly Setup',t_us:'Users',
+t_an:'Analysis',t_en:'Enter Performance',t_tg:'Monthly Setup',t_us:'Users',t_sal:'Salary',
 month:'Month',cls:'Class',stu:'Student',all_m:'All months',all_c:'All classes',all_s:'All students',export:'Export CSV',
 k_stu:'Students',k_ent:'Entries',k_ach:'Average achievement',k_att:'Need attention',
 name:'Name',entries:'Entries',overall:'Overall',target:'Target',avg:'Avg',st_ex:'Excellent',st_ok:'On track',st_low:'Need attention',
@@ -377,7 +400,7 @@ no_resp:'No response from the server. Did you paste the new Code.gs, run setup a
 f_deeni12:'12 Deeni Kaam',f_mutalia:'Mutalia (Study)',f_madaniPhool:'Madani Phool',f_hazri:'Attendance',f_qafila:'Madani Qafila',f_test:'Monthly Test Result',f_takhrij:'Takhrij-e-Hadith',f_tahqeeq:'Tahqeeq-e-Hadith',f_fatwe:'Fatawa',f_photo:'Student Photo'},
 ur:{title:'طلبہ کارکردگی پورٹل',sub:'شعبہ تخصصات',logout:'لاگ آؤٹ',signin:'لاگ اِن',user_l:'یوزر نیم',pass_l:'پاس ورڈ',
 side_h:'ہر طالب علم کی ماہانہ کارکردگی',side_p:'مطالعہ، حاضری، مدنی پھول اور جماعت کے مطابق باقی کام، ایک ہی جگہ۔',
-t_an:'تجزیہ',t_en:'کارکردگی درج کریں',t_tg:'ماہانہ ترتیب',t_us:'یوزرز',
+t_an:'تجزیہ',t_en:'کارکردگی درج کریں',t_tg:'ماہانہ ترتیب',t_us:'یوزرز',t_sal:'تنخواہ',
 month:'ماہ',cls:'جماعت',stu:'طالب علم',all_m:'تمام مہینے',all_c:'تمام جماعتیں',all_s:'تمام طلبہ',export:'CSV ڈاؤنلوڈ کریں',
 k_stu:'طلبہ',k_ent:'اندراجات',k_ach:'اوسط کارکردگی',k_att:'توجہ طلب طلبہ',
 name:'نام',entries:'اندراجات',overall:'مجموعی',target:'ہدف',avg:'اوسط',st_ex:'عمدہ',st_ok:'بہتر',st_low:'توجہ طلب',
@@ -422,9 +445,11 @@ const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" al
 function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');
   $('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
 function toast(m,bad){const x=$('toast');x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,2800);}
-function show(x){['an','en','at','tg','adm'].forEach(y=>{$(y=='an'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
+function show(x){['an','en','at','sal','tg','adm'].forEach(y=>{$(y=='an'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));
-  if(x=='at')attOpen();}
+  if(x=='at')attOpen();
+  if(x=='sal')renderSalary();
+}
 function setLang(l){
   LG=l;try{localStorage.setItem('lg',l)}catch(e){}
   document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
@@ -447,15 +472,33 @@ async function login(){
   const r=await call({action:'list'});
   if(!r.ok)return $('msg').textContent=r.msg;
   D=r;
-  fixSpecificClasses(); // 👈 YAHAN CLASS FIX LAGAYA HAI
+  applyClassCorrections();
   $('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
   $('tbU').hidden=D.me.role!='admin';$('tbA').hidden=D.me.role=='student';$('tbT').hidden=D.me.role=='student';
+  $('tbS').hidden=D.me.role=='student';
   $('dt').value=$('tm').value=new Date().toISOString().slice(0,7);
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
+  
+  // Show Punch In/Out for students
+  if(D.me.role=='student'){
+    $('punchBox').hidden=false;
+  }
+  
   fill();
 }
+
+// PUNCH IN/OUT FUNCTION
+async function punch(action){
+  const r = await call({action});
+  if(r.ok) {
+    toast(action=='punchIn'?'Check-In Successful':'Check-Out Successful');
+  } else {
+    toast(r.msg,1);
+  }
+}
+
 function fill(){
-  fixSpecificClasses(); // 👈 AGAR DATA UPDATE HO TO BHI FIX RAHE
+  applyClassCorrections();
   setVer();
   const sv=$('st').value,cv=$('cf').value,mv=$('mf').value,tv=$('tc').value;
   $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(s.name)} (${esc(s.class)})</option>`).join('');
@@ -479,8 +522,8 @@ function fsf(){
 function ulist(){
   if(!D.users){$('ul').innerHTML=`<tr><td>${t('u_nolist')}</td></tr>`;$('uc').textContent='';return;}
   $('uc').textContent=t('u_tot')+' '+D.users.length;
-  $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th></th></tr></thead><tbody>`+
-    D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
+  $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Salary</th><th></th></tr></thead><tbody>`+
+    D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.salary || '—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
 }
 const shareUrl=(cls)=>new URL('dashboard.html',location.href).href.split('?')[0]+'?k='+D.share+(cls?'&cls='+encodeURIComponent(cls):'');
 function shareBox(){
@@ -686,9 +729,9 @@ function pick(inp,u){
   im.src=URL.createObjectURL(f);inp.value='';
 }
 async function addUser(){
-  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value});
+  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value,salary:$('nsal').value});
   if(!r.ok)return toast(r.msg,1);
-  D=r;fill();['nn','nu','np','nc'].forEach(i=>$(i).value='');toast(t('ok_user'));
+  D=r;fill();['nn','nu','np','nc','nsal'].forEach(i=>$(i).value='');toast(t('ok_user'));
 }
 const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.class));
 function editE(id){
@@ -715,6 +758,56 @@ function exportCSV(){
   a.href=URL.createObjectURL(new Blob(['\ufeff'+EXP.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv;charset=utf-8'}));
   a.download='performance-'+($('mf').value||'all')+'.csv';a.click();
 }
+
+// DOWNLOAD SALARY CSV
+function downloadSalary() {
+  if(!D.attendanceRaw) return;
+  const m = $('salMonth').value;
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  let csv = [[t('name'), 'Class', 'Total Hours', 'Hourly Rate', 'Total Salary'].map(q).join(',')];
+  
+  const grouped = {};
+  D.attendanceRaw.forEach(r => {
+    if(m && String(r.date).slice(0,7) !== m) return;
+    if(!grouped[r.username]) grouped[r.username] = { hours: 0, user: D.students.find(s=>s.username===r.username) || {} };
+    grouped[r.username].hours += (+r.totalHours || 0);
+  });
+
+  Object.keys(grouped).forEach(u => {
+    const data = grouped[u];
+    const rate = +(data.user.salary || 0);
+    const total = (data.hours * rate).toFixed(2);
+    csv.push([data.user.name || u, data.user.class || '', data.hours.toFixed(2), rate, total].map(q).join(','));
+  });
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + csv.join('\n')], {type:'text/csv;charset=utf-8'}));
+  a.download = 'Salary_' + (m || 'All') + '.csv';
+  a.click();
+}
+
+// RENDER SALARY TABLE
+function renderSalary() {
+  if(!D.attendanceRaw) return;
+  const m = $('salMonth').value;
+  const grouped = {};
+  D.attendanceRaw.forEach(r => {
+    if(m && String(r.date).slice(0,7) !== m) return;
+    if(!grouped[r.username]) grouped[r.username] = { hours: 0, user: D.students.find(s=>s.username===r.username) || {} };
+    grouped[r.username].hours += (+r.totalHours || 0);
+  });
+
+  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Total Hours</th><th>Hourly Rate</th><th>Total Salary</th></tr></thead><tbody>`;
+  Object.keys(grouped).forEach(u => {
+    const data = grouped[u];
+    const rate = +(data.user.salary || 0);
+    const total = (data.hours * rate).toFixed(2);
+    html += `<tr><td class="l">${esc(data.user.name || u)}</td><td class="l">${esc(data.user.class || '')}</td><td><b>${data.hours.toFixed(2)}</b></td><td>${rate}</td><td><b>${total}</b></td></tr>`;
+  });
+  html += '</tbody>';
+  $('salTable').innerHTML = html;
+}
+
 function attOf(u,m){const o={p:0,l:0,a:0,t:0};(D.attsum||[]).forEach(r=>{if(String(r.username)==String(u)&&(!m||r.month==m)){o.p+=r.p;o.l+=r.l;o.a+=r.a;}});o.t=o.p+o.l+o.a;o.pc=o.t?Math.round(o.p/o.t*100):null;return o;}
 const attTxt=o=>`${t('at_p')} ${o.p} · ${t('at_l')} ${o.l} · ${t('at_a')} ${o.a}`;
 let ADC={},ADT={date:null},ACM={},PP='',PCH=null;
@@ -813,7 +906,7 @@ function ptable(A,ks,Tg,tf,m){
     const p=Math.round(v/Tg[x]*100),q=lv(p);
     return `<td><div class="c2"><div dir="ltr"><span class="num">${n}</span><span class="of"> / ${+Tg[x].toFixed(1)}</span></div><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><span class="pc ${q}">${p}%</span></div></td>`;
   };
-  const atc=s=>{const o=attOf(s.u,m);return o.t?`<td><div class="c2"><b class="pc ${lv(o.pc)}">${o.pc}%</b><small class="of" style="white-space:nowrap">${attTxt(o)}</small></div></td>`:`<td><span class="of">—</span></td>`;};
+  const atc=s=>{const o=attOf(s.u,m);return o.t?`<td><div class="c2"><b class="pc ${lv(o.pc)}">${o.pc}%</b><div class="bar"><i class="${lv(o.pc)}" style="width:${Math.min(o.pc,100)}%"></i></div><small class="of" style="white-space:nowrap">${attTxt(o)}</small></div></td>`:`<td><span class="of">—</span></td>`;};
   return `<div class="t"><table><thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('entries')}</th>`+
     ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}</th>`).join('')+(hasAt?`<th>${t('at_rec')}</th>`:'')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
     A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+
@@ -870,8 +963,19 @@ function render(){
   const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
   $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
   if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
+  
   const by={};
-  E.forEach(e=>{((by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}).list.push(e);});
+  D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)))
+    .forEach(s => {
+        if (!by[s.class]) by[s.class] = {};
+        by[s.class][s.username] = {u: s.username, name: s.name, list: []};
+    });
+  E.forEach(e => {
+      if (!by[e.class]) by[e.class] = {};
+      if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
+      by[e.class][e.username].list.push(e);
+  });
+
   const allk=D.keys.filter(k=>k!='photo');
   EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
   let h='';const items=[],ALL=[];
@@ -921,6 +1025,7 @@ function render(){
       options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
   });
   attCard();
+  
   $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
     E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
       Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
