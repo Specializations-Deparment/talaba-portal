@@ -279,7 +279,6 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <p class="note">Yahan mahine ke hisaab se unki salary calculate hogi. PDF download karne ke liye button dabayein.</p>
     <div class="bar-tools">
       <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
-      <!-- Naye Filters Yahan Add Kiye Gaye Hain -->
       <label><span>Class</span><select id="salClass" onchange="renderSalary()"><option value="">All Classes</option></select></label>
       <label><span>Search Student</span><input id="salSearch" oninput="renderSalary()" autocomplete="off" placeholder="Name or Roll No..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:200px"></label>
     </div>
@@ -405,7 +404,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='22';
+const VER='23';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -617,7 +616,6 @@ function renderSalary() {
   const [year, month] = m.split('-');
   const totalDaysInMonth = new Date(year, month, 0).getDate();
   
-  // Class Dropdown Populate Karein
   if($('salClass').options.length <= 1) {
      const cls = [...new Set(D.students.filter(s=>s.basicSalary).map(s=>s.class))].sort();
      $('salClass').innerHTML = `<option value="">All Classes</option>` + cls.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
@@ -628,7 +626,6 @@ function renderSalary() {
   let found = false;
   D.students.forEach(s => {
     if(s.basicSalary) {
-      // Filter Logic
       if(selectedClass && s.class !== selectedClass) return;
       if(searchQ && !String(s.name).toLowerCase().includes(searchQ) && !String(s.username).toLowerCase().includes(searchQ)) return;
 
@@ -644,7 +641,10 @@ function renderSalary() {
         <td class="l">${esc(s.class)}</td>
         <td>₹ ${s.basicSalary}</td>
         <td>${attText}</td>
-        <td><button class="btn sm" onclick="previewSalary('${s.username}','${m}')">Check / Preview</button></td>
+        <td style="white-space:nowrap;">
+          <button class="btn sm" onclick="previewSalary('${s.username}','${m}')">Salary Slip</button>
+          <button class="btn ghost sm" style="margin-left:4px;" onclick="showTimeSummary('${s.username}','${m}')">Time Summary</button>
+        </td>
       </tr>`;
     }
   });
@@ -653,6 +653,76 @@ function renderSalary() {
   
   html += '</tbody>';
   $('salTable').innerHTML = html;
+}
+
+async function showTimeSummary(username, month) {
+  toast('Loading Time Summary...');
+  const r = await call({action:'getTimeSummary', username: username, month: month});
+  if(!r.ok) return toast(r.msg, 1);
+
+  const s = D.students.find(x => String(x.username) === String(username));
+  const summary = r.summary;
+
+  let p=0, l=0, a=0, q=0;
+  if(summary['Present']) p = summary['Present'].length;
+  if(summary['Leave']) l = summary['Leave'].length;
+  if(summary['Absent']) a = summary['Absent'].length;
+  if(summary['Qafila']) q = summary['Qafila'].length;
+
+  let html = `<div style="background:var(--pri);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;">
+    <h3 style="margin:0;font:600 18px var(--serif);">Time Attendance Summary</h3>
+    <button onclick="document.getElementById('timeSummaryModal').hidden=true" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">✕</button>
+  </div>
+  <div style="padding:20px; max-height:70vh; overflow-y:auto;">`;
+
+  html += `<p style="margin-bottom:10px;"><b>Name:</b> ${esc(s.name)} (${esc(s.class)})<br><b>Month:</b> ${month}</p>`;
+
+  html += `<div style="display:flex; gap:10px; margin-bottom:15px;">
+    <div style="background:#e1f3ea;color:var(--ok);padding:8px 12px;border-radius:8px;font-weight:bold;">Present: ${p}</div>
+    <div style="background:#fbf0d9;color:#8a5d0c;padding:8px 12px;border-radius:8px;font-weight:bold;">Leave: ${l}</div>
+    <div style="background:#f8e1de;color:var(--low);padding:8px 12px;border-radius:8px;font-weight:bold;">Absent: ${a}</div>
+  </div>`;
+
+  html += `<table style="min-width:100%;"><thead><tr><th style="text-align:left;">Date</th><th>Status</th><th>IN Time</th><th>OUT Time</th><th>Hours</th></tr></thead><tbody>`;
+
+  let allRecs = [];
+  for(let st in summary) {
+    summary[st].forEach(rec => allRecs.push({...rec, status: st}));
+  }
+  allRecs.sort((a,b)=>new Date(a.date) - new Date(b.date));
+
+  if(allRecs.length === 0) {
+      html += `<tr><td colspan="5" style="text-align:center;">No records found for this month.</td></tr>`;
+  } else {
+      allRecs.forEach(rec => {
+        let clr = rec.status === 'Present' ? 'var(--ok)' : rec.status === 'Leave' ? 'var(--mid)' : 'var(--low)';
+        html += `<tr>
+            <td style="text-align:left;">${rec.date}</td>
+            <td style="color:${clr}; font-weight:bold;">${rec.status}</td>
+            <td>${rec.inTime || '--'}</td>
+            <td>${rec.outTime || '--'}</td>
+            <td>${rec.hours || '0'}</td>
+        </tr>`;
+      });
+  }
+
+  html += `</tbody></table></div>
+  <div style="padding: 15px; background: #fff; border-top: 1px solid var(--line); text-align: right;">
+    <button class="btn ghost" onclick="document.getElementById('timeSummaryModal').hidden=true">Close</button>
+  </div>`;
+
+  let modal = document.getElementById('timeSummaryModal');
+  if(!modal) {
+    modal = document.createElement('div');
+    modal.id = 'timeSummaryModal';
+    modal.className = 'md';
+    modal.style.zIndex = '9999';
+    modal.style.background = 'rgba(0,0,0,0.8)';
+    modal.innerHTML = `<div class="mb" style="padding:0; max-width:600px;"></div>`;
+    document.body.appendChild(modal);
+  }
+  modal.querySelector('.mb').innerHTML = html;
+  modal.hidden = false;
 }
 
 async function previewSalary(username, month) {
