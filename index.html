@@ -429,10 +429,17 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <h2 data-i="u_h"></h2>
       <div class="grid" style="margin-top:20px">
         <label class="f"><span data-i="name"></span><input id="nn"></label>
+        <!-- Naye input boxes yahan add kiye gaye hain -->
+        <label class="f"><span>Name (English)</span><input id="nnEn"></label>
+        <label class="f"><span>Father Name</span><input id="nfn"></label>
+        <label class="f"><span>Aadhar Number</span><input id="nadhr"></label>
+        
         <label class="f"><span data-i="user_l"></span><input id="nu"></label>
         <label class="f"><span data-i="pass_l"></span><input id="np"></label>
         <label class="f"><span data-i="role"></span><select id="nr"><option value="student" data-i="r_student"></option><option value="teacher" data-i="r_teacher"></option></select></label>
         <label class="f"><span data-i="cls"></span><input id="nc"></label>
+        <label class="f"><span>Class (English)</span><input id="ncEn"></label>
+        
         <label class="f"><span>Basic Salary (₹)</span><input id="nsal" type="number"></label>
         <label class="f"><span>Account No</span><input id="nacc"></label>
         <label class="f"><span>IFSC Code</span><input id="nifsc"></label>
@@ -486,7 +493,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='32';
+const VER='33';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -1226,9 +1233,28 @@ function pick(inp,u){
   im.src=URL.createObjectURL(f);inp.value='';
 }
 async function addUser(){
-  const r=await call({action:'addUser',name:$('nn').value,nu:$('nu').value,np:$('np').value,role:$('nr').value,cls:$('nc').value,basicSalary:$('nsal').value,account:$('nacc').value,ifsc:$('nifsc').value,bank:$('nbank').value});
+  // Naye fields JS mein pass kiye gaye hain
+  const r=await call({
+    action:'addUser',
+    name:$('nn').value,
+    nu:$('nu').value,
+    np:$('np').value,
+    role:$('nr').value,
+    cls:$('nc').value,
+    basicSalary:$('nsal').value,
+    account:$('nacc').value,
+    ifsc:$('nifsc').value,
+    bank:$('nbank').value,
+    nameEn:$('nnEn').value,
+    classEn:$('ncEn').value,
+    fatherName:$('nfn').value,
+    aadhar:$('nadhr').value
+  });
   if(!r.ok)return toast(r.msg,1);
-  D=r;fill();['nn','nu','np','nc','nsal','nacc','nifsc','nbank'].forEach(i=>$(i).value='');toast(t('ok_user'));
+  D=r;fill();
+  // Form clear karte waqt naye fields bhi clear kiye gaye hain
+  ['nn','nnEn','nfn','nadhr','nu','np','nc','ncEn','nsal','nacc','nifsc','nbank'].forEach(i=>$(i).value='');
+  toast(t('ok_user'));
 }
 const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.class));
 function editE(id){
