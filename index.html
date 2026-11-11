@@ -245,7 +245,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label class="f"><span>Date</span><input type="date" id="sa_date" style="margin-bottom:15px;"></label>
       
       <label class="f"><span>Status</span>
-        <select id="sa_status" style="margin-bottom:15px;">
+        <select id="sa_status" style="margin-bottom:15px;" onchange="toggleTimeInputs(this.value)">
           <option value="Present">Present</option>
           <option value="Leave">Leave</option>
           <option value="Absent">Absent</option>
@@ -254,8 +254,10 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
         </select>
       </label>
 
-      <label class="f"><span>IN TIME (08:00 AM)</span><input type="time" id="sa_in" style="margin-bottom:15px;"></label>
-      <label class="f"><span>OUT TIME (04:00 PM)</span><input type="time" id="sa_out" style="margin-bottom:15px;"></label>
+      <div id="timeInputsDiv">
+        <label class="f"><span>IN TIME (08:00 AM)</span><input type="time" id="sa_in" style="margin-bottom:15px;"></label>
+        <label class="f"><span>OUT TIME (04:00 PM)</span><input type="time" id="sa_out" style="margin-bottom:15px;"></label>
+      </div>
       
       <label class="f"><span>PRECAUTIONARY DEDUCTION (OPTIONAL)</span><input type="number" id="sa_precaution" placeholder="Enter amount" style="margin-bottom:20px;"></label>
 
@@ -281,6 +283,8 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
       <label><span>Class</span><select id="salClass" onchange="renderSalary()"><option value="">All Classes</option></select></label>
       <label><span>Search Student</span><input id="salSearch" oninput="renderSalary()" autocomplete="off" placeholder="Name or Roll No..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:200px"></label>
+      <span class="sp"></span>
+      <button class="btn ghost" onclick="toggleSalaryPublish()" id="btnPublish" style="display:none;">Publish Salary to Students</button>
     </div>
     <div class="t"><table id="salTable"></table></div>
   </section>
@@ -404,7 +408,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='23';
+const VER='24';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -533,7 +537,7 @@ async function login(){
   applyClassCorrections();
   $('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
   $('tbU').hidden=D.me.role!='admin';$('tbA').hidden=D.me.role=='student';$('tbT').hidden=D.me.role=='student';
-  $('tbS').hidden=D.me.role=='student';
+  $('tbS').hidden=D.me.role=='student' && !D.showSalary;
   $('tbStuAtt').hidden=D.me.role!='student';
   $('tbSum').hidden=D.me.role!='student';
   
@@ -544,11 +548,17 @@ async function login(){
   fill();
 }
 
+function toggleTimeInputs(status) {
+  const hide = ['Leave', 'Absent', 'Qafila', 'Haftawar Tatti'].includes(status);
+  document.getElementById('timeInputsDiv').style.display = hide ? 'none' : 'block';
+}
+
 async function submitStuTimeAtt() {
   const dt = $('sa_date').value;
   const st = $('sa_status').value;
-  const inT = $('sa_in').value;
-  const outT = $('sa_out').value;
+  const hideTime = ['Leave', 'Absent', 'Qafila', 'Haftawar Tatti'].includes(st);
+  const inT = hideTime ? "" : $('sa_in').value;
+  const outT = hideTime ? "" : $('sa_out').value;
   const prec = $('sa_precaution').value;
   if(!dt) return toast('Date select karein', 1);
   
@@ -607,6 +617,19 @@ async function loadHazriSummary() {
 let currentPreviewUser = null;
 let currentPreviewMonth = null;
 
+function toggleSalaryPublish() {
+   const newVal = !(D.showSalary || false);
+   call({action: 'setSalaryPublish', val: newVal}).then(r => {
+      if(r.ok) {
+         D.showSalary = newVal;
+         renderSalary();
+         toast(newVal ? 'Salary Publish ho gayi hai!' : 'Salary Unpublish ho gayi hai!');
+      } else {
+         toast(r.msg, 1);
+      }
+   });
+}
+
 function renderSalary() {
   if(!D || !D.students) return;
   const m = $('salMonth').value || new Date().toISOString().slice(0,7);
@@ -619,6 +642,14 @@ function renderSalary() {
   if($('salClass').options.length <= 1) {
      const cls = [...new Set(D.students.filter(s=>s.basicSalary).map(s=>s.class))].sort();
      $('salClass').innerHTML = `<option value="">All Classes</option>` + cls.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  }
+
+  if(D.me.role === 'admin') {
+     $('btnPublish').style.display = 'inline-block';
+     $('btnPublish').textContent = D.showSalary ? 'Unpublish Salary' : 'Publish Salary to Students';
+     $('btnPublish').className = D.showSalary ? 'btn danger' : 'btn';
+  } else {
+     $('btnPublish').style.display = 'none';
   }
 
   let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Attendance</th><th>Action</th></tr></thead><tbody>`;
