@@ -255,8 +255,8 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       </label>
 
       <div id="timeInputsDiv">
-        <label class="f"><span>IN TIME (08:00 AM)</span><input type="time" id="sa_in" style="margin-bottom:15px;"></label>
-        <label class="f"><span>OUT TIME (04:00 PM)</span><input type="time" id="sa_out" style="margin-bottom:15px;"></label>
+        <label class="f"><span>IN TIME (Subah / AM)</span><input type="time" id="sa_in" min="05:00" max="11:59" style="margin-bottom:15px;"></label>
+        <label class="f"><span>OUT TIME (Shaam / PM)</span><input type="time" id="sa_out" min="12:00" max="23:59" style="margin-bottom:15px;"></label>
       </div>
       
       <label class="f"><span>PRECAUTIONARY DEDUCTION (OPTIONAL)</span><input type="number" id="sa_precaution" placeholder="Enter amount" style="margin-bottom:20px;"></label>
@@ -408,7 +408,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='24';
+const VER='25';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -560,7 +560,18 @@ async function submitStuTimeAtt() {
   const inT = hideTime ? "" : $('sa_in').value;
   const outT = hideTime ? "" : $('sa_out').value;
   const prec = $('sa_precaution').value;
+  
   if(!dt) return toast('Date select karein', 1);
+
+  // Roster Validation Frontend
+  if (inT) {
+    const inH = parseInt(inT.split(':')[0]);
+    if (inH >= 12) return toast('Roster Error: IN Time subah (AM) ka hona chahiye!', 1);
+  }
+  if (outT) {
+    const outH = parseInt(outT.split(':')[0]);
+    if (outH < 12) return toast('Roster Error: OUT Time shaam (PM) ka hona chahiye!', 1);
+  }
   
   $('stuAttMsg').textContent = "Saving...";
   $('stuAttMsg').style.color = "var(--pri)";
