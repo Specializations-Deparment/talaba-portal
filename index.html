@@ -281,10 +281,8 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     <p class="note">Yahan mahine ke hisaab se unki salary calculate hogi. PDF download karne ke liye button dabayein.</p>
     <div class="bar-tools">
       <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
-      <label><span>Class</span><select id="salClass" onchange="renderSalary()"><option value="">All Classes</option></select></label>
-      <label><span>Search Student</span><input id="salSearch" oninput="renderSalary()" autocomplete="off" placeholder="Name or Roll No..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:200px"></label>
-      <span class="sp"></span>
-      <button class="btn ghost" onclick="toggleSalaryPublish()" id="btnPublish" style="display:none;">Publish Salary to Students</button>
+      <label id="salClassWrap"><span>Class</span><select id="salClass" onchange="renderSalary()"><option value="">All Classes</option></select></label>
+      <label id="salSearchWrap"><span>Search Student</span><input id="salSearch" oninput="renderSalary()" autocomplete="off" placeholder="Name or Roll No..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:200px"></label>
     </div>
     <div class="t"><table id="salTable"></table></div>
   </section>
@@ -408,7 +406,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='28';
+const VER='29';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -646,19 +644,6 @@ async function loadHazriSummary() {
 let currentPreviewUser = null;
 let currentPreviewMonth = null;
 
-function toggleSalaryPublish() {
-   const newVal = !(D.showSalary || false);
-   call({action: 'setSalaryPublish', val: newVal}).then(r => {
-      if(r.ok) {
-         D.showSalary = newVal;
-         renderSalary();
-         toast(newVal ? 'Salary Publish ho gayi hai!' : 'Salary Unpublish ho gayi hai!');
-      } else {
-         toast(r.msg, 1);
-      }
-   });
-}
-
 function renderSalary() {
   if(!D || !D.students) return;
   const m = $('salMonth').value || new Date().toISOString().slice(0,7);
@@ -673,12 +658,12 @@ function renderSalary() {
      $('salClass').innerHTML = `<option value="">All Classes</option>` + cls.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
   }
 
-  if(D.me.role === 'admin') {
-     $('btnPublish').style.display = 'inline-block';
-     $('btnPublish').textContent = D.showSalary ? 'Unpublish Salary' : 'Publish Salary to Students';
-     $('btnPublish').className = D.showSalary ? 'btn danger' : 'btn';
+  if(D.me.role === 'student') {
+     $('salClassWrap').style.display = 'none';
+     $('salSearchWrap').style.display = 'none';
   } else {
-     $('btnPublish').style.display = 'none';
+     $('salClassWrap').style.display = 'flex';
+     $('salSearchWrap').style.display = 'flex';
   }
 
   let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Attendance</th><th>Action</th></tr></thead><tbody>`;
@@ -696,14 +681,26 @@ function renderSalary() {
       let attColor = markedDays >= totalDaysInMonth ? 'var(--ok)' : 'var(--low)';
       let attText = `<b style="color:${attColor};cursor:pointer;text-decoration:underline;" onclick="showMissingDays('${s.username}', '${m}')" title="Click to see missing days">${markedDays} / ${totalDaysInMonth} days</b>`;
       
+      const isPublished = (D.publishedSalaries || []).some(p => p.username === String(s.username) && p.month === m);
+      
+      let btnPublish = '';
+      if(D.me.role === 'admin') {
+         btnPublish = isPublished 
+            ? `<button class="btn danger sm" style="margin-left:4px;" onclick="toggleRowPublish('${s.username}', '${m}', false)">Unpublish</button>`
+            : `<button class="btn sm" style="margin-left:4px; background:var(--ok);" onclick="toggleRowPublish('${s.username}', '${m}', true)">Publish</button>`;
+      } else if(D.me.role === 'student' && !isPublished) {
+         return; // Hide from student if not published
+      }
+
       html += `<tr>
         <td class="l">${esc(s.name)}</td>
         <td class="l">${esc(s.class)}</td>
         <td>₹ ${s.basicSalary}</td>
         <td>${attText}</td>
         <td style="white-space:nowrap;">
-          <button class="btn sm" onclick="previewSalary('${s.username}','${m}')">Salary Slip</button>
+          <button class="btn ghost sm" onclick="previewSalary('${s.username}','${m}')">Salary Slip</button>
           <button class="btn ghost sm" style="margin-left:4px;" onclick="showTimeSummary('${s.username}','${m}')">Time Summary</button>
+          ${btnPublish}
         </td>
       </tr>`;
     }
@@ -713,6 +710,16 @@ function renderSalary() {
   
   html += '</tbody>';
   $('salTable').innerHTML = html;
+}
+
+function toggleRowPublish(username, month, publish) {
+   toast('Updating...');
+   call({action: 'toggleSalaryPublish', username, month, publish}).then(r => {
+      if(!r.ok) return toast(r.msg, 1);
+      D = r; // Server returns updated list
+      renderSalary();
+      toast(publish ? 'Salary Published successfully!' : 'Salary Unpublished!');
+   });
 }
 
 async function showTimeSummary(username, month) {
