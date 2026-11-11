@@ -255,8 +255,8 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       </label>
 
       <div id="timeInputsDiv">
-        <label class="f"><span>IN TIME (Subah / AM)</span><input type="time" id="sa_in" min="05:00" max="11:59" style="margin-bottom:15px;"></label>
-        <label class="f"><span>OUT TIME (Shaam / PM)</span><input type="time" id="sa_out" min="12:00" max="23:59" style="margin-bottom:15px;"></label>
+        <label class="f"><span>IN TIME (Max 08:00 AM)</span><input type="time" id="sa_in" min="05:00" max="08:00" style="margin-bottom:15px;"></label>
+        <label class="f"><span>OUT TIME (Max 04:00 PM)</span><input type="time" id="sa_out" min="12:00" max="16:00" style="margin-bottom:15px;"></label>
       </div>
       
       <label class="f"><span>PRECAUTIONARY DEDUCTION (OPTIONAL)</span><input type="number" id="sa_precaution" placeholder="Enter amount" style="margin-bottom:20px;"></label>
@@ -408,7 +408,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='25';
+const VER='26';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -565,12 +565,14 @@ async function submitStuTimeAtt() {
 
   // Roster Validation Frontend
   if (inT) {
-    const inH = parseInt(inT.split(':')[0]);
-    if (inH >= 12) return toast('Roster Error: IN Time subah (AM) ka hona chahiye!', 1);
+    const inMins = parseInt(inT.split(':')[0]) * 60 + parseInt(inT.split(':')[1]);
+    if (inMins > 480) return toast('Roster Error: IN Time 08:00 AM se pehle ya barabar hona chahiye!', 1);
+    if (inMins < 300) return toast('Roster Error: IN Time 05:00 AM ke baad ka hona chahiye!', 1);
   }
   if (outT) {
-    const outH = parseInt(outT.split(':')[0]);
-    if (outH < 12) return toast('Roster Error: OUT Time shaam (PM) ka hona chahiye!', 1);
+    const outMins = parseInt(outT.split(':')[0]) * 60 + parseInt(outT.split(':')[1]);
+    if (outMins > 960) return toast('Roster Error: OUT Time 04:00 PM se pehle ya barabar hona chahiye!', 1);
+    if (outMins < 720) return toast('Roster Error: OUT Time 12:00 PM ke baad ka hona chahiye!', 1);
   }
   
   $('stuAttMsg').textContent = "Saving...";
