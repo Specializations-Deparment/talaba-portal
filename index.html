@@ -242,7 +242,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <h2 style="color:var(--pri);margin-bottom:20px;text-align:center;">Submit Time Attendance</h2>
       <div id="stuAttMsg" style="margin-bottom:15px;font-weight:bold;text-align:center;"></div>
 
-      <label class="f"><span>Date</span><input type="date" id="sa_date" style="margin-bottom:15px;"></label>
+      <label class="f"><span>Date</span><input type="date" id="sa_date" style="margin-bottom:15px;" onchange="checkSunday()"></label>
       
       <label class="f"><span>Status</span>
         <select id="sa_status" style="margin-bottom:15px;" onchange="toggleTimeInputs(this.value)">
@@ -408,7 +408,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='26';
+const VER='27';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -546,6 +546,22 @@ async function login(){
   
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
   fill();
+  checkSunday(); // Check on initial load
+}
+
+function checkSunday() {
+  const dVal = $('sa_date').value;
+  if (!dVal) return;
+  const dayOfWeek = new Date(dVal + 'T00:00:00').getDay();
+  if (dayOfWeek === 0) { // 0 is Sunday
+    $('sa_status').value = 'Haftawar Tatti';
+    toggleTimeInputs('Haftawar Tatti');
+  } else {
+    if ($('sa_status').value === 'Haftawar Tatti') {
+      $('sa_status').value = 'Present';
+      toggleTimeInputs('Present');
+    }
+  }
 }
 
 function toggleTimeInputs(status) {
