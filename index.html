@@ -406,7 +406,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='29';
+const VER='30';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -472,8 +472,10 @@ no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code
 f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
-Object.assign(T.en,{sr_l:'Student report',sr_ph:'Select a student…',pf_overall:'Overall (all months)',cal_h:'Attendance calendar',cal_my:'My attendance',cal_none:'No attendance recorded for this month.',pf_pick:'Period',at_today:'Today',at_clear:'Clear all',at_search:'Search student',at_marked:'Marked',at_card_h:'Attendance',at_not_yet:'Attendance has not been marked for this date.',at_last:'Show last recorded day',at_rate:'Present rate',at_auto:'Attendance is counted automatically from the daily attendance, so it is not asked here.',t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.'});
-Object.assign(T.ur,{sr_l:'طالب علم کی رپورٹ',sr_ph:'طالب علم منتخب کریں…',pf_overall:'مجموعی (تمام مہینے)',cal_h:'حاضری کا کیلنڈر',cal_my:'میری حاضری',cal_none:'اس ماہ کی کوئی حاضری درج نہیں۔',pf_pick:'مدت',at_today:'آج',at_clear:'سب صاف کریں',at_search:'طالب علم تلاش کریں',at_marked:'نشان لگے',at_card_h:'حاضری',at_not_yet:'اس تاریخ کی حاضری ابھی نہیں لگی۔',at_last:'آخری درج دن دکھائیں',at_rate:'حاضری کی شرح',at_auto:'حاضری روزانہ حاضری سے خود شمار ہوتی ہے، اس لیے یہاں نہیں پوچھی جاتی۔',t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔'});
+Object.assign(T.en,{sr_l:'Student report',sr_ph:'Select a student…',pf_overall:'Overall (all months)',cal_h:'Attendance calendar',cal_my:'My attendance',cal_none:'No attendance recorded for this month.',pf_pick:'Period',at_today:'Today',at_clear:'Clear all',at_search:'Search student',at_marked:'Marked',at_card_h:'Attendance',at_not_yet:'Attendance has not been marked for this date.',at_last:'Show last recorded day',at_rate:'Present rate',at_auto:'Attendance is counted automatically from the daily attendance, so it is not asked here.',t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.',
+ts_title:'Time Attendance Summary', ts_name:'Name', ts_month:'Month', ts_date:'Date', ts_status:'Status', ts_in:'IN Time', ts_out:'OUT Time', ts_late:'Late Mins', ts_total_late:'Total Late Mins', ts_close:'Close', ts_present:'Present', ts_leave:'Leave', ts_absent:'Absent', ts_holiday:'Weekly Holiday', err_incomplete:'Attendance is incomplete! Cannot publish salary.'});
+Object.assign(T.ur,{sr_l:'طالب علم کی رپورٹ',sr_ph:'طالب علم منتخب کریں…',pf_overall:'مجموعی (تمام مہینے)',cal_h:'حاضری کا کیلنڈر',cal_my:'میری حاضری',cal_none:'اس ماہ کی کوئی حاضری درج نہیں۔',pf_pick:'مدت',at_today:'آج',at_clear:'سب صاف کریں',at_search:'طالب علم تلاش کریں',at_marked:'نشان لگے',at_card_h:'حاضری',at_not_yet:'اس تاریخ کی حاضری ابھی نہیں لگی۔',at_last:'آخری درج دن دکھائیں',at_rate:'حاضری کی شرح',at_auto:'حاضری روزانہ حاضری سے خود شمار ہوتی ہے، اس لیے یہاں نہیں پوچھی جاتی۔',t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔',
+ts_title:'حاضری کی تفصیل', ts_name:'نام', ts_month:'ماہ', ts_date:'تاریخ', ts_status:'حالت', ts_in:'آنے کا وقت', ts_out:'جانے کا وقت', ts_late:'تاخیر (منٹ)', ts_total_late:'کل تاخیر (منٹ)', ts_close:'بند کریں', ts_present:'حاضر', ts_leave:'رخصت', ts_absent:'غیر حاضر', ts_holiday:'ہفتوار چھٹی', err_incomplete:'حاضری ادھوری ہے! تنخواہ پبلش نہیں ہو سکتی۔'});
 const MSG={'آپ اپنا اکاؤنٹ خود حذف نہیں کر سکتے':'You cannot delete your own account','یوزر نہیں ملا':'User not found','اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے':'This student already has an entry for this month. The admin or teacher can edit it.','یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -611,6 +613,7 @@ async function loadHazriSummary() {
   if(!r.ok) return $('sumOut').innerHTML = `<div class="empty">${r.msg}</div>`;
   
   const summary = r.summary;
+  let totalLate = r.totalLate || 0;
   let html = `<div class="scs">`;
   
   let p=0, l=0, a=0, q=0;
@@ -619,13 +622,13 @@ async function loadHazriSummary() {
   if(summary['Absent']) a = summary['Absent'].length;
   if(summary['Qafila']) q = summary['Qafila'].length;
   
-  html += `<div class="sc ok"><small>Present</small><b>${p}</b></div>`;
-  html += `<div class="sc mid"><small>Leave</small><b>${l}</b></div>`;
-  html += `<div class="sc low"><small>Absent</small><b>${a}</b></div>`;
-  html += `<div class="sc"><small>Qafila / Others</small><b>${q}</b></div>`;
+  html += `<div class="sc ok"><small>${t('ts_present')}</small><b>${p}</b></div>`;
+  html += `<div class="sc mid"><small>${t('ts_leave')}</small><b>${l}</b></div>`;
+  html += `<div class="sc low"><small>${t('ts_absent')}</small><b>${a}</b></div>`;
+  html += `<div class="sc"><small>${t('ts_total_late')}</small><b>${totalLate}</b></div>`;
   html += `</div>`;
 
-  html += `<h4>Daily Details</h4><div class="t"><table><thead><tr><th>Date</th><th>Status</th><th>In Time</th><th>Out Time</th><th>Hours</th></tr></thead><tbody>`;
+  html += `<h4>${t('at_rec')}</h4><div class="t"><table><thead><tr><th>${t('ts_date')}</th><th>${t('ts_status')}</th><th>${t('ts_in')}</th><th>${t('ts_out')}</th><th>${t('ts_late')}</th></tr></thead><tbody>`;
   let allRecs = [];
   for(let st in summary) {
     summary[st].forEach(rec => allRecs.push({...rec, status: st}));
@@ -633,7 +636,9 @@ async function loadHazriSummary() {
   allRecs.sort((a,b)=>new Date(a.date) - new Date(b.date));
   
   allRecs.forEach(rec => {
-    html += `<tr><td>${rec.date}</td><td><b>${rec.status}</b></td><td>${rec.inTime}</td><td>${rec.outTime}</td><td>${rec.hours}</td></tr>`;
+    let stName = rec.status === 'Present' ? t('ts_present') : rec.status === 'Leave' ? t('ts_leave') : rec.status === 'Absent' ? t('ts_absent') : t('ts_holiday');
+    let clr = rec.status === 'Present' ? 'var(--ok)' : rec.status === 'Leave' ? 'var(--mid)' : 'var(--low)';
+    html += `<tr><td>${rec.date}</td><td style="color:${clr}; font-weight:bold;">${stName}</td><td>${rec.inTime}</td><td>${rec.outTime}</td><td>${rec.lateMins || 0}</td></tr>`;
   });
   html += `</tbody></table></div>`;
 
@@ -666,7 +671,7 @@ function renderSalary() {
      $('salSearchWrap').style.display = 'flex';
   }
 
-  let html = `<thead><tr><th class="l">Name</th><th class="l">Class</th><th>Basic Salary</th><th>Attendance</th><th>Action</th></tr></thead><tbody>`;
+  let html = `<thead><tr><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th>${t('f_deeni12')}</th><th>${t('at_rec')}</th><th>Action</th></tr></thead><tbody>`;
   
   let found = false;
   D.students.forEach(s => {
@@ -698,15 +703,15 @@ function renderSalary() {
         <td>₹ ${s.basicSalary}</td>
         <td>${attText}</td>
         <td style="white-space:nowrap;">
-          <button class="btn ghost sm" onclick="previewSalary('${s.username}','${m}')">Salary Slip</button>
-          <button class="btn ghost sm" style="margin-left:4px;" onclick="showTimeSummary('${s.username}','${m}')">Time Summary</button>
+          <button class="btn ghost sm" onclick="previewSalary('${s.username}','${m}')">${t('t_sal')}</button>
+          <button class="btn ghost sm" style="margin-left:4px;" onclick="showTimeSummary('${s.username}','${m}')">${t('ts_title')}</button>
           ${btnPublish}
         </td>
       </tr>`;
     }
   });
   
-  if(!found) html += `<tr><td colspan="5" class="empty">Is filter ke mutabiq koi record nahi mila.</td></tr>`;
+  if(!found) html += `<tr><td colspan="5" class="empty">${t('empty')}</td></tr>`;
   
   html += '</tbody>';
   $('salTable').innerHTML = html;
@@ -715,7 +720,10 @@ function renderSalary() {
 function toggleRowPublish(username, month, publish) {
    toast('Updating...');
    call({action: 'toggleSalaryPublish', username, month, publish}).then(r => {
-      if(!r.ok) return toast(r.msg, 1);
+      if(!r.ok) {
+         if(r.msg === 'INCOMPLETE_ATT') return toast(t('err_incomplete'), 1);
+         return toast(r.msg, 1);
+      }
       D = r; // Server returns updated list
       renderSalary();
       toast(publish ? 'Salary Published successfully!' : 'Salary Unpublished!');
@@ -729,6 +737,7 @@ async function showTimeSummary(username, month) {
 
   const s = D.students.find(x => String(x.username) === String(username));
   const summary = r.summary;
+  const totalLate = r.totalLate || 0;
 
   let p=0, l=0, a=0, q=0;
   if(summary['Present']) p = summary['Present'].length;
@@ -737,20 +746,21 @@ async function showTimeSummary(username, month) {
   if(summary['Qafila']) q = summary['Qafila'].length;
 
   let html = `<div style="background:var(--pri);color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;">
-    <h3 style="margin:0;font:600 18px var(--serif);">Time Attendance Summary</h3>
+    <h3 style="margin:0;font:600 18px var(--serif);">${t('ts_title')}</h3>
     <button onclick="document.getElementById('timeSummaryModal').hidden=true" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">✕</button>
   </div>
   <div style="padding:20px; max-height:70vh; overflow-y:auto;">`;
 
-  html += `<p style="margin-bottom:10px;"><b>Name:</b> ${esc(s.name)} (${esc(s.class)})<br><b>Month:</b> ${month}</p>`;
+  html += `<p style="margin-bottom:10px;"><b>${t('ts_name')}:</b> ${esc(s.name)} (${esc(s.class)})<br><b>${t('ts_month')}:</b> ${month}</p>`;
 
-  html += `<div style="display:flex; gap:10px; margin-bottom:15px;">
-    <div style="background:#e1f3ea;color:var(--ok);padding:8px 12px;border-radius:8px;font-weight:bold;">Present: ${p}</div>
-    <div style="background:#fbf0d9;color:#8a5d0c;padding:8px 12px;border-radius:8px;font-weight:bold;">Leave: ${l}</div>
-    <div style="background:#f8e1de;color:var(--low);padding:8px 12px;border-radius:8px;font-weight:bold;">Absent: ${a}</div>
+  html += `<div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+    <div style="background:#e1f3ea;color:var(--ok);padding:8px 12px;border-radius:8px;font-weight:bold;">${t('ts_present')}: ${p}</div>
+    <div style="background:#fbf0d9;color:#8a5d0c;padding:8px 12px;border-radius:8px;font-weight:bold;">${t('ts_leave')}: ${l}</div>
+    <div style="background:#f8e1de;color:var(--low);padding:8px 12px;border-radius:8px;font-weight:bold;">${t('ts_absent')}: ${a}</div>
+    <div style="background:#e4eeec;color:var(--pri);padding:8px 12px;border-radius:8px;font-weight:bold;">${t('ts_total_late')}: ${totalLate}</div>
   </div>`;
 
-  html += `<table style="min-width:100%;"><thead><tr><th style="text-align:left;">Date</th><th>Status</th><th>IN Time</th><th>OUT Time</th><th>Hours</th></tr></thead><tbody>`;
+  html += `<table style="min-width:100%;"><thead><tr><th style="text-align:left;">${t('ts_date')}</th><th>${t('ts_status')}</th><th>${t('ts_in')}</th><th>${t('ts_out')}</th><th>${t('ts_late')}</th></tr></thead><tbody>`;
 
   let allRecs = [];
   for(let st in summary) {
@@ -759,23 +769,24 @@ async function showTimeSummary(username, month) {
   allRecs.sort((a,b)=>new Date(a.date) - new Date(b.date));
 
   if(allRecs.length === 0) {
-      html += `<tr><td colspan="5" style="text-align:center;">No records found for this month.</td></tr>`;
+      html += `<tr><td colspan="5" style="text-align:center;">${t('empty')}</td></tr>`;
   } else {
       allRecs.forEach(rec => {
+        let stName = rec.status === 'Present' ? t('ts_present') : rec.status === 'Leave' ? t('ts_leave') : rec.status === 'Absent' ? t('ts_absent') : t('ts_holiday');
         let clr = rec.status === 'Present' ? 'var(--ok)' : rec.status === 'Leave' ? 'var(--mid)' : 'var(--low)';
         html += `<tr>
             <td style="text-align:left;">${rec.date}</td>
-            <td style="color:${clr}; font-weight:bold;">${rec.status}</td>
+            <td style="color:${clr}; font-weight:bold;">${stName}</td>
             <td>${rec.inTime || '--'}</td>
             <td>${rec.outTime || '--'}</td>
-            <td>${rec.hours || '0'}</td>
+            <td>${rec.lateMins || 0}</td>
         </tr>`;
       });
   }
 
   html += `</tbody></table></div>
   <div style="padding: 15px; background: #fff; border-top: 1px solid var(--line); text-align: right;">
-    <button class="btn ghost" onclick="document.getElementById('timeSummaryModal').hidden=true">Close</button>
+    <button class="btn ghost" onclick="document.getElementById('timeSummaryModal').hidden=true">${t('ts_close')}</button>
   </div>`;
 
   let modal = document.getElementById('timeSummaryModal');
