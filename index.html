@@ -679,7 +679,8 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
       <div class="grid" style="margin-top:20px">
         <label class="f"><span data-i="name"></span><input id="nn"></label>
         <label class="f"><span>Name (English)</span><input id="nnEn"></label>
-        <label class="f"><span>Father Name</span><input id="nfn"></label>
+        <label class="f"><span>Father Name (Urdu)</span><input id="nfn"></label>
+        <label class="f"><span>Father Name (English)</span><input id="nfnEn"></label>
         <label class="f"><span>Aadhar Number</span><input id="nadhr"></label>
         <label class="f"><span data-i="user_l"></span><input id="nu" autocapitalize="off"></label>
         <label class="f"><span data-i="pass_l"></span><input id="np"></label>
@@ -1394,7 +1395,7 @@ function ulist(){
   if($('ul_count')) $('ul_count').textContent=t('u_tot')+' '+D.users.length;
   const thead=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Basic Salary</th><th></th></tr></thead>`;
   if(!rows.length){$('ul').innerHTML=thead+`<tbody><tr><td colspan="6" class="sfs-empty">کوئی طالب علم نہیں ملا</td></tr></tbody>`;return;}
-  $('ul').innerHTML=thead+'<tbody>'+rows.map(u=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.basicSalary||'—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser('${esc(u.username)}')">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
+  $('ul').innerHTML=thead+'<tbody>'+rows.map(u=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.basicSalary||'—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="Edit" onclick="editUser('${esc(u.username)}')">✏️</button><button class="ib" title="${t('del')}" onclick="askDelUser('${esc(u.username)}')">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
 }
 const debouncedRenderUl=debounce(ulist,250);
 function resetUlFilters(){
@@ -1657,6 +1658,32 @@ function tgl(cb){const r=cb.closest('.pr');r.classList.toggle('off',!cb.checked)
 function copyPrev(){const c=$('tc').value,m=$('tm').value;const p=D.targets.filter(x=>x.class==c&&String(x.month).slice(0,7)<m).sort((a,b)=>String(b.month).localeCompare(String(a.month)))[0];if(!p) return toast(t('no_prev'),1);const on=new Set(p.fields?String(p.fields).split(','):fk(cfg(c))),tv=tjo(p);document.querySelectorAll('#t_f .pr').forEach(r=>{const cb=r.querySelector('input[type=checkbox]');cb.checked=on.has(cb.value);tgl(cb);r.querySelector('.tin').value=tv[cb.value]||'';});}
 async function setT(){const fields=[],tj={};document.querySelectorAll('#t_f .pr').forEach(r=>{const cb=r.querySelector('input[type=checkbox]');if(!cb.checked)return;fields.push(cb.value);const v=num(r.querySelector('.tin').value);if(v>0)tj[cb.value]=v;});if(!fields.length) return toast(t('sel_one'),1);const r=await call({action:'setTarget',cls:$('tc').value,month:$('tm').value,fields,tj});if(!r.ok) return toast(r.msg,1);D=r;fill();toast(t('ok_setup'));}
 
+let editingUser = null;
+function editUser(username) {
+  const u = D.users.find(x => x.username === username);
+  if(!u) return;
+  editingUser = username;
+  
+  $('nn').value = u.name || '';
+  $('nnEn').value = u.nameEn || '';
+  $('nfn').value = u.fatherName || '';
+  $('nfnEn').value = u.fatherNameEn || '';
+  $('nadhr').value = u.aadhar || '';
+  $('nu').value = u.username || '';
+  $('nu').disabled = true; // Username change nahi ho sakta
+  $('np').value = ''; // Password blank rakhein
+  $('nr').value = u.role || 'student';
+  $('nc').value = u.class || '';
+  $('ncEn').value = u.classEn || '';
+  $('nsal').value = u.basicSalary || '';
+  $('nacc').value = u.account || '';
+  $('nifsc').value = u.ifsc || '';
+  $('nbank').value = u.bank || '';
+
+  $('addUserBtn').textContent = 'Update User';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 async function add(){
   if($('savebtn').disabled) return toast(t('locked'),1);
   
@@ -1742,6 +1769,34 @@ function pick(inp,u){
 }
 
 async function addUser(){
+  // Agar editing mode mein hai
+  if (editingUser) {
+    const btn = $('addUserBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="save-spinner" style="border-color:var(--pri);border-top-color:#fff"></span> Updating...';
+
+    try {
+      const r = await call({
+        action: 'editUser', name: $('nn').value, nu: editingUser, np: $('np').value,
+        role: $('nr').value, cls: $('nc').value, basicSalary: $('nsal').value,
+        account: $('nacc').value, ifsc: $('nifsc').value, bank: $('nbank').value,
+        nameEn: $('nnEn').value, classEn: $('ncEn').value, fatherName: $('nfn').value, fatherNameEn: $('nfnEn').value, aadhar: $('nadhr').value
+      });
+      if(!r.ok) throw new Error(r.msg);
+      D = r; fill();
+      ['nn','nnEn','nfn','nfnEn','nadhr','nu','np','nc','ncEn','nsal','nacc','nifsc','nbank'].forEach(i=>$(i).value='');
+      $('nu').disabled = false;
+      editingUser = null;
+      toast('User updated successfully! ✓');
+    } catch(e) {
+      toast(e.message || t('msg_save_fail'), 1);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = t('u_add');
+    }
+    return; // Yahan ruk jayein
+  }
+
   const u = $('nu').value.trim();
   if(D.users && D.users.some(x => String(x.username).toLowerCase() === u.toLowerCase())) {
     toast(t('msg_dup_user'), 1);
@@ -1757,10 +1812,26 @@ async function addUser(){
   btn.innerHTML = '<span class="save-spinner" style="border-color:var(--pri);border-top-color:#fff"></span> ' + t('u_add');
 
   try {
-    const r=await call({action:'addUser',name:$('nn').value,nu:u,np:$('np').value,role:$('nr').value,cls:$('nc').value,basicSalary:$('nsal').value,account:$('nacc').value,ifsc:$('nifsc').value,bank:$('nbank').value,nameEn:$('nnEn').value,classEn:$('ncEn').value,fatherName:$('nfn').value,aadhar:$('nadhr').value});
+    const r=await call({
+      action:'addUser',
+      name:$('nn').value,
+      nu:u,
+      np:$('np').value,
+      role:$('nr').value,
+      cls:$('nc').value,
+      basicSalary:$('nsal').value,
+      account:$('nacc').value,
+      ifsc:$('nifsc').value,
+      bank:$('nbank').value,
+      nameEn:$('nnEn').value,
+      classEn:$('ncEn').value,
+      fatherName:$('nfn').value,
+      fatherNameEn:$('nfnEn').value,
+      aadhar:$('nadhr').value
+    });
     if(!r.ok) { toast(t('msg_save_fail'),1); return; }
     D=r;fill();
-    ['nn','nnEn','nfn','nadhr','nu','np','nc','ncEn','nsal','nacc','nifsc','nbank'].forEach(i=>$(i).value='');
+    ['nn','nnEn','nfn','nfnEn','nadhr','nu','np','nc','ncEn','nsal','nacc','nifsc','nbank'].forEach(i=>$(i).value='');
     toast(t('ok_user') + ' ✓');
   } catch(e) {
     toast(t('msg_save_fail'), 1);
