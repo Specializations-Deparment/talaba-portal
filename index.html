@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Student Performance Portal</title>
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,7 +32,7 @@
 html[lang=ur]{--serif:'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif;--sans:'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif}
 html[lang=ur] h1,html[lang=ur] h2,html[lang=ur] h3,html[lang=ur] h4,html[lang=ur] .ttl,html[lang=ur] .me b{font-weight:400}
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);font-variant-numeric:tabular-nums;-webkit-font-smoothing: antialiased;}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);font-variant-numeric:tabular-nums;-webkit-font-smoothing: antialiased; overflow-x: hidden;}
 html[lang=ur] body{line-height:2.05}
 h1,h2,h3,.ttl{font-family:var(--serif);font-weight:700;line-height:1.3;margin:0}
 html[lang=ur] h1,html[lang=ur] h2,html[lang=ur] h3,html[lang=ur] .ttl{line-height:2.1}
@@ -61,7 +61,7 @@ td,option,.nm,.me b{unicode-bidi:plaintext}
 .lang{border:0;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600; transition: all 0.2s;}
 
 /* Layout */
-.wrap{max-width:1240px;margin:0 auto;padding:24px;display:flex;gap:24px;align-items:flex-start}
+.wrap{max-width:1240px;margin:0 auto;padding:24px;display:flex;gap:24px;align-items:flex-start; width: 100%;}
 .sidebar{width:240px;flex:none;position:sticky;top:84px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px; box-shadow: var(--shadow-sm);}
 .tabs{display:flex;flex-direction:column;gap:6px}
 .tabs button{background:none;border:0;padding:12px 16px;cursor:pointer;color:var(--mute);font-weight:600;border-radius:8px;text-align:start;white-space:nowrap;transition:all 0.2s;}
@@ -256,7 +256,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 /* --- MOBILE RESPONSIVENESS --- */
 @media (max-width: 800px) {
   /* Layout */
-  .wrap { flex-direction: column; padding: 12px; padding-bottom: 90px !important; gap: 16px; }
+  .wrap { flex-direction: column; padding: 10px; padding-bottom: 90px !important; gap: 16px; width: 100%; overflow-x: hidden; }
   
   /* Sidebar becomes Bottom Navigation */
   .sidebar {
@@ -294,60 +294,116 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
   }
   
   /* Top Bar */
-  .top { padding: 8px 12px; }
+  .top { padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
   .ttl { font-size: 16px; }
   .brand small { display: none; }
-  .mark { width: 36px; height: 36px; border-radius: 8px; }
+  .mark { width: 32px; height: 32px; border-radius: 8px; }
   .vtag { display: none; }
-  .user { font-size: 13px; flex-direction: column; gap: 2px; align-items: flex-end; }
+  .user { font-size: 12px; flex-direction: column; gap: 2px; align-items: flex-end; }
   
   /* Login */
-  .login { grid-template-columns: 1fr; margin: 20px auto; max-width: 90%; }
+  .login { grid-template-columns: 1fr; margin: 20px auto; max-width: 95%; }
   .login .side { padding: 24px; align-items: center; text-align: center; }
-  .lg { align-self: center; width: 100px; height: 100px; }
+  .lg { align-self: center; width: 90px; height: 90px; }
   .login form { padding: 24px; }
   
   /* Forms and Filters */
-  .grid { grid-template-columns: 1fr; gap: 12px; }
-  .row { flex-direction: column; align-items: stretch; gap: 12px; }
-  .bar-tools { flex-direction: column; align-items: stretch; padding: 12px; gap: 12px; }
-  .bar-tools label { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .grid { grid-template-columns: 1fr; gap: 10px; }
+  .row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .bar-tools { flex-direction: column; align-items: stretch; padding: 10px; gap: 10px; }
+  .bar-tools label { flex-direction: column; align-items: flex-start; gap: 4px; font-size: 13px; }
   .bar-tools select, .bar-tools input { width: 100%; }
   .bar-tools .sp { display: none; }
   
-  /* Attendance */
-  .atbar { grid-template-columns: 1fr; }
-  .dstep { flex-wrap: wrap; }
-  .dstep input { width: 100%; }
-  .atk { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .at-t b { font-size: 20px; }
+  /* KPI Cards */
+  .kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi { padding: 10px; }
+  .kpi small { font-size: 11px; }
+  .kpi b { font-size: 20px; }
+  
+  /* Class Header */
+  .clsh { flex-direction: column; align-items: flex-start; gap: 6px; padding-inline-start: 8px; margin-bottom: 12px; }
+  .clsh h3 { font-size: 18px; }
+  .chip { font-size: 11px; padding: 2px 6px; white-space: normal; text-align: left; }
   
   /* Tables */
-  .t { border-radius: 8px; }
-  table { min-width: 600px; } /* Keep min-width to prevent squishing, allow horizontal scroll */
-  th, td { padding: 8px 6px; font-size: 13px; }
+  .t { 
+    border-radius: 8px; 
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -10px; 
+    width: calc(100% + 20px);
+    border-left: none;
+    border-right: none;
+    max-width: none;
+  }
+  table { min-width: 100%; }
   
-  /* Modals */
-  .mb { padding: 16px; width: 95%; max-height: 85vh; border-radius: 12px; }
-  .pmb { padding: 16px; max-height: 90vh; }
-  .pmh { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .pmh h2 { font-size: 20px; }
+  /* Adjustments for specific tables */
+  #attbl { min-width: 100%; }
+  #attbl th, #attbl td { padding: 6px 4px; font-size: 12px; }
+  .seg { flex-direction: column; width: 100%; border-radius: 6px; }
+  .seg button { border-inline-start: none; border-top: 1px solid var(--line); border-radius: 0; padding: 4px; font-size: 11px; }
+  .seg button:first-child { border-top: none; }
+  
+  #salTable { min-width: 100%; }
+  #salTable th, #salTable td { padding: 6px 4px; font-size: 11px; }
+  #salTable th:nth-child(3), #salTable td:nth-child(3) { display: none; } /* Hide Deeni Kaam */
+  #salTable td[style*="white-space"] { white-space: normal !important; display: flex; flex-direction: column; gap: 4px; }
+  #salTable .btn.sm { padding: 4px 6px; font-size: 10px; width: 100%; margin-bottom: 2px; }
+  
+  #log { min-width: 100%; }
+  #log th, #log td { padding: 6px 4px; font-size: 11px; }
+  #log td:nth-child(3), #log th:nth-child(3) { display: none; } /* Hide Class */
+  #log td:nth-child(5), #log th:nth-child(5) { display: none; } /* Hide Note */
+  
+  /* Analysis table (Cards) */
+  .cls .t { margin: 0; width: 100%; border: 1px solid var(--line); }
+  .cls .t table { min-width: 600px; }
+  .cls .t th, .cls .t td { padding: 6px 4px; font-size: 11px; }
+  .c2 { min-width: 60px; }
+  .c2 .bar { min-width: 40px; height: 4px; }
+  .nm .ava { width: 26px; height: 26px; font-size: 12px; }
+  td.l .nm { min-width: auto; }
   
   /* Scorecards */
   .scs { grid-template-columns: 1fr; }
   .cg { grid-template-columns: 1fr; }
-  .kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .kpi { padding: 12px; }
-  .kpi b { font-size: 24px; }
+  .sc { padding: 12px; }
+  .sc b { font-size: 20px; }
+  .sc.big b { font-size: 26px; }
+  
+  /* Modals */
+  .mb { padding: 16px; width: 95%; max-height: 85vh; border-radius: 12px; }
+  .pmb { padding: 16px; max-height: 90vh; border-radius: 0; width: 100%; margin: 0; }
+  .pmh { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 16px; }
+  .pmh h2 { font-size: 18px; }
+  .pmx { top: 8px; right: 8px; font-size: 20px; }
   
   /* Calendar */
   .cgrid { gap: 4px; }
-  .cgrid .d { min-height: 36px; font-size: 14px; border-radius: 6px; }
+  .cgrid .d { min-height: 28px; font-size: 12px; border-radius: 4px; }
+  .cgrid .w { font-size: 10px; }
+  .cal { padding: 12px; }
+  .cal .hd { flex-direction: column; align-items: flex-start; }
   
-  /* Salary Sheet Buttons */
-  td[style*="white-space"] { white-space: normal !important; }
-  .btn.sm { margin-bottom: 4px; width: 100%; text-align: center; }
-  .btn.ghost.sm { margin-left: 0 !important; }
+  /* Attendance Top */
+  .atbar { grid-template-columns: 1fr; }
+  .dstep { flex-wrap: wrap; }
+  .dstep input { width: 100%; flex: none; }
+  .atk { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .at-t b { font-size: 18px; }
+  
+  /* Others */
+  .attcard { padding: 12px; }
+  .attcard .hd { flex-direction: column; align-items: flex-start; }
+  .attcard .dstep { width: 100%; }
+  .nmchip { font-size: 12px; padding: 4px 8px; }
+  .stick { flex-direction: column; padding: 12px; gap: 8px; position: static; background: transparent; border: none; }
+  .stick .btn { width: 100%; }
+  .plist { grid-template-columns: 1fr; }
+  .pr { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .pr input.tin { width: 100%; }
 }
 </style>
 </head>
@@ -582,7 +638,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='35';
+const VER='36';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
