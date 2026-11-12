@@ -161,7 +161,7 @@ td.l .nm{white-space:nowrap;min-width:140px}
 .sc.big.ok,.sc.big.mid,.sc.big.low{border-left-width:1px}
 .scf{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 
-@media print{.top,.tabs,.bar-tools,.vr,#toast,.md,.ib,.hint{display:none!important}body{background:#fff}.panel{border:0;padding:0; box-shadow: none;}.cls{break-inside:avoid}}
+@media print{.top,.tabs,.bar-tools,.vr,#toast,.md,.ib,.hint,.sfs-bar{display:none!important}body{background:#fff}.panel{border:0;padding:0; box-shadow: none;}.cls{break-inside:avoid}}
 .hint{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px;background:#fdfaf2;border:1px solid #f5e8c8;color:#8a5d0c;border-radius:var(--radius);padding:14px 20px; font-size: 14px; font-weight: 500;}
 .note{color:var(--mute);font-size:14px;margin:8px 0 0}
 .empty{text-align:center;color:var(--mute);padding:40px 10px; font-size: 15px;}
@@ -320,6 +320,28 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 .back-arrow { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 html[dir=rtl] .back-arrow { transform: scaleX(-1); }
 
+/* ============ SEARCH / FILTER / SORT — NEW ============ */
+.sfs-bar { position: sticky; top: 76px; z-index: 20; background: var(--paper); padding: 10px 0; margin-bottom: 12px; border-bottom: 1px solid var(--line); }
+.sfs-search-wrap { position: relative; }
+.sfs-search { width: 100%; min-height: 44px; font-size: 16px; padding: 10px 40px 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.sfs-search:focus { border-color: var(--pri); outline: none; box-shadow: 0 0 0 3px rgba(14,59,58,0.1); }
+.sfs-clear { position: absolute; inset-inline-end: 8px; top: 50%; transform: translateY(-50%); background: var(--tint); border: 0; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: grid; place-items: center; color: var(--mute); font-size: 14px; }
+.sfs-clear:hover { color: #fff; background: var(--pri); }
+.sfs-count { color: var(--mute); font-size: 13px; font-weight: 600; margin-top: 8px; }
+.sfs-filters { margin-top: 10px; }
+.sfs-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sfs-row select { min-height: 44px; font-size: 16px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; min-width: 160px; }
+.sfs-row select:focus { border-color: var(--pri); outline: none; box-shadow: 0 0 0 3px rgba(14,59,58,0.1); }
+.sfs-reset { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; min-height: 44px; border: 1px solid var(--low); background: #fff; color: var(--low); border-radius: 8px; font-weight: 700; cursor: pointer; }
+.sfs-reset:hover { background: var(--low); color: #fff; }
+.sfs-filter-toggle { display: none; }
+.sfs-badge { background: var(--pri); color: #fff; border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: 700; margin-inline-start: 6px; }
+.sfs-empty { text-align: center; color: var(--mute); padding: 24px; font-weight: 600; font-size: 15px; }
+.sfs-mobile-sort { display: none; }
+.sortable { cursor: pointer; user-select: none; }
+.sortable:hover { background: var(--tint); }
+.sortable .sort-arrow { font-size: 10px; margin-inline-start: 4px; color: var(--pri); }
+
 /* --- MOBILE RESPONSIVENESS (≤ 768px) --- */
 @media (max-width: 768px) {
   /* Layout & Body */
@@ -469,6 +491,14 @@ html[dir=rtl] .back-arrow { transform: scaleX(-1); }
   .att-status-btn { min-height:44px; padding:0 10px; font-size:12px; }
   .att-save-wrap { position:fixed; bottom:calc(80px + env(safe-area-inset-bottom)); left:0; right:0; margin:0; padding:10px 12px; background:var(--paper); z-index:40; border-top:1px solid var(--line); box-shadow:0 -4px 10px rgba(0,0,0,0.04); }
   #p_at { padding-bottom:80px; }
+  
+  /* SFS mobile */
+  .sfs-bar { top: 54px; }
+  .sfs-filter-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; min-height: 44px; border: 1px solid var(--line); background: #fff; border-radius: 8px; font-weight: 700; color: var(--pri); cursor: pointer; margin-top: 8px; }
+  .sfs-filters { display: none; }
+  .sfs-filters.open { display: block; }
+  .sfs-row select { width: 100%; min-width: 0; }
+  .sfs-mobile-sort { display: flex; }
 }
 </style>
 </head>
@@ -540,15 +570,62 @@ html[dir=rtl] .back-arrow { transform: scaleX(-1); }
         <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
         <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
         <label><span data-i="sr_l"></span><select id="sr" onchange="srOpen(this)"></select></label>
-        <input id="q" oninput="render()" autocomplete="off" placeholder="Search student..." style="border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:15px;min-width:200px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s;" onfocus="this.style.borderColor='var(--pri)'; this.style.boxShadow='0 0 0 3px rgba(14,59,58,0.1)'" onblur="this.style.borderColor='var(--line)'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)'">
+        <div class="sfs-search-wrap" style="min-width:200px; flex:1;">
+          <input id="q" class="sfs-search" oninput="$('q_clear').hidden = !this.value; debouncedRender()" autocomplete="off" placeholder="طالب علم کا نام تلاش کریں">
+          <button class="sfs-clear" id="q_clear" onclick="clearSearch()" hidden>✕</button>
+        </div>
         <span class="sp"></span>
         <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
         <button class="btn ghost sm" onclick="exportCSV()" data-i="export"></button>
       </div>
+      <div class="sfs-filters" id="an_filters" style="margin-bottom:16px;">
+        <div class="sfs-row">
+          <button class="att-filter-chip on" data-status="" onclick="setAnStatus('')">سب</button>
+          <button class="att-filter-chip" data-status="ok" onclick="setAnStatus('ok')">اچھی کارکردگی</button>
+          <button class="att-filter-chip" data-status="low" onclick="setAnStatus('low')">کمزور کارکردگی</button>
+          <button class="att-filter-chip" data-status="abs" onclick="setAnStatus('abs')">غیر حاضر</button>
+          <button class="sfs-reset" id="an_reset" onclick="resetAnFilters()" hidden>فلٹر ہٹائیں</button>
+          <span id="an_count" class="sfs-count"></span>
+        </div>
+      </div>
+      <button class="sfs-filter-toggle" onclick="$('an_filters').classList.toggle('open')">فلٹر ▾</button>
+      <label class="f sfs-mobile-sort" style="margin-bottom:16px;"><span>ترتیب</span>
+        <select id="an_sort" onchange="setAnSort(this.value)">
+          <option value="">ڈیفالٹ (کارکردگی)</option>
+          <option value="name-1">نام (الف سے ی)</option>
+          <option value="name--1">نام (ی سے الف)</option>
+          <option value="ov--1">سب سے اوپر کارکردگی</option>
+          <option value="ov-1">سب سے کم کارکردگی</option>
+          <option value="att-1">حاضری کم</option>
+          <option value="att--1">حاضری زیادہ</option>
+          <option value="entries--1">اندراجات زیادہ</option>
+          <option value="entries-1">اندراجات کم</option>
+        </select>
+      </label>
       <div id="attcard"></div>
       <div id="mycal"></div>
       <div id="out"></div>
       <h4 data-i="recent"></h4>
+      <div class="sfs-bar">
+        <div class="sfs-search-wrap">
+          <input id="log_q" class="sfs-search" oninput="$('log_clear').hidden = !this.value; debouncedRenderLog()" placeholder="طالب علم کا نام تلاش کریں" autocomplete="off">
+          <button class="sfs-clear" id="log_clear" onclick="$('log_q').value='';$('log_clear').hidden=true;renderLog();" hidden>✕</button>
+        </div>
+        <div class="sfs-count" id="log_count"></div>
+        <button class="sfs-filter-toggle" onclick="$('log_filters').classList.toggle('open')">فلٹر ▾</button>
+        <div class="sfs-filters" id="log_filters">
+          <div class="sfs-row">
+            <select id="log_cls" onchange="renderLog()"><option value="">سب جماعتیں</option></select>
+            <select id="log_sort" onchange="renderLog()">
+              <option value="date-desc">تاریخ (نئی پہلے)</option>
+              <option value="date-asc">تاریخ (پرانی پہلے)</option>
+              <option value="name-asc">نام (الف سے ی)</option>
+              <option value="name-desc">نام (ی سے الف)</option>
+            </select>
+            <button class="sfs-reset" id="log_reset" onclick="resetLogFilters()" hidden>فلٹر ہٹائیں</button>
+          </div>
+        </div>
+      </div>
       <div class="t"><table id="log"></table></div>
     </section>
 
@@ -689,6 +766,26 @@ html[dir=rtl] .back-arrow { transform: scaleX(-1); }
       <div class="row"><button class="btn" onclick="addCustom()" data-i="cu_add"></button></div>
       <div id="culist" class="ckg" style="margin-top:16px"></div>
       <h4 data-i="saved_setups" style="margin-top:36px;"></h4>
+      <div class="sfs-bar">
+        <div class="sfs-search-wrap">
+          <input id="tlist_q" class="sfs-search" oninput="$('tlist_clear').hidden = !this.value; debouncedRenderTlist()" placeholder="کلاس تلاش کریں" autocomplete="off">
+          <button class="sfs-clear" id="tlist_clear" onclick="$('tlist_q').value='';$('tlist_clear').hidden=true;tlist();" hidden>✕</button>
+        </div>
+        <div class="sfs-count" id="tlist_count"></div>
+        <button class="sfs-filter-toggle" onclick="$('tlist_filters').classList.toggle('open')">فلٹر ▾</button>
+        <div class="sfs-filters" id="tlist_filters">
+          <div class="sfs-row">
+            <select id="tlist_month" onchange="tlist()"><option value="">سب ماہ</option></select>
+            <select id="tlist_sort" onchange="tlist()">
+              <option value="month-desc">ماہ (نئی پہلے)</option>
+              <option value="month-asc">ماہ (پرانی پہلے)</option>
+              <option value="class-asc">کلاس (الف سے ی)</option>
+              <option value="class-desc">کلاس (ی سے الف)</option>
+            </select>
+            <button class="sfs-reset" id="tlist_reset" onclick="resetTlistFilters()" hidden>فلٹر ہٹائیں</button>
+          </div>
+        </div>
+      </div>
       <div class="t"><table id="tlist"></table></div>
     </section>
 
@@ -714,6 +811,26 @@ html[dir=rtl] .back-arrow { transform: scaleX(-1); }
       <div class="row" style="margin-top:24px;"><button class="btn" onclick="addUser()" data-i="u_add"></button></div>
       <div id="sharebox" class="cbox" style="margin-top:32px"></div>
       <h4 style="margin-top:32px;"><span data-i="u_all"></span> <span id="uc" class="chip" style="margin-left:8px;"></span></h4>
+      <div class="sfs-bar" style="margin-top:16px;">
+        <div class="sfs-search-wrap">
+          <input id="ul_q" class="sfs-search" oninput="$('ul_clear').hidden = !this.value; debouncedRenderUl()" placeholder="نام یا یوزر نیم تلاش کریں" autocomplete="off">
+          <button class="sfs-clear" id="ul_clear" onclick="$('ul_q').value='';$('ul_clear').hidden=true;ulist();" hidden>✕</button>
+        </div>
+        <div class="sfs-count" id="ul_count"></div>
+        <button class="sfs-filter-toggle" onclick="$('ul_filters').classList.toggle('open')">فلٹر ▾</button>
+        <div class="sfs-filters" id="ul_filters">
+          <div class="sfs-row">
+            <select id="ul_role" onchange="ulist()">
+              <option value="">سب کردار</option>
+              <option value="admin">منتظم</option>
+              <option value="teacher">استاد</option>
+              <option value="student">طالب علم</option>
+            </select>
+            <select id="ul_cls" onchange="ulist()"><option value="">سب جماعتیں</option></select>
+            <button class="sfs-reset" id="ul_reset" onclick="resetUlFilters()" hidden>فلٹر ہٹائیں</button>
+          </div>
+        </div>
+      </div>
       <div class="t" style="margin-top:12px;"><table id="ul"></table></div>
     </section>
   </main>
@@ -866,6 +983,65 @@ const MSG={'آپ اپنا اکاؤنٹ خود حذف نہیں کر سکتے':'Yo
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
+
+// ===== SFS Helpers =====
+function normalizeUrdu(s){
+  return String(s ?? '')
+    .replace(/[\u064B-\u065F\u0670\u0640\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, '')
+    .replace(/[\u064A\u0649]/g, '\u06CC')
+    .replace(/\u0643/g, '\u06A9')
+    .replace(/\u0647/g, '\u06C1')
+    .replace(/\u0629/g, '\u06C1')
+    .replace(/\u00A0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+function debounce(fn, ms){ let t; return function(...args){ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args), ms); }; }
+function uLocaleCmp(a,b){ return String(a).localeCompare(String(b), 'ur', {numeric:true}); }
+function saveSFS(key, st){ try{ localStorage.setItem('sfs_'+key, JSON.stringify(st)); }catch(e){} }
+function loadSFS(key){ try{ return JSON.parse(localStorage.getItem('sfs_'+key) || '{}'); }catch(e){ return {}; } }
+
+const SFS_AN = (() => {
+  const s = loadSFS('an');
+  return { status: s.status || '', sort: s.sort || {key:'', dir:0} };
+})();
+function saveAnState(){ saveSFS('an', {status:SFS_AN.status, sort:SFS_AN.sort}); }
+
+function setAnStatus(s){
+  SFS_AN.status = s;
+  document.querySelectorAll('#an_filters [data-status]').forEach(b=>b.classList.toggle('on', b.dataset.status===s));
+  saveAnState(); render();
+}
+function sortBy(key){
+  if(SFS_AN.sort.key === key){
+    if(SFS_AN.sort.dir === 1) SFS_AN.sort.dir = -1;
+    else if(SFS_AN.sort.dir === -1) SFS_AN.sort = {key:'', dir:0};
+    else SFS_AN.sort.dir = 1;
+  } else { SFS_AN.sort = {key, dir:1}; }
+  saveAnState(); render();
+}
+function setAnSort(val){
+  if(!val) SFS_AN.sort = {key:'', dir:0};
+  else { const [k,d] = val.split('-'); SFS_AN.sort = {key:k, dir:+d}; }
+  saveAnState(); render();
+}
+function resetAnFilters(){
+  SFS_AN.status = '';
+  SFS_AN.sort = {key:'', dir:0};
+  if($('q')) $('q').value = '';
+  if($('q_clear')) $('q_clear').hidden = true;
+  if($('cf')) $('cf').value = '';
+  if($('mf')) $('mf').value = '';
+  if($('sf')) $('sf').value = '';
+  if($('an_sort')) $('an_sort').value = '';
+  fsf();
+  document.querySelectorAll('#an_filters [data-status]').forEach(b=>b.classList.toggle('on', b.dataset.status===''));
+  saveAnState(); render();
+}
+function clearSearch(){ if($('q')) $('q').value=''; if($('q_clear')) $('q_clear').hidden=true; render(); }
+const debouncedRender = debounce(render, 250);
+
 const cu=k=>(D&&D.custom||[]).find(x=>String(x.key)==String(k));
 const isAvg=k=>k=='test'||(cu(k)||{}).mode=='avg';
 const L=k=>{const c=cu(k);if(c)return(LG=='ur'?(c.ur||c.en):(c.en||c.ur))||k;return t('f_'+k)==='f_'+k?k:t('f_'+k);};
@@ -972,6 +1148,11 @@ async function login(){
   fill();
   checkSunday();
   reorderTabs();
+  if(D.me.role=='student'){
+    const anFilters=$('an_filters'); if(anFilters) anFilters.style.display='none';
+    const anSort=document.querySelector('#p_an .sfs-mobile-sort'); if(anSort) anSort.style.display='none';
+    const anSearch=document.querySelector('#p_an .bar-tools .sfs-search-wrap'); if(anSearch) anSearch.style.display='none';
+  }
   try{
     const lt = localStorage.getItem('lastTab') || 'an';
     const lBtn = document.querySelector(`.tabs button[data-t="${lt}"]`);
@@ -1368,9 +1549,34 @@ function fsf(){
 }
 function ulist(){
   if(!D.users){$('ul').innerHTML=`<tr><td>${t('u_nolist')}</td></tr>`;$('uc').textContent='';return;}
-  $('uc').textContent=t('u_tot')+' '+D.users.length;
-  $('ul').innerHTML=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Basic Salary</th><th></th></tr></thead><tbody>`+
-    D.users.map((u,i)=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.basicSalary || '—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser(${i})">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
+  if($('ul_cls') && $('ul_cls').options.length <= 1){
+    const classes = [...new Set(D.users.map(u=>u.class).filter(Boolean))].sort();
+    $('ul_cls').innerHTML = `<option value="">سب جماعتیں</option>` + classes.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  }
+  const q = normalizeUrdu($('ul_q') ? $('ul_q').value : '');
+  const role = $('ul_role') ? $('ul_role').value : '';
+  const cls = $('ul_cls') ? $('ul_cls').value : '';
+  if($('ul_clear')) $('ul_clear').hidden = !($('ul_q') && $('ul_q').value);
+  if($('ul_reset')) $('ul_reset').hidden = !(q || role || cls);
+  let rows = [...D.users];
+  if(role) rows = rows.filter(u=>u.role===role);
+  if(cls) rows = rows.filter(u=>u.class===cls);
+  if(q) rows = rows.filter(u=>normalizeUrdu(u.name).includes(q) || normalizeUrdu(u.username).includes(q));
+  rows.sort((a,b)=>uLocaleCmp(a.name,b.name));
+  $('uc').textContent = `${D.users.length} میں سے ${rows.length} یوزرز`;
+  if($('ul_count')) $('ul_count').textContent = t('u_tot')+' '+D.users.length;
+  const thead = `<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Basic Salary</th><th></th></tr></thead>`;
+  if(!rows.length){$('ul').innerHTML=thead+`<tbody><tr><td colspan="6" class="sfs-empty">کوئی طالب علم نہیں ملا</td></tr></tbody>`;return;}
+  $('ul').innerHTML=thead+'<tbody>'+
+    rows.map(u=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.basicSalary || '—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="${t('del')}" onclick="askDelUser('${esc(u.username)}')">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
+}
+const debouncedRenderUl = debounce(ulist, 250);
+function resetUlFilters(){
+  if($('ul_q')) $('ul_q').value = '';
+  if($('ul_clear')) $('ul_clear').hidden = true;
+  if($('ul_role')) $('ul_role').value = '';
+  if($('ul_cls')) $('ul_cls').value = '';
+  ulist();
 }
 const shareUrl=(cls)=>new URL('dashboard.html',location.href).href.split('?')[0]+'?k='+D.share+(cls?'&cls='+encodeURIComponent(cls):'');
 function shareBox(){
@@ -1426,7 +1632,13 @@ function copyShare(id){
   doCopy();
 }
 let DU=null;
-function askDelUser(i){DU=D.users[i];$('du_t').textContent=DU.name+' ('+DU.username+')';$('du_all').checked=false;$('dm').hidden=false;}
+function askDelUser(arg){
+  DU = typeof arg === 'number' ? D.users[arg] : D.users.find(u=>u.username===arg);
+  if(!DU) return;
+  $('du_t').textContent=DU.name+' ('+DU.username+')';
+  $('du_all').checked=false;
+  $('dm').hidden=false;
+}
 async function doDelUser(){
   const r=await call({action:'delUser',username:DU.username,wipe:$('du_all').checked});
   $('dm').hidden=true;
@@ -1660,11 +1872,39 @@ async function delCustom(k){
 }
 let TL=[];
 function tlist(){
-  TL=[...D.targets].sort((a,b)=>String(b.month).localeCompare(String(a.month))||String(a.class).localeCompare(String(b.class)));
-  if(!TL.length){$('tlist').innerHTML='<tr><td>—</td></tr>';return;}
+  if(!D || !D.targets) return;
+  if($('tlist_month') && $('tlist_month').options.length <= 1){
+    const months = [...new Set(D.targets.map(t=>String(t.month).slice(0,7)))].sort().reverse();
+    $('tlist_month').innerHTML = `<option value="">سب ماہ</option>` + months.map(m=>`<option value="${m}">${m}</option>`).join('');
+  }
+  const q = normalizeUrdu($('tlist_q') ? $('tlist_q').value : '');
+  const month = $('tlist_month') ? $('tlist_month').value : '';
+  const sortVal = $('tlist_sort') ? $('tlist_sort').value : 'month-desc';
+  if($('tlist_clear')) $('tlist_clear').hidden = !($('tlist_q') && $('tlist_q').value);
+  if($('tlist_reset')) $('tlist_reset').hidden = !(q || month);
+  let rows = [...D.targets];
+  if(month) rows = rows.filter(r=>String(r.month).slice(0,7)===month);
+  if(q) rows = rows.filter(r=>normalizeUrdu(r.class).includes(q));
+  const [sk,sd]=sortVal.split('-'), dir=sd==='desc'?-1:1;
+  rows.sort((a,b)=>{
+    if(sk==='month') return String(a.month).localeCompare(String(b.month))*dir;
+    if(sk==='class') return uLocaleCmp(a.class,b.class)*dir;
+    return 0;
+  });
+  if($('tlist_count')) $('tlist_count').textContent = `${D.targets.length} میں سے ${rows.length} ترتیبات`;
+  TL = rows;
+  if(!rows.length){$('tlist').innerHTML=`<tr><td class="sfs-empty">کوئی طالب علم نہیں ملا</td></tr>`;return;}
   $('tlist').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('cls')}</th><th class="l">${t('perfs')}</th><th class="l">${t('targets')}</th><th></th></tr></thead><tbody>`+
-    TL.map((r,i)=>{const on=r.fields?String(r.fields).split(','):fk(cfg(r.class)),tv=tjo(r);
+    rows.map((r,i)=>{const on=r.fields?String(r.fields).split(','):fk(cfg(r.class)),tv=tjo(r);
       return `<tr><td class="l" style="white-space:nowrap">${esc(String(r.month).slice(0,7))}</td><td class="l">${esc(r.class)}</td><td class="l">${on.map(k=>esc(L(k))).join(', ')}</td><td class="l">${Object.entries(tv).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(', ')||'—'}</td><td style="white-space:nowrap"><button class="ib" title="${t('edit')}" onclick="editT(${i})">✏️</button><button class="ib" title="${t('del')}" onclick="delT(${i})">🗑️</button></td></tr>`}).join('')+'</tbody>';
+}
+const debouncedRenderTlist = debounce(tlist, 250);
+function resetTlistFilters(){
+  if($('tlist_q')) $('tlist_q').value = '';
+  if($('tlist_clear')) $('tlist_clear').hidden = true;
+  if($('tlist_month')) $('tlist_month').value = '';
+  if($('tlist_sort')) $('tlist_sort').value = 'month-desc';
+  tlist();
 }
 function editT(i){const r=TL[i];$('tc').value=r.class;$('tm').value=String(r.month).slice(0,7);loadT();window.scrollTo({top:0,behavior:'smooth'});toast(t('edit_loaded'));}
 async function delT(i){
@@ -1855,6 +2095,11 @@ function scorecard(s,ks,Tg,at){
 }
 function ptable(A,ks,Tg,tf,m){
   const hasAt=A.some(s=>attOf(s.u,m).t>0);
+  const sh = (key, inner) => {
+    const active = SFS_AN.sort.key === key;
+    const arrow = active ? (SFS_AN.sort.dir===1?'▲':SFS_AN.sort.dir===-1?'▼':'') : '';
+    return `<th class="sortable" onclick="sortBy('${key}')">${inner}${arrow?` <span class="sort-arrow">${arrow}</span>`:''}</th>`;
+  };
   const cell=(s,x)=>{
     if(s.none)return `<td><span class="of">—</span></td>`;
     const v=vl(s,x),n=+v.toFixed(1);
@@ -1863,8 +2108,13 @@ function ptable(A,ks,Tg,tf,m){
     return `<td><div class="c2"><div dir="ltr"><span class="num">${n}</span><span class="of"> / ${+Tg[x].toFixed(1)}</span></div><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><span class="pc ${q}">${p}%</span></div></td>`;
   };
   const atc=s=>{const o=attOf(s.u,m);return o.t?`<td><div class="c2"><b class="pc ${lv(o.pc)}">${o.pc}%</b><div class="bar"><i class="${lv(o.pc)}" style="width:${Math.min(o.pc,100)}%"></i></div><small class="of" style="white-space:nowrap">${attTxt(o)}</small></div></td>`:`<td><span class="of">—</span></td>`;};
-  return `<div class="t"><table><thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('entries')}</th>`+
-    ks.map(x=>`<th>${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}</th>`).join('')+(hasAt?`<th>${t('at_rec')}</th>`:'')+(tf.length?`<th>${t('overall')}</th>`:'')+'</tr></thead><tbody>'+
+  return `<div class="t"><table><thead><tr><th class="rk">#</th>`+
+    sh('name', t('name'))+
+    sh('entries', t('entries'))+
+    ks.map(x=>sh(x, `${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}`)).join('')+
+    (hasAt?sh('att', t('at_rec')):'')+
+    (tf.length?sh('ov', t('overall')):'')+
+    '</tr></thead><tbody>'+
     A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+
       (tf.length?(s.ov==null?`<td>${ovBadge(s)}</td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b>${ovBadge(s)}</div></td>`):'')+'</tr>').join('')+'</tbody></table></div>';
 }
@@ -1911,55 +2161,73 @@ function goStudent(){
 function render(){
   try {
     CH.forEach(c=>c.destroy());CH=[];srFill();
-    
-    if(typeof Chart !== 'undefined') {
-       Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b';
-    }
+    if(typeof Chart !== 'undefined') { Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b'; }
 
     const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
-    const q=($('q')&&$('q').value||'').trim().toLowerCase();
-    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
+    const q=normalizeUrdu(($('q')&&$('q').value)||'');
+    if($('q_clear')) $('q_clear').hidden = !(($('q')&&$('q').value)||'').length;
+    if($('an_reset')) $('an_reset').hidden = !((($('q')&&$('q').value)||'') || SFS_AN.status || c || m || sv);
+
+    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||normalizeUrdu(e.name).includes(q)));
     const E=base.filter(e=>!m||mon(e)==m);
-    const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
+    const qs=q?D.students.filter(s=>(!c||s.class==c)&&normalizeUrdu(s.name).includes(q)):[];
     const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
     $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
     if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
-    
+
     const by={};
-    D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)))
-      .forEach(s => {
-          if (!by[s.class]) by[s.class] = {};
-          by[s.class][s.username] = {u: s.username, name: s.name, list: []};
-      });
-    E.forEach(e => {
-        if (!by[e.class]) by[e.class] = {};
-        if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
-        by[e.class][e.username].list.push(e);
-    });
+    D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)))
+      .forEach(s=>{ (by[s.class]??={})[s.username]={u:s.username,name:s.name,list:[]}; });
+    E.forEach(e=>{ (by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}; by[e.class][e.username].list.push(e); });
 
     const allk=D.keys.filter(k=>k!='photo');
     EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
     let h='';const items=[],ALL=[];
     Object.keys(by).forEach((k,i)=>{
-      const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
+      let A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
       const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
       A.forEach(s=>withAtt(s,ms,s.u,s.list));
       const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
       E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
       const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
       const tf=ks.filter(x=>Tg[x]>0);
-      A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
-      A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
+      A.forEach(s=>{s.ov=ovOf(s,k,ms);});
+
+      if(SFS_AN.status){
+        A=A.filter(s=>{
+          if(SFS_AN.status==='ok') return s.ov!=null && s.ov>=HIGH;
+          if(SFS_AN.status==='low') return s.ov!=null && s.ov<LOW;
+          if(SFS_AN.status==='abs'){ const ao=attOf(s.u,m); return ao.t>0 && ao.pc<50; }
+          return true;
+        });
+      }
+      if(SFS_AN.sort.key){
+        const key=SFS_AN.sort.key, dir=SFS_AN.sort.dir||1;
+        A.sort((a,b)=>{
+          if(key==='name') return uLocaleCmp(a.name,b.name)*dir;
+          if(key==='entries') return (a.n-b.n)*dir;
+          if(key==='ov') return ((a.ov??-1)-(b.ov??-1))*dir;
+          if(key==='att'){ const ao=attOf(a.u,m),bo=attOf(b.u,m); return ((ao.pc??0)-(bo.pc??0))*dir; }
+          const av=vl(a,key), bv=vl(b,key); return (av-bv)*dir;
+        });
+      } else {
+        A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(String(b.name)));
+      }
+
+      A.forEach(s=>{ALL.push(s); const ao=attOf(s.u,m); EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);});
+
       const live=A.filter(s=>!s.none);
       const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
-      h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
-      h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
+      if(A.length){
+        h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
+        h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
+      } else { return; }
+
       let cg='';
       if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
       if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
       const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
-      const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
-        const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
+      const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
       if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
       if(cg)h+=`<div class="cg">${cg}</div>`;
       if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`;
@@ -1969,35 +2237,68 @@ function render(){
     });
     const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
     const low=ovs.filter(s=>s.ov<LOW).length;
-    const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
-      `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
-      `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
-    $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
-    
+    const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div><div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div><div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
+    const noResMsg = (q || SFS_AN.status) ? 'کوئی طالب علم نہیں ملا' : t('empty');
+    $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${noResMsg}</div>`;
+    if($('an_count')){
+      const totalForClass = D.students.filter(s=>!c||s.class==c).length;
+      $('an_count').textContent = `${totalForClass} میں سے ${ALL.length} طلبہ`;
+    }
     if(typeof Chart !== 'undefined') {
       const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
-      const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
-        options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
+      const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
       items.forEach(({i,A,tf,Tg,bm,tr})=>{
         const o1=$('co'+i);
         if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
         const o2=$('cp'+i);
         if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
         const o3=$('ct'+i);
-        if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},
-          options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
+        if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
       });
     }
-    
     attCard();
-    
-    $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
-      E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
-        Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
+    renderLog();
   } catch(err) {
     console.error(err);
     $('out').innerHTML = `<div class="empty" style="color:var(--low); font-weight:600; border:1px solid var(--low); border-radius:8px; padding:20px; background:#fcefed;">Error: ${err.message}<br><br>Please refresh the page or check your internet connection.</div>`;
   }
+}
+function renderLog(){
+  if(!D || !D.entries) return;
+  if($('log_cls') && $('log_cls').options.length <= 1){
+    const classes = [...new Set(D.entries.map(e=>e.class))].sort();
+    $('log_cls').innerHTML = `<option value="">سب جماعتیں</option>` + classes.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  }
+  const q = normalizeUrdu($('log_q') ? $('log_q').value : '');
+  const cls = $('log_cls') ? $('log_cls').value : '';
+  const sortVal = $('log_sort') ? $('log_sort').value : 'date-desc';
+  if($('log_clear')) $('log_clear').hidden = !($('log_q') && $('log_q').value);
+  if($('log_reset')) $('log_reset').hidden = !(q || cls);
+  let rows = [...D.entries];
+  if(cls) rows = rows.filter(e=>e.class===cls);
+  if(q) rows = rows.filter(e=>normalizeUrdu(e.name).includes(q));
+  const [sk,sd]=sortVal.split('-');
+  rows.sort((a,b)=>{
+    if(sk==='date') return mon(a).localeCompare(mon(b))*(sd==='desc'?-1:1);
+    if(sk==='name') return uLocaleCmp(a.name,b.name)*(sd==='desc'?-1:1);
+    return 0;
+  });
+  if($('log_count')) $('log_count').textContent = `${D.entries.length} میں سے ${rows.length} اندراجات`;
+  if(!rows.length){
+    $('log').innerHTML = `<tbody><tr><td colspan="6" class="sfs-empty">کوئی طالب علم نہیں ملا</td></tr></tbody>`;
+    return;
+  }
+  $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
+    rows.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
+      Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
+}
+const debouncedRenderLog = debounce(renderLog, 250);
+function resetLogFilters(){
+  if($('log_q')) $('log_q').value = '';
+  if($('log_clear')) $('log_clear').hidden = true;
+  if($('log_cls')) $('log_cls').value = '';
+  if($('log_sort')) $('log_sort').value = 'date-desc';
+  renderLog();
 }
 
 window.addEventListener('beforeunload', function(e){
