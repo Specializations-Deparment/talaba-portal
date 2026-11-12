@@ -65,9 +65,12 @@ td,option,.nm,.me b{unicode-bidi:plaintext}
 .wrap{max-width:1240px;margin:0 auto;padding:24px;display:flex;gap:24px;align-items:flex-start; width: 100%; min-height: 100vh;}
 .sidebar{width:240px;flex:none;position:sticky;top:84px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px; box-shadow: var(--shadow-sm);}
 .tabs{display:flex;flex-direction:column;gap:6px}
-.tabs button{background:none;border:0;padding:12px 16px;cursor:pointer;color:var(--mute);font-weight:600;border-radius:8px;text-align:start;white-space:nowrap;transition:all 0.2s;}
+.tabs button{background:none;border:0;padding:10px 14px;cursor:pointer;color:var(--mute);font-weight:600;border-radius:8px;text-align:center;white-space:nowrap;transition:all 0.2s; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-height:52px; position:relative;}
+.tabs button svg{width:20px;height:20px;stroke:currentColor;fill:none;flex-shrink:0;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.tabs button .nav-label{font-size:11px;font-weight:600;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:block;}
 .tabs button:hover{background:var(--tint);color:var(--pri)}
 .tabs button.on{background:var(--pri);color:#fff; box-shadow: 0 2px 4px rgba(14, 59, 58, 0.2);}
+.tabs button.on .nav-label{font-weight:700;}
 .main-content{flex:1;min-width:0; width: 100%;}
 
 /* Login */
@@ -172,7 +175,6 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:32px 0 12px}
 .pmb{max-width:880px;position:relative}
 .pmh{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:12px}
 .pmh h2{color:var(--pri);unicode-bidi:plaintext}
-.pmx{position:absolute;top:12px;inset-inline-end:16px;font-size:24px;color:var(--mute); background: none; border: none; cursor: pointer;}
 .pz{cursor:zoom-in;display:inline-block}
 #lb{z-index:110;background:rgba(0,0,0,0.8);cursor:zoom-out}
 #lb figure{margin:0;text-align:center;color:#fff}
@@ -254,6 +256,70 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 .att-form-box input[type="time"] {text-align:center;}
 .att-form-box .btn {width:100%;padding:16px;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px; border-radius: 10px;}
 
+/* ============ ATTENDANCE SCREEN — NEW ============ */
+#p_at { overflow: visible; }
+.att-page-head { margin-bottom: 16px; }
+.att-page-head h2 { color: var(--pri); margin-bottom: 6px; }
+
+.att-toolbar { margin-bottom: 16px; }
+
+.att-quick-actions { margin-bottom: 16px; }
+.att-quick-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+.att-allpresent { display:inline-flex; align-items:center; gap:6px; background:var(--ok); color:#fff; border:0; border-radius:8px; padding:10px 16px; font-weight:700; min-height:44px; cursor:pointer; box-shadow:var(--shadow-sm); transition: background .15s; }
+.att-allpresent:hover { background:#197a57; }
+.att-allpresent svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.5; }
+
+.att-kpi-chips { display:flex; gap:6px; flex-wrap:wrap; }
+.att-chip { display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:20px; font-weight:700; font-size:13px; border:1px solid var(--line); background:#fff; color:var(--mute); }
+.att-chip.ok { background:#e8f5ef; color:var(--ok); border-color:#c6e9d7; }
+.att-chip.mid { background:#fdf6e8; color:#b57d10; border-color:#f5e8c8; }
+.att-chip.low { background:#fcefed; color:var(--low); border-color:#f6d5d1; }
+.att-chip.unm { background:var(--tint); color:var(--mute); }
+
+.att-progress-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:10px; }
+.att-progress-text { font-weight:700; color:var(--pri); font-size:14px; }
+
+.att-filter-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+.att-filter-chip { padding:8px 14px; border-radius:20px; border:1px solid var(--line); background:#fff; color:var(--mute); font-weight:600; font-size:13px; cursor:pointer; min-height:36px; transition:all .15s; }
+.att-filter-chip:hover { border-color:var(--pri); color:var(--pri); }
+.att-filter-chip.on { background:var(--pri); color:#fff; border-color:var(--pri); }
+
+.att-list { display:flex; flex-direction:column; gap:10px; }
+
+.att-student { display:flex; align-items:center; gap:12px; padding:10px 12px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-sm); border-inline-start:4px solid var(--line); }
+.att-student.st-p { border-inline-start-color:var(--ok); }
+.att-student.st-a { border-inline-start-color:var(--low); }
+.att-student.st-l { border-inline-start-color:var(--mid); }
+
+.att-student-info { display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
+.att-student-name { font-weight:700; font-size:15px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.att-status-btns { display:flex; gap:6px; flex-shrink:0; }
+.att-status-btn { padding:0 14px; min-height:44px; border-radius:8px; border:2px solid; background:#fff; font-weight:700; font-size:13px; cursor:pointer; transition:all .15s; white-space:nowrap; }
+.att-status-btn.p { color:var(--ok); border-color:var(--ok); }
+.att-status-btn.a { color:var(--low); border-color:var(--low); }
+.att-status-btn.l { color:var(--mid); border-color:var(--mid); }
+.att-status-btn.p.on { background:var(--ok); color:#fff; }
+.att-status-btn.a.on { background:var(--low); color:#fff; }
+.att-status-btn.l.on { background:var(--mid); color:#fff; }
+
+.att-save-wrap { margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
+.att-save-btn { width:100%; min-height:52px; font-size:16px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; }
+.save-spinner { display:inline-block; width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast with undo */
+#toast.has-undo { display:flex; align-items:center; gap:12px; padding:12px 16px 12px 24px; }
+#toast .undo-btn { background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.4); padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer; font-size:13px; min-height:32px; }
+#toast .undo-btn:hover { background:rgba(255,255,255,0.3); }
+
+/* Modal back button */
+.pmx { position:absolute; top:12px; inset-inline-end:16px; font-size:14px; color:var(--mute); background:#fff; border:1px solid var(--line); border-radius:8px; cursor:pointer; padding:6px 12px; display:inline-flex; align-items:center; gap:6px; min-height:36px; z-index:1; }
+.pmx:hover { color:var(--pri); border-color:var(--pri); }
+.back-arrow { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+html[dir=rtl] .back-arrow { transform: scaleX(-1); }
+
 /* --- MOBILE RESPONSIVENESS (≤ 768px) --- */
 @media (max-width: 768px) {
   /* Layout & Body */
@@ -290,13 +356,20 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     width: max-content !important;
   }
   .tabs button {
-    padding: 10px 16px !important;
+    padding: 8px 12px !important;
     border-radius: 8px !important;
     font-size: 14px !important;
     white-space: nowrap !important;
     flex: none !important;
-    min-height: 44px;
+    min-height: 56px !important;
+    min-width: 72px !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    position: relative;
   }
+  .tabs button svg { width: 20px !important; height: 20px !important; }
+  .tabs button .nav-label { font-size: 10px !important; }
+  .tabs button.on::before { content:''; position:absolute; top:0; left:12px; right:12px; height:3px; background:#fff; border-radius:0 0 4px 4px; }
   
   /* Header */
   .top { padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
@@ -368,7 +441,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
   .pmb { padding: 16px; max-height: 90vh; border-radius: 0; width: 100%; margin: 0; }
   .pmh { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 16px; }
   .pmh h2 { font-size: 18px; }
-  .pmx { top: 8px; right: 8px; font-size: 20px; }
+  .pmx { top: 8px; right: 8px; font-size: 13px; padding: 4px 8px; }
   
   /* Calendar */
   .cgrid { gap: 4px; }
@@ -387,6 +460,15 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
   .plist { grid-template-columns: 1fr; }
   .pr { flex-direction: column; align-items: flex-start; gap: 8px; }
   .pr input.tin { width: 100%; }
+  
+  /* Attendance screen mobile */
+  .att-quick-actions { position:sticky; top:56px; z-index:30; background:var(--paper); margin-left:-24px; margin-right:-24px; padding:10px 24px; border-bottom:1px solid var(--line); box-shadow:0 2px 6px rgba(0,0,0,0.03); }
+  .att-student { padding:10px; gap:8px; }
+  .att-student-name { font-size:14px; }
+  .att-status-btns { gap:4px; }
+  .att-status-btn { min-height:44px; padding:0 10px; font-size:12px; }
+  .att-save-wrap { position:fixed; bottom:calc(80px + env(safe-area-inset-bottom)); left:0; right:0; margin:0; padding:10px 12px; background:var(--paper); z-index:40; border-top:1px solid var(--line); box-shadow:0 -4px 10px rgba(0,0,0,0.04); }
+  #p_at { padding-bottom:80px; }
 }
 </style>
 </head>
@@ -414,19 +496,44 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <div id="app" class="wrap" hidden>
   <aside class="sidebar">
     <nav class="tabs">
-      <button data-t="an" class="on" onclick="show('an')" data-i="t_an"></button>
-      <button data-t="stuatt" id="tbStuAtt" onclick="show('stuatt')">Mark Attendance</button>
-      <button data-t="sum" id="tbSum" onclick="show('sum')">Hazri Summary</button>
-      <button data-t="sal" id="tbS" onclick="show('sal')" data-i="t_sal"></button>
-      <button data-t="en" onclick="show('en')" data-i="t_en"></button>
-      <button data-t="at" id="tbA" onclick="show('at')" data-i="t_at"></button>
-      <button data-t="tg" id="tbT" onclick="show('tg')" data-i="t_tg"></button>
-      <button data-t="adm" id="tbU" onclick="show('adm')" data-i="t_us"></button>
+      <button data-t="at" id="tbA" onclick="show('at')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+        <span class="nav-label" data-i="t_at"></span>
+      </button>
+      <button data-t="en" id="tbE" onclick="show('en')">
+        <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        <span class="nav-label" data-i="t_en"></span>
+      </button>
+      <button data-t="an" class="on" onclick="show('an')">
+        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 4 4 5-5"/></svg>
+        <span class="nav-label" data-i="t_an"></span>
+      </button>
+      <button data-t="sal" id="tbS" onclick="show('sal')">
+        <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+        <span class="nav-label" data-i="t_sal"></span>
+      </button>
+      <button data-t="tg" id="tbT" onclick="show('tg')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        <span class="nav-label" data-i="t_tg"></span>
+      </button>
+      <button data-t="adm" id="tbU" onclick="show('adm')">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="nav-label" data-i="t_us"></span>
+      </button>
+      <button data-t="stuatt" id="tbStuAtt" onclick="show('stuatt')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span class="nav-label" data-i="t_sa"></span>
+      </button>
+      <button data-t="sum" id="tbSum" onclick="show('sum')">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8"/></svg>
+        <span class="nav-label" data-i="t_hs"></span>
+      </button>
     </nav>
   </aside>
   
   <main class="main-content">
     <section id="p_an" class="panel">
+      <h2 data-i="t_an" style="color:var(--pri); margin-bottom:16px;"></h2>
       <div id="mine" class="me" hidden></div>
       <div class="bar-tools">
         <label><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
@@ -517,17 +624,48 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
     </section>
 
     <section id="p_at" class="panel" hidden>
-      <h2 data-i="at_h"></h2>
-      <p class="note" data-i="at_note" style="margin-bottom:20px;"></p>
-      <div class="atbar">
-        <label class="f"><span data-i="cls"></span><select id="ac" onchange="loadAtt()"></select></label>
-        <label class="f"><span data-i="at_date"></span><div class="dstep" dir="ltr"><button class="btn ghost sm" onclick="stepDay(-1)">‹</button><input id="ad" type="date" onchange="loadAtt()"><button class="btn ghost sm" onclick="stepDay(1)">›</button><button class="btn ghost sm" onclick="goToday()" data-i="at_today"></button></div></label>
-        <label class="f"><span data-i="at_search"></span><input id="aq" oninput="drawAtt()" autocomplete="off" style="border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:15px;font-weight:400; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s;" onfocus="this.style.borderColor='var(--pri)'; this.style.boxShadow='0 0 0 3px rgba(14,59,58,0.1)'" onblur="this.style.borderColor='var(--line)'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)'"></label>
+      <div class="att-page-head">
+        <h2 data-i="at_h"></h2>
+        <p class="note" data-i="at_note"></p>
       </div>
-      <div id="atk" class="atk"></div>
-      <div class="row" style="margin-top:8px"><button class="btn ghost sm" onclick="allPresent()" data-i="at_allp"></button><button class="btn ghost sm" onclick="clearAtt()" data-i="at_clear"></button><span id="atday" class="note" style="align-self:center"></span></div>
-      <div class="t" style="margin-top:16px"><table id="attbl"></table></div>
-      <div class="stick"><span id="atmsg" class="note"></span><button class="btn" id="atsave" onclick="saveAtt()" data-i="at_save"></button></div>
+
+      <div class="att-toolbar">
+        <div class="atbar">
+          <label class="f"><span data-i="cls"></span><select id="ac" onchange="onAttClassChange()"></select></label>
+          <label class="f"><span data-i="at_date"></span><div class="dstep" dir="ltr"><button class="btn ghost sm" onclick="stepDay(-1)">‹</button><input id="ad" type="date" onchange="loadAtt()"><button class="btn ghost sm" onclick="stepDay(1)">›</button><button class="btn ghost sm" onclick="goToday()" data-i="at_today"></button></div></label>
+          <label class="f"><span data-i="at_search"></span><input id="aq" oninput="drawAtt()" autocomplete="off" style="border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:16px;font-weight:400; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s;" onfocus="this.style.borderColor='var(--pri)'; this.style.boxShadow='0 0 0 3px rgba(14,59,58,0.1)'" onblur="this.style.borderColor='var(--line)'; this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)'"></label>
+        </div>
+      </div>
+
+      <div class="att-quick-actions">
+        <div class="att-quick-row">
+          <button class="att-allpresent" onclick="allPresent()">
+            <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+            <span data-i="att_allp_short"></span>
+          </button>
+          <div id="atk" class="att-kpi-chips"></div>
+        </div>
+        <div class="att-progress-row">
+          <span id="atday" class="note"></span>
+          <span id="atprogress" class="att-progress-text"></span>
+        </div>
+        <div class="att-filter-row">
+          <button class="att-filter-chip on" data-f="" onclick="setAttFilter('')"><span data-i="att_f_all"></span></button>
+          <button class="att-filter-chip" data-f="A" onclick="setAttFilter('A')"><span data-i="at_a"></span></button>
+          <button class="att-filter-chip" data-f="L" onclick="setAttFilter('L')"><span data-i="at_l"></span></button>
+          <button class="att-filter-chip" data-f="U" onclick="setAttFilter('U')"><span data-i="at_unm"></span></button>
+        </div>
+      </div>
+
+      <div id="attbl" class="att-list"></div>
+
+      <div class="att-save-wrap">
+        <button class="btn att-save-btn" id="atsave" onclick="saveAtt()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+          <span class="save-label" data-i="at_save"></span>
+          <span class="save-spinner" hidden></span>
+        </button>
+      </div>
     </section>
 
     <section id="tg" class="panel" hidden>
@@ -605,7 +743,10 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 </div></div>
 <div id="ver" class="vr"></div>
 <div id="pm" class="md" hidden><div class="mb pmb">
-  <button class="ib pmx" onclick="$('pm').hidden=true" title="Close">✕</button>
+  <button class="pmx" onclick="$('pm').hidden=true" title="Back">
+    <svg class="back-arrow" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span data-i="att_back"></span>
+  </button>
   <div id="pm_in"></div>
 </div></div>
 <div id="lb" class="md" hidden onclick="this.hidden=true"><figure><img id="lbi" alt=""><figcaption id="lbc"></figcaption></figure></div>
@@ -691,6 +832,36 @@ Object.assign(T.en,{sr_l:'Student report',sr_ph:'Select a student…',pf_overall
 ts_title:'Time Attendance Summary', ts_name:'Name', ts_month:'Month', ts_date:'Date', ts_status:'Status', ts_in:'IN Time', ts_out:'OUT Time', ts_late:'Late Mins', ts_total_late:'Total Late Mins', ts_close:'Close', ts_present:'Present', ts_leave:'Leave', ts_absent:'Absent', ts_holiday:'Weekly Holiday', err_incomplete:'Attendance is incomplete! Cannot publish salary.'});
 Object.assign(T.ur,{sr_l:'طالب علم کی رپورٹ',sr_ph:'طالب علم منتخب کریں…',pf_overall:'مجموعی (تمام مہینے)',cal_h:'حاضری کا کیلنڈر',cal_my:'میری حاضری',cal_none:'اس ماہ کی کوئی حاضری درج نہیں۔',pf_pick:'مدت',at_today:'آج',at_clear:'سب صاف کریں',at_search:'طالب علم تلاش کریں',at_marked:'نشان لگے',at_card_h:'حاضری',at_not_yet:'اس تاریخ کی حاضری ابھی نہیں لگی۔',at_last:'آخری درج دن دکھائیں',at_rate:'حاضری کی شرح',at_auto:'حاضری روزانہ حاضری سے خود شمار ہوتی ہے، اس لیے یہاں نہیں پوچھی جاتی۔',t_at:'حاضری',at_h:'روزانہ حاضری',at_note:'جماعت اور تاریخ منتخب کریں، پھر ہر طالب علم کو حاضر، رخصت یا غیر حاضر لگائیں۔ اسی تاریخ کی حاضری دوبارہ محفوظ کریں تو وہ بدل جاتی ہے۔',at_date:'تاریخ',at_p:'حاضر',at_l:'رخصت',at_a:'غیر حاضر',at_allp:'باقی سب کو حاضر لگائیں',at_save:'حاضری محفوظ کریں',at_unm:'نشان نہیں لگا',at_need:'محفوظ کرنے کے لیے ہر طالب علم پر نشان لگائیں',at_ok:'حاضری محفوظ ہو گئی',at_rec:'روزانہ حاضری',at_rec_p:'درج حاضر',at_none:'اس جماعت میں کوئی طالب علم نہیں',BAD_DATE:'درست تاریخ منتخب کریں',cu_h:'نئی کارکردگی شامل کریں',cu_note:'ایسی کارکردگی شامل کریں جو اوپر کی فہرست میں نہیں۔ وہ وہاں بغیر نشان کے آئے گی: جن مہینوں میں لینی ہو نشان لگائیں اور اس کا ہدف لکھیں۔ یہ ہر جماعت کے لیے استعمال ہو سکتی ہے۔',cu_en:'نام (انگریزی)',cu_ur:'نام (اردو، اختیاری)',cu_mode:'ماہانہ قدر',cu_sum:'اندراجات کا مجموعہ',cu_avg:'اندراجات کی اوسط',cu_add:'کارکردگی شامل کریں',cu_list:'آپ کی اپنی کارکردگیاں',cu_need:'کارکردگی کا نام لکھیں',cu_used:'اس کارکردگی کی اندراجات محفوظ ہیں، اس لیے یہ حذف نہیں ہو سکتی۔ اس کی جگہ ماہانہ ترتیب میں نشان ہٹا دیں۔',ok_cu:'کارکردگی شامل ہو گئی',ok_cu_del:'کارکردگی حذف ہو گئی',cu_del_q:'کیا یہ کارکردگی حذف کریں؟',filled:'بھرے ہوئے',fill_need:'محفوظ کرنے کے لیے تمام خانے بھریں',fill_all:'براہِ کرم تمام خانے بھریں:',pl_h:'لائیو ڈیش بورڈ کا لنک (صرف دیکھنے کے لیے)',pl_note:'یہ لنک اپنے سینئرز کو دیں۔ اس سے صرف لائیو ڈیش بورڈ کھلتا ہے: لاگ اِن نہیں، ترمیم نہیں، اور یوزر نیم یا پاس ورڈ کبھی نظر نہیں آتے۔ جس کے پاس لنک ہو وہ طلبہ کی کارکردگی دیکھ سکتا ہے، اس لیے احتیاط سے دیں۔ نیا لنک بنانے سے پرانا لنک بند ہو جاتا ہے۔',pl_create:'لنک بنائیں',pl_new:'نیا لنک بنائیں',pl_off:'لنک بند کریں',pl_copy:'لنک نقل کریں',pl_open:'کھولیں',pl_copied:'لنک نقل ہو گیا',pl_none:'کوئی لنک فعال نہیں۔',pl_old:'اس سہولت کے لیے نیا Code.gs لگائیں۔',pl_confirm_new:'کیا نیا لنک بنائیں؟ پرانا لنک کام کرنا بند کر دے گا۔',pl_confirm_off:'کیا لنک بند کریں؟ اس سے کوئی ڈیش بورڈ نہیں کھول سکے گا۔',pl_done:'لنک تبدیل ہو گیا',pf_h:'طالب علم کا پروفائل',pf_open:'مکمل تجزیہ کھولیں',pf_period:'کارکردگی',pf_hist:'ماہ بہ ماہ',pf_nophoto:'ابھی تصویر نہیں لگی',chg_photo:'تصویر تبدیل کریں',pf_all:'تمام مہینے',du_h:'یوزر حذف کریں',du_note:'یہ یوزر لاگ اِن نہیں کر سکے گا اور فہرستوں سے ہٹ جائے گا۔ نیچے نشان نہ لگائیں تو اس کی محفوظ اندراجات شیٹ میں رہیں گی۔',du_all:'اس یوزر کی کارکردگی کی اندراجات اور تصویر بھی حذف کریں',ok_delU:'یوزر حذف ہو گیا',locked:'اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے، دوسری اندراج نہیں ہو سکتی۔ ترمیم منتظم یا استاد کر سکتے ہیں۔',edit_it:'وہ اندراج تبدیل کریں',saved_setups:'محفوظ شدہ ترتیبات',perfs:'کارکردگیاں',targets:'ہدف',edit_loaded:'ترتیب اوپر کے فارم میں آ گئی ہے۔ تبدیل کر کے «ترتیب محفوظ کریں» دبائیں۔',confirm_delT:'کیا اس ماہ کی ترتیب حذف کریں؟ اس کے ہدف اور کارکردگیوں کی فہرست پہلی حالت پر آ جائیں گے۔ محفوظ اندراجات حذف نہیں ہوتیں۔',ok_delT:'ترتیب حذف ہو گئی',print:'پرنٹ',ch_ov:'طلبہ کے مطابق مجموعی کارکردگی',ch_perf:'کارکردگی کے مطابق جماعت کی اوسط',ch_trend:'ماہانہ رجحان',sc_nt:'ہدف مقرر نہیں',no_nums:'کوئی قدر محفوظ نہیں',empty_hint:'کچھ اندراجات بغیر کسی عدد کے محفوظ ہوئی ہیں۔ انہیں حذف کریں (منتظم یا استاد «حالیہ اندراجات» میں 🗑️ سے) اور کارکردگی دوبارہ درج کریں۔',save_to:'یہ {n} کے لیے {m} میں محفوظ ہوگی۔',
 ts_title:'حاضری کی تفصیل', ts_name:'نام', ts_month:'ماہ', ts_date:'تاریخ', ts_status:'حالت', ts_in:'آنے کا وقت', ts_out:'جانے کا وقت', ts_late:'تاخیر (منٹ)', ts_total_late:'کل تاخیر (منٹ)', ts_close:'بند کریں', ts_present:'حاضر', ts_leave:'رخصت', ts_absent:'غیر حاضر', ts_holiday:'ہفتوار چھٹی', err_incomplete:'حاضری ادھوری ہے! تنخواہ پبلش نہیں ہو سکتی۔'});
+Object.assign(T.en,{
+  t_sa:'Attendance',
+  t_hs:'Summary',
+  att_allp_short:'All Present',
+  att_saved:'Attendance saved ✓',
+  att_saving:'Saving…',
+  att_save_fail:'Check internet connection, try again',
+  att_unsaved:'You have not saved attendance',
+  att_undo:'Undo',
+  att_undone:'Reverted',
+  att_progress:'Marked',
+  att_f_all:'All',
+  att_back:'Back',
+  att_nothing_undo:'No previous attendance to undo'
+});
+Object.assign(T.ur,{
+  t_sa:'حاضری',
+  t_hs:'خلاصہ',
+  att_allp_short:'سب حاضر',
+  att_saved:'حاضری محفوظ ہو گئی ✓',
+  att_saving:'محفوظ ہو رہا ہے…',
+  att_save_fail:'انٹرنیٹ کنیکشن چیک کریں، دوبارہ کوشش کریں',
+  att_unsaved:'آپ نے حاضری محفوظ نہیں کی',
+  att_undo:'واپس کریں',
+  att_undone:'واپس کر دیا گیا',
+  att_progress:'نشان لگ چکا',
+  att_f_all:'سب',
+  att_back:'واپس',
+  att_nothing_undo:'واپس کرنے کے لیے کوئی پرانی حاضری نہیں'
+});
 const MSG={'آپ اپنا اکاؤنٹ خود حذف نہیں کر سکتے':'You cannot delete your own account','یوزر نہیں ملا':'User not found','اس طالب علم کی اس ماہ کی اندراج پہلے سے موجود ہے':'This student already has an entry for this month. The admin or teacher can edit it.','یوزر نیم یا پاس ورڈ غلط ہے':'Incorrect username or password','اجازت نہیں ہے':'Not allowed','اجازت نہیں ہے یا تصویر بڑی ہے':'Not allowed, or the photo is too large','اندراج نہیں ملی، صفحہ تازہ کر کے دوبارہ کوشش کریں':'Entry not found. Refresh the page and try again'};
 const t=k=>T[LG][k]||T.en[k]||k;
 const $=id=>document.getElementById(id);
@@ -716,18 +887,54 @@ const stl=l=>t({ok:'st_ex',mid:'st_ok',low:'st_low'}[l]);
 const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
 function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');
   $('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
-function toast(m,bad){const x=$('toast');x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,2800);}
-function show(x){['an','stuatt','sum','sal','en','at','tg','adm'].forEach(y=>{$(y=='an'||y=='stuatt'||y=='sum'||y=='sal'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
+function toast(m,bad){const x=$('toast');x.innerHTML='';x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,2800);}
+function toastWithUndo(msg, onUndo, ms){
+  const x=$('toast');
+  x.innerHTML='';
+  x.className='has-undo';
+  const span=document.createElement('span');
+  span.textContent=msg;
+  const btn=document.createElement('button');
+  btn.className='undo-btn';
+  btn.textContent=t('att_undo');
+  btn.onclick=()=>{ x.hidden=true; clearTimeout(TT); clearTimeout(TUndo); if(onUndo) onUndo(); };
+  x.appendChild(span); x.appendChild(btn);
+  x.hidden=false;
+  clearTimeout(TT); clearTimeout(TUndo);
+  TT=setTimeout(()=>{ x.hidden=true; }, ms||5000);
+}
+function show(x){
+  ['an','stuatt','sum','sal','en','at','tg','adm'].forEach(y=>{
+    $(y=='an'||y=='stuatt'||y=='sum'||y=='sal'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;
+  });
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));
   if(x=='at')attOpen();
   if(x=='sal')renderSalary();
   if(x=='sum')loadHazriSummary();
+  try{ localStorage.setItem('lastTab', x); }catch(e){}
+  const active = document.querySelector('.tabs button.on');
+  if(active && window.innerWidth<=768) active.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+}
+function reorderTabs(){
+  if(!D || !D.me) return;
+  const tabs = document.querySelector('.tabs');
+  if(!tabs) return;
+  const order = D.me.role === 'student'
+    ? ['stuatt','sum','an','sal']
+    : (D.me.role === 'admin'
+       ? ['at','en','an','sal','tg','adm']
+       : ['at','en','an','sal','tg']);
+  const map = {};
+  tabs.querySelectorAll('button').forEach(b=>{ map[b.dataset.t]=b; });
+  order.forEach(t=>{ if(map[t]) tabs.appendChild(map[t]); });
 }
 function setLang(l){
   LG=l;try{localStorage.setItem('lg',l)}catch(e){}
   document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
   document.title=t('title');$('lgb').textContent=l=='en'?'اردو':'English';
   document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i));
+  const sl=document.querySelector('#atsave .save-label');
+  if(sl && $('atsave') && !$('atsave').disabled) sl.textContent=t('at_save');
   if(D){$('who').textContent=D.me.name+' — '+t('r_'+D.me.role);fill();}
 }
 async function call(o){
@@ -751,10 +958,12 @@ async function login(){
   D=r;
   applyClassCorrections();
   $('login').hidden=true;$('app').hidden=false;$('user').hidden=false;
-  $('tbU').hidden=D.me.role!='admin';$('tbA').hidden=D.me.role=='student';$('tbT').hidden=D.me.role=='student';
+  $('tbU').hidden=D.me.role!='admin';$('tbA').hidden=D.me.role=='student';
+  $('tbT').hidden=D.me.role=='student';
   $('tbS').hidden=false;
   $('tbStuAtt').hidden=D.me.role!='student';
   $('tbSum').hidden=D.me.role!='student';
+  $('tbE').hidden=D.me.role=='student';
   
   $('dt').value=$('tm').value=$('salMonth').value=$('sumMonth').value=new Date().toISOString().slice(0,7);
   $('sa_date').value=new Date().toISOString().slice(0,10);
@@ -762,6 +971,12 @@ async function login(){
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
   fill();
   checkSunday();
+  reorderTabs();
+  try{
+    const lt = localStorage.getItem('lastTab') || 'an';
+    const lBtn = document.querySelector(`.tabs button[data-t="${lt}"]`);
+    if(lBtn && !lBtn.hidden) show(lt);
+  }catch(e){}
 }
 
 function checkSunday() {
@@ -1219,47 +1434,188 @@ async function doDelUser(){
   D=r;fill();toast(t('ok_delU'));
 }
 let AT={};
+let ATT_FILTER='';
+let attDirty=false;
+let TUndo=null;
+let SERVER_STATE=null;
 const dayLabel=d=>d?new Date(d+'T00:00:00').toLocaleDateString(LG=='ur'?'ur-PK':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'';
-function attOpen(){
-  const cl=[...new Set(D.students.map(s=>s.class))],cv=$('ac').value;
-  $('ac').innerHTML=cl.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if(cl.includes(cv))$('ac').value=cv;
-  $('ad').max=todayStr();if(!$('ad').value)$('ad').value=todayStr();
+
+function attDraftKey(c,d){ return 'attDraft_'+c+'_'+d; }
+function saveAttDraft(){
+  if(!$('ac').value || !$('ad').value) return;
+  try{ localStorage.setItem(attDraftKey($('ac').value,$('ad').value), JSON.stringify(AT)); }catch(e){}
+}
+function loadAttDraft(c,d){
+  try{ const s=localStorage.getItem(attDraftKey(c,d)); return s ? JSON.parse(s) : null; }catch(e){ return null; }
+}
+function clearAttDraft(c,d){
+  try{ localStorage.removeItem(attDraftKey(c,d)); }catch(e){}
+}
+
+function onAttClassChange(){
+  try{ localStorage.setItem('lastAttClass', $('ac').value); }catch(e){}
   loadAtt();
 }
-async function loadAtt(){
-  const c=$('ac').value,d=$('ad').value;if(!c||!d){AT={};return drawAtt();}
-  const r=await call({action:'getAtt',cls:c,date:d});if(!r.ok){AT={};drawAtt();return toast(r.msg,1);}
-  AT={...r.attday};drawAtt();
+
+function setAttFilter(f){
+  ATT_FILTER = f;
+  document.querySelectorAll('.att-filter-chip').forEach(b=>b.classList.toggle('on', b.dataset.f===f));
+  drawAtt();
 }
+
+function attOpen(){
+  const cl=[...new Set(D.students.map(s=>s.class))];
+  let cv=$('ac').value;
+  if(!cv){ try{ cv = localStorage.getItem('lastAttClass') || ''; }catch(e){} }
+  $('ac').innerHTML=cl.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if(cl.includes(cv)) $('ac').value=cv;
+  else if(cl.length) $('ac').value=cl[0];
+  $('ad').max=todayStr();
+  if(!$('ad').value) $('ad').value=todayStr();
+  loadAtt();
+}
+
+async function loadAtt(){
+  const c=$('ac').value, d=$('ad').value;
+  if(!c||!d){ AT={}; return drawAtt(); }
+  const draft = loadAttDraft(c, d);
+  const r=await call({action:'getAtt',cls:c,date:d});
+  if(!r.ok){ AT={}; drawAtt(); return toast(r.msg,1); }
+  const existing = r.attday || {};
+  SERVER_STATE = JSON.parse(JSON.stringify(existing));
+  AT = {};
+  D.students.filter(s=>s.class==c).forEach(s=>{
+    if(draft && draft[s.username]) AT[s.username]=draft[s.username];
+    else if(existing[s.username]) AT[s.username]=existing[s.username];
+    else AT[s.username]='P';
+  });
+  attDirty = !!draft;
+  try{ localStorage.setItem('lastAttClass', c); }catch(e){}
+  drawAtt();
+}
+
 function stepDay(n){
   const d=new Date($('ad').value+'T00:00:00');d.setDate(d.getDate()+n);
   const s=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
   if(s>todayStr())return;$('ad').value=s;loadAtt();
 }
 function goToday(){$('ad').value=todayStr();loadAtt();}
+
 function drawAtt(){
-  const c=$('ac').value,L2=D.students.filter(s=>s.class==c),q=($('aq').value||'').trim().toLowerCase();
-  const cnt={P:0,L:0,A:0};L2.forEach(s=>{if(AT[s.username])cnt[AT[s.username]]++;});
-  const un=L2.length-cnt.P-cnt.L-cnt.A;
-  $('atk').innerHTML=`<div class="at-t"><small>${t('k_stu')}</small><b>${L2.length}</b></div><div class="at-t ok"><small>${t('at_p')}</small><b>${cnt.P}</b></div><div class="at-t mid"><small>${t('at_l')}</small><b>${cnt.L}</b></div><div class="at-t low"><small>${t('at_a')}</small><b>${cnt.A}</b></div><div class="at-t"><small>${t('at_unm')}</small><b>${un}</b></div>`;
-  const shown=L2.map((s,j)=>[s,j]).filter(([s])=>!q||String(s.name).toLowerCase().includes(q));
-  $('attbl').innerHTML=L2.length?`<thead><tr><th class="rk">#</th><th class="l">${t('name')}</th><th>${t('t_at')}</th></tr></thead><tbody>`+
-    shown.map(([s,j])=>`<tr class="st-${AT[s.username]?AT[s.username].toLowerCase():'n'}"><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${ava(s.username,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td><div class="seg">`+
-      [['P','p'],['L','l'],['A','a']].map(([k,c2])=>`<button class="${c2} ${AT[s.username]==k?'on':''}" data-u="${esc(s.username)}" onclick="setAtt(this.dataset.u,'${k}')">${t('at_'+c2)}</button>`).join('')+`</div></td></tr>`).join('')+'</tbody>':`<tbody><tr><td>${t('at_none')}</td></tr></tbody>`;
-  $('atday').textContent=dayLabel($('ad').value);
-  $('atsave').disabled=!L2.length||un>0;
-  $('atmsg').textContent=L2.length?(un>0?t('at_need')+' ('+t('at_marked')+' '+(L2.length-un)+' / '+L2.length+')':t('at_marked')+' '+L2.length+' / '+L2.length):'';
+  const c=$('ac').value, L2=D.students.filter(s=>s.class==c);
+  const q=($('aq').value||'').trim().toLowerCase();
+
+  const cnt={P:0,L:0,A:0,U:0};
+  L2.forEach(s=>{
+    const st=AT[s.username];
+    if(st=='P')cnt.P++;
+    else if(st=='L')cnt.L++;
+    else if(st=='A')cnt.A++;
+    else cnt.U++;
+  });
+
+  $('atk').innerHTML=
+    `<span class="att-chip ok">${t('at_p')} ${cnt.P}</span>`+
+    `<span class="att-chip low">${t('at_a')} ${cnt.A}</span>`+
+    `<span class="att-chip mid">${t('at_l')} ${cnt.L}</span>`+
+    (cnt.U>0?`<span class="att-chip unm">${t('at_unm')} ${cnt.U}</span>`:'');
+
+  const marked=cnt.P+cnt.L+cnt.A;
+  const prog=$('atprogress');
+  if(prog) prog.innerHTML = `${t('att_progress')}: <b>${marked}</b> / ${L2.length}`;
+
+  const dayLbl=$('atday');
+  if(dayLbl) dayLbl.textContent=dayLabel($('ad').value);
+
+  const shown=L2.filter(s=>{
+    if(q && !String(s.name).toLowerCase().includes(q)) return false;
+    const st=AT[s.username];
+    if(ATT_FILTER==='A' && st!=='A') return false;
+    if(ATT_FILTER==='L' && st!=='L') return false;
+    if(ATT_FILTER==='U' && st) return false;
+    return true;
+  });
+
+  $('atsave').disabled = L2.length==0;
+
+  if(!L2.length){ $('attbl').innerHTML=`<div class="empty">${t('at_none')}</div>`; return; }
+  if(!shown.length){ $('attbl').innerHTML=`<div class="empty">—</div>`; return; }
+
+  $('attbl').innerHTML = shown.map(s=>{
+    const st = AT[s.username] || 'P';
+    return `<div class="att-student st-${st.toLowerCase()}">
+      <div class="att-student-info">
+        ${ava(s.username, s.name)}
+        <span class="att-student-name">${esc(s.name)}</span>
+      </div>
+      <div class="att-status-btns">
+        <button class="att-status-btn p ${st=='P'?'on':''}" onclick="setAtt('${esc(s.username)}','P')">${t('at_p')}</button>
+        <button class="att-status-btn a ${st=='A'?'on':''}" onclick="setAtt('${esc(s.username)}','A')">${t('at_a')}</button>
+        <button class="att-status-btn l ${st=='L'?'on':''}" onclick="setAtt('${esc(s.username)}','L')">${t('at_l')}</button>
+      </div>
+    </div>`;
+  }).join('');
 }
-function setAtt(u,s){AT[u]=s;drawAtt();}
-function allPresent(){D.students.filter(s=>s.class==$('ac').value).forEach(s=>{if(!AT[s.username])AT[s.username]='P';});drawAtt();}
-function clearAtt(){D.students.filter(s=>s.class==$('ac').value).forEach(s=>{delete AT[s.username];});drawAtt();}
+
+function setAtt(u,s){ AT[u]=s; attDirty=true; saveAttDraft(); drawAtt(); }
+
+function allPresent(){
+  D.students.filter(s=>s.class==$('ac').value).forEach(s=>{ AT[s.username]='P'; });
+  attDirty=true; saveAttDraft(); drawAtt();
+}
+
+function clearAtt(){ D.students.filter(s=>s.class==$('ac').value).forEach(s=>{ delete AT[s.username]; }); drawAtt(); }
+
 async function saveAtt(){
-  const c=$('ac').value,L2=D.students.filter(s=>s.class==c);
-  if(L2.some(s=>!AT[s.username]))return toast(t('at_need'),1);
-  const r=await call({action:'saveAtt',cls:c,date:$('ad').value,marks:AT});if(!r.ok)return toast(r.msg,1);
-  const ids=new Set(L2.map(s=>String(s.username)));D.attsum=(D.attsum||[]).filter(x=>!ids.has(String(x.username))).concat(r.attsum||[]);
-  ADC={};ACM={};D.attlast=null;ADT.date=$('ad').value;render();toast(t('at_ok'));
+  const c=$('ac').value, d=$('ad').value;
+  const L2=D.students.filter(s=>s.class==c);
+  if(!L2.length) return;
+  L2.forEach(s=>{ if(!AT[s.username]) AT[s.username]='P'; });
+  const undoMarks = SERVER_STATE ? JSON.parse(JSON.stringify(SERVER_STATE)) : {};
+
+  const btn=$('atsave'), lbl=btn.querySelector('.save-label'), spin=btn.querySelector('.save-spinner');
+  btn.disabled=true;
+  if(lbl) lbl.textContent=t('att_saving');
+  if(spin) spin.hidden=false;
+
+  try{
+    const r=await call({action:'saveAtt',cls:c,date:d,marks:AT});
+    if(!r.ok){ toast(r.msg||t('att_save_fail'),1); return; }
+    const ids=new Set(L2.map(s=>String(s.username)));
+    D.attsum=(D.attsum||[]).filter(x=>!ids.has(String(x.username))).concat(r.attsum||[]);
+    ADC={};ACM={};D.attlast=null;ADT.date=d;
+    attDirty=false; clearAttDraft(c,d);
+    SERVER_STATE = JSON.parse(JSON.stringify(AT));
+    render();
+    toastWithUndo(t('att_saved'), async ()=>{
+      if(!undoMarks || Object.keys(undoMarks).length === 0){
+        toast(t('att_nothing_undo'),1);
+        return;
+      }
+      D.students.filter(s=>s.class==c).forEach(s=>{
+        AT[s.username] = undoMarks[s.username] || 'P';
+      });
+      drawAtt();
+      try{
+        const r2=await call({action:'saveAtt',cls:c,date:d,marks:AT});
+        if(r2.ok){
+          const ids2=new Set(L2.map(s=>String(s.username)));
+          D.attsum=(D.attsum||[]).filter(x=>!ids2.has(String(x.username))).concat(r2.attsum||[]);
+          SERVER_STATE = JSON.parse(JSON.stringify(undoMarks));
+          attDirty=false; clearAttDraft(c,d);
+          toast(t('att_undone')+' ✓');
+        } else { toast(t('att_save_fail'),1); }
+      }catch(e){ toast(t('att_save_fail'),1); }
+    }, 5000);
+  }catch(e){
+    toast(t('att_save_fail'),1);
+  }finally{
+    btn.disabled=false;
+    if(lbl) lbl.textContent=t('at_save');
+    if(spin) spin.hidden=true;
+  }
 }
+
 async function fetchMonth(u,mm){const r=await call({action:'attMonth',student:u,month:mm});if(!r.ok)throw new Error(r.msg);return r.days||{};}
 async function fetchDay(d){const r=await call({action:'attDay',date:d});if(!r.ok)throw new Error(r.msg);return r.attday||{};}
 let LOCK=false;
@@ -1643,6 +1999,15 @@ function render(){
     $('out').innerHTML = `<div class="empty" style="color:var(--low); font-weight:600; border:1px solid var(--low); border-radius:8px; padding:20px; background:#fcefed;">Error: ${err.message}<br><br>Please refresh the page or check your internet connection.</div>`;
   }
 }
+
+window.addEventListener('beforeunload', function(e){
+  if(attDirty && D && D.me && D.me.role!=='student'){
+    e.preventDefault();
+    e.returnValue = t('att_unsaved');
+    return e.returnValue;
+  }
+});
+
 setLang(LG);setVer();
 </script>
 </body></html>
