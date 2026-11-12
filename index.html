@@ -256,34 +256,41 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 /* --- MOBILE RESPONSIVENESS --- */
 @media (max-width: 800px) {
   /* Layout */
-  .wrap { flex-direction: column; padding: 12px; padding-bottom: 90px; gap: 16px; }
+  .wrap { flex-direction: column; padding: 12px; padding-bottom: 90px !important; gap: 16px; }
   
   /* Sidebar becomes Bottom Navigation */
   .sidebar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    width: 100%;
-    border-radius: 0;
-    border: none;
-    border-top: 1px solid var(--line);
-    background: #fff;
-    z-index: 1000;
-    padding: 8px;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
-  }
-  .tabs {
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 0;
-    gap: 6px;
+    position: fixed !important;
+    bottom: 0 !important; left: 0 !important; right: 0 !important; top: auto !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    border: none !important;
+    border-top: 1px solid var(--line) !important;
+    background: #fff !important;
+    z-index: 1000 !important;
+    padding: 8px !important;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.05) !important;
+    display: block !important;
+    overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
   }
-  .tabs::-webkit-scrollbar { display: none; }
+  .sidebar::-webkit-scrollbar { display: none; }
+  
+  .tabs {
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    padding-bottom: 0 !important;
+    gap: 6px !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    width: max-content !important;
+  }
   .tabs button {
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    white-space: nowrap;
+    padding: 10px 16px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    white-space: nowrap !important;
+    flex: none !important;
   }
   
   /* Top Bar */
@@ -371,7 +378,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
       <button data-t="an" class="on" onclick="show('an')" data-i="t_an"></button>
       <button data-t="stuatt" id="tbStuAtt" onclick="show('stuatt')">Mark Attendance</button>
       <button data-t="sum" id="tbSum" onclick="show('sum')">Hazri Summary</button>
-      <button data-t="sal" id="tbS" onclick="show('sal')">Salary Sheet</button>
+      <button data-t="sal" id="tbS" onclick="show('sal')" data-i="t_sal"></button>
       <button data-t="en" onclick="show('en')" data-i="t_en"></button>
       <button data-t="at" id="tbA" onclick="show('at')" data-i="t_at"></button>
       <button data-t="tg" id="tbT" onclick="show('tg')" data-i="t_tg"></button>
@@ -575,7 +582,7 @@ tr.st-p td:first-child{border-inline-start:4px solid var(--ok)}tr.st-l td:first-
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='34';
+const VER='35';
 let FORCEM=null;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const TK=['mutalia','hazri','madaniPhool'];
@@ -1507,82 +1514,95 @@ function goStudent(){
   $('pm').hidden=true;$('cf').value=s.class;fsf();$('sf').value=s.username;render();show('an');window.scrollTo({top:0,behavior:'smooth'});
 }
 function render(){
-  CH.forEach(c=>c.destroy());CH=[];srFill();
-  Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b';
-  const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
-  const q=($('q')&&$('q').value||'').trim().toLowerCase();
-  const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
-  const E=base.filter(e=>!m||mon(e)==m);
-  const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
-  const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
-  $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
-  if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
-  
-  const by={};
-  D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)))
-    .forEach(s => {
-        if (!by[s.class]) by[s.class] = {};
-        by[s.class][s.username] = {u: s.username, name: s.name, list: []};
-    });
-  E.forEach(e => {
-      if (!by[e.class]) by[e.class] = {};
-      if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
-      by[e.class][e.username].list.push(e);
-  });
+  try {
+    CH.forEach(c=>c.destroy());CH=[];srFill();
+    
+    if(typeof Chart !== 'undefined') {
+       Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5d6e6b';
+    }
 
-  const allk=D.keys.filter(k=>k!='photo');
-  EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
-  let h='';const items=[],ALL=[];
-  Object.keys(by).forEach((k,i)=>{
-    const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
-    const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
-    A.forEach(s=>withAtt(s,ms,s.u,s.list));
-    const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
-    E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
-    const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
-    const tf=ks.filter(x=>Tg[x]>0);
-    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
-    A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
-    const live=A.filter(s=>!s.none);
-    const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
-    h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
-    h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
-    let cg='';
-    if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
-    if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
-    const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
-    const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
-      const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
-    if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
-    if(cg)h+=`<div class="cg">${cg}</div>`;
-    if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`;
-    if(A.some(s=>s.none))h+=`<div class="hint"><span>${t('empty_hint')}</span></div>`;
-    h+='</section>';
-    items.push({i,A,tf,Tg,bm,tr});
-  });
-  const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
-  const low=ovs.filter(s=>s.ov<LOW).length;
-  const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
-    `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
-    `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
-  $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
-  const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
-  const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
-    options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
-  items.forEach(({i,A,tf,Tg,bm,tr})=>{
-    const o1=$('co'+i);
-    if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
-    const o2=$('cp'+i);
-    if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
-    const o3=$('ct'+i);
-    if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},
-      options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
-  });
-  attCard();
-  
-  $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
-    E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
-      Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
+    const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
+    const q=($('q')&&$('q').value||'').trim().toLowerCase();
+    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
+    const E=base.filter(e=>!m||mon(e)==m);
+    const qs=q?D.students.filter(s=>(!c||s.class==c)&&String(s.name).toLowerCase().includes(q)):[];
+    const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
+    $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
+    if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
+    
+    const by={};
+    D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)))
+      .forEach(s => {
+          if (!by[s.class]) by[s.class] = {};
+          by[s.class][s.username] = {u: s.username, name: s.name, list: []};
+      });
+    E.forEach(e => {
+        if (!by[e.class]) by[e.class] = {};
+        if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
+        by[e.class][e.username].list.push(e);
+    });
+
+    const allk=D.keys.filter(k=>k!='photo');
+    EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
+    let h='';const items=[],ALL=[];
+    Object.keys(by).forEach((k,i)=>{
+      const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
+      const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
+      A.forEach(s=>withAtt(s,ms,s.u,s.list));
+      const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
+      E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
+      const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
+      const tf=ks.filter(x=>Tg[x]>0);
+      A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);{const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);}});
+      A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
+      const live=A.filter(s=>!s.none);
+      const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
+      h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
+      h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
+      let cg='';
+      if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
+      if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
+      const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
+      const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
+        const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
+      if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
+      if(cg)h+=`<div class="cg">${cg}</div>`;
+      if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span>${D.me.role=='student'?'':`<button class="btn ghost sm" onclick="show('tg')">${t('go_setup')}</button>`}</div>`;
+      if(A.some(s=>s.none))h+=`<div class="hint"><span>${t('empty_hint')}</span></div>`;
+      h+='</section>';
+      items.push({i,A,tf,Tg,bm,tr});
+    });
+    const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
+    const low=ovs.filter(s=>s.ov<LOW).length;
+    const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
+      `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
+      `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
+    $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
+    
+    if(typeof Chart !== 'undefined') {
+      const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
+      const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
+        options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
+      items.forEach(({i,A,tf,Tg,bm,tr})=>{
+        const o1=$('co'+i);
+        if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
+        const o2=$('cp'+i);
+        if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
+        const o3=$('ct'+i);
+        if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#0e3b3a',backgroundColor:'#0e3b3a22',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#0e3b3a',spanGaps:true}]},
+          options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#e6ecea'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
+      });
+    }
+    
+    attCard();
+    
+    $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+
+      E.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${
+        Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="delE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
+  } catch(err) {
+    console.error(err);
+    $('out').innerHTML = `<div class="empty" style="color:var(--low); font-weight:600; border:1px solid var(--low); border-radius:8px; padding:20px; background:#fcefed;">Error: ${err.message}<br><br>Please refresh the page or check your internet connection.</div>`;
+  }
 }
 setLang(LG);setVer();
 </script>
