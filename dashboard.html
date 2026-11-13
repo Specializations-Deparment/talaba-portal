@@ -157,6 +157,8 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 /* Dashboard Styles */
 .dash-top-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .dash-card{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;background:#fff;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:4px;position:relative;min-height:88px}
+.dash-card.tap{cursor:pointer;transition:all .15s}
+.dash-card.tap:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--pri)}
 .dash-card small{font-size:12px;color:var(--mute);font-weight:700;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
 .dash-card small svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
 .dash-card b{font:700 28px/1.2 var(--serif);color:var(--ink)}
@@ -315,6 +317,14 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
   <button class="btn ghost pmx" style="border:0; font-size:22px;" onclick="$('pm').hidden=true" title="Close">✕</button>
   <div id="pm_in"></div>
 </div></div>
+
+<!-- Naya Modal for Attendance Student List -->
+<div id="dashSheet" class="md" hidden><div class="mb" style="position:relative;">
+  <button class="btn ghost" style="position:absolute;top:12px;inset-inline-end:12px;border:0;font-size:22px;cursor:pointer;background:none;padding:0;box-shadow:none;" onclick="$('dashSheet').hidden=true">✕</button>
+  <h2 id="dashSheetTitle" style="color:var(--pri);margin-bottom:16px;"></h2>
+  <div id="dashSheetBody"></div>
+</div></div>
+
 <div id="lb" class="md" hidden onclick="this.hidden=true"><figure><img id="lbi" alt=""><figcaption id="lbc"></figcaption></figure></div>
 <div id="toast" hidden></div>
 
@@ -650,9 +660,9 @@ function renderDashboard(){
     } else {
       const rc=lv(rate);
       topEl.innerHTML=`
-        <div class="dash-card ok"><small><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>${LG=='ur'?'حاضر':'Present'}</small><b>${cnt.P}</b></div>
-        <div class="dash-card low"><small><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>${LG=='ur'?'غیر حاضر':'Absent'}</small><b>${cnt.A}</b></div>
-        <div class="dash-card mid"><small><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>${LG=='ur'?'رخصت':'Leave'}</small><b>${cnt.L}</b></div>
+        <div class="dash-card ok tap" onclick="openAttSheet('P')"><small><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>${LG=='ur'?'حاضر':'Present'}</small><b>${cnt.P}</b></div>
+        <div class="dash-card low tap" onclick="openAttSheet('A')"><small><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>${LG=='ur'?'غیر حاضر':'Absent'}</small><b>${cnt.A}</b></div>
+        <div class="dash-card mid tap" onclick="openAttSheet('L')"><small><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>${LG=='ur'?'رخصت':'Leave'}</small><b>${cnt.L}</b></div>
         <div class="dash-card ${rc}"><small><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 4 4 5-5"/></svg>${LG=='ur'?'حاضری کی شرح':'Rate'}</small><b>${rate}%</b><span class="status-lbl">${stl(rc)}</span></div>`;
     }
     
@@ -702,6 +712,21 @@ function renderDashboard(){
     const perfs=[...ovs].sort((a,b)=>b.ov-a.ov).slice(0,3);
     $('dash_top_perf').innerHTML=perfs.length?`<h4 style="margin-top:24px;">${LG=='ur'?'اس ماہ کے بہترین طلبہ':'Top Performers'}</h4><div class="dash-perf-list">${perfs.map((p,i)=>`<div class="dash-perf-item ok" onclick="openProfile('${esc(p.u)}')" style="cursor:pointer;"><span class="dash-rank">${i+1}</span><div style="flex:1;"><b>${esc(p.name)}</b> <span style="color:var(--mute);font-size:13px;">— ${esc(p.class)}</span></div><span class="bd ok">${p.ov}%</span></div>`).join('')}</div>`:'';
   }catch(e){console.error('dashboard', e);}
+}
+
+// Naya function list dikhane ke liye
+function openAttSheet(status){
+  const c=$('cf')?.value||'';
+  const filtered=D.students.filter(s=>!c||s.class==c);
+  const today=todayStr();
+  const marks=(D.attlast && D.attlast.date==today)?D.attlast.marks:(ADC[today]||{});
+  const list=filtered.filter(s=>marks[s.username]==status);
+  const title=status=='P'?(LG=='ur'?'حاضر طلبہ':'Present'):status=='A'?(LG=='ur'?'غیر حاضر طلبہ':'Absent'):(LG=='ur'?'رخصت طلبہ':'Leave');
+  $('dashSheetTitle').textContent=title+' — '+list.length;
+  $('dashSheetBody').innerHTML=list.length?
+    list.map(s=>`<div style="padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;"><div><b>${esc(s.name)}</b><div style="font-size:13px;color:var(--mute);">${esc(s.class)}</div></div><button class="btn ghost sm" onclick="openProfile('${esc(s.username)}');$('dashSheet').hidden=true;">👁️</button></div>`).join('')
+    :`<p class="empty">${LG=='ur'?'کوئی طالب علم نہیں':'No students'}</p>`;
+  $('dashSheet').hidden=false;
 }
 
 function printReports() {
