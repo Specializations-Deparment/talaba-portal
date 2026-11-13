@@ -11,19 +11,9 @@
 <style>
 @font-face{font-family:'JNN';src:local('Jameel Noori Nastaleeq'),local('JameelNooriNastaleeq'),local('Jameel Noori Nastaleeq Kasheeda'),url('JameelNooriNastaleeq.ttf') format('truetype');font-display:swap}
 :root{
-  --ink:#1F2A2E;
-  --mute:#5B6769;
-  --line:#E2DED3;
-  --paper:#F7F5EF;
-  --card:#FFFFFF;
-  --pri:#2E7D74;
-  --pri2:#25655E;
-  --tint:#E3F1EF;
-  --ok:#2E8B57;
-  --mid:#E0A030;
-  --low:#D64545;
-  --serif:'Fraunces','Noto Naskh Arabic',serif;
-  --sans:'Source Sans 3','Noto Naskh Arabic',sans-serif;
+  --ink:#1F2A2E; --mute:#5B6769; --line:#E2DED3; --paper:#F7F5EF; --card:#FFFFFF;
+  --pri:#2E7D74; --pri2:#25655E; --tint:#E3F1EF; --ok:#2E8B57; --mid:#E0A030; --low:#D64545;
+  --serif:'Fraunces','Noto Naskh Arabic',serif; --sans:'Source Sans 3','Noto Naskh Arabic',sans-serif;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.05),0 1px 2px rgba(0,0,0,0.03);
   --shadow-md:0 4px 6px -1px rgba(0,0,0,0.05),0 2px 4px -1px rgba(0,0,0,0.03);
   --shadow-lg:0 10px 15px -3px rgba(0,0,0,0.05),0 4px 6px -2px rgba(0,0,0,0.03);
@@ -140,7 +130,6 @@ td.l .nm{white-space:nowrap;min-width:140px}
 .sc.ok{border-left:4px solid var(--ok)}.sc.mid{border-left:4px solid var(--mid)}.sc.low{border-left:4px solid var(--low)}
 .sc.big.ok,.sc.big.mid,.sc.big.low{border-left-width:1px}
 .scf{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-@media print{.top,.tabs,.bar-tools,.vr,#toast,.md,.ib,.hint,.sfs-bar,.help-btn{display:none!important}body{background:#fff}.panel{border:0;padding:0;box-shadow:none}.cls{break-inside:avoid}}
 .hint{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px;background:#fdfaf2;border:1px solid #f5e8c8;color:#7A5200;border-radius:var(--radius);padding:14px 20px;font-size:14px;font-weight:500}
 .note{color:var(--mute);font-size:14px;margin:8px 0 0}
 .empty{text-align:center;color:var(--mute);padding:40px 10px;font-size:15px}
@@ -328,6 +317,64 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
 .pass-wrap input { padding-inline-end: 44px; }
 .pass-toggle { position: absolute; inset-inline-end: 4px; background: none; border: none; color: var(--mute); font-weight: 600; cursor: pointer; min-height: 36px; padding: 0 10px; border-radius: 6px; font-size: 13px; }
 .pass-toggle:hover { background: var(--tint); color: var(--pri); }
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  @page { margin: 10mm; }
+  body { background: #fff; margin: 0; padding: 0; }
+  #app, .top, .sidebar, #toast, .md, .vr { display: none !important; }
+  #print-area { display: block !important; width: 100%; }
+  .print-page {
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    padding: 10px 20px;
+    font-family: var(--sans);
+    color: var(--ink);
+  }
+  .print-page:last-child { page-break-after: auto; break-after: auto; }
+  
+  .print-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--pri); padding-bottom: 15px; margin-bottom: 20px; }
+  .print-header h1 { font-family: var(--serif); font-size: 28px; color: var(--pri); margin: 0; }
+  .print-header .note { font-size: 15px; color: var(--mute); margin-top: 4px; }
+  .print-header .ava { width: 80px; height: 80px; border: 3px solid var(--tint); }
+  
+  .print-title { font-family: var(--serif); font-size: 20px; color: var(--pri); margin: 0 0 15px 0; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  
+  .print-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+  .print-grid .sc { border: 1px solid var(--line); padding: 12px 15px; border-radius: 10px; page-break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-grid .sc.big { grid-column: 1 / -1; background: var(--pri); color: #fff; display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 15px 20px; }
+  .print-grid .sc.big b { font-size: 36px; margin: 0; }
+  .print-grid .sc.big small { color: #ffffffcc; }
+  .print-grid .sc small { font-weight: 700; color: var(--mute); text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
+  .print-grid .sc b { font-family: var(--serif); font-size: 24px; color: var(--ink); margin-top: 5px; display: block; }
+  .print-grid .sc.big b { color: #fff; }
+  .print-grid .sc .of { font-size: 14px; font-weight: 400; color: var(--mute); }
+  .print-grid .sc.big .of { color: #ffffffaa; }
+  
+  .print-grid .sc.ok { border-left: 4px solid var(--ok); }
+  .print-grid .sc.mid { border-left: 4px solid var(--mid); }
+  .print-grid .sc.low { border-left: 4px solid var(--low); }
+  
+  .print-grid .bar { height: 6px; background: var(--line); border-radius: 3px; margin: 8px 0 4px; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-grid .bar i { display: block; height: 100%; }
+  .print-grid .bar i.ok { background: var(--ok); }
+  .print-grid .bar i.mid { background: var(--mid); }
+  .print-grid .bar i.low { background: var(--low); }
+  .print-grid .bd { display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: bold; border-radius: 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-grid .bd.ok { background: #E4F4EA; color: var(--ok); border: 1px solid #CDEBD6; }
+  .print-grid .bd.mid { background: #FDF3DC; color: #7A5200; border: 1px solid #F9E6B9; }
+  .print-grid .bd.low { background: #FBE6E6; color: var(--low); border: 1px solid #F6CDCD; }
+  .print-grid .sc.big .bd { background: #fff; color: var(--pri); border: none; margin-top: 5px; }
+  
+  .print-grid .scf { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+  .print-grid .pc { font-size: 14px; font-weight: 700; }
+  .print-grid .pc.ok { color: var(--ok); }
+  .print-grid .pc.mid { color: #7A5200; }
+  .print-grid .pc.low { color: var(--low); }
+}
+/* ========================================= */
 @media (max-width:768px){
   body{padding-bottom:80px}
   .wrap{flex-direction:column;padding:10px;gap:16px;width:100%;overflow-x:hidden}
@@ -483,7 +530,7 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
           <button class="sfs-clear" id="q_clear" onclick="clearSearch()" hidden>✕</button>
         </div>
         <span class="sp"></span>
-        <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
+        <button class="btn ghost sm" onclick="printReports()" data-i="print"></button>
         <button class="btn ghost sm" onclick="exportCSV()" data-i="export"></button>
       </div>
       <div class="sfs-filters" id="an_filters" style="margin-bottom:16px;">
@@ -719,6 +766,9 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
     </section>
   </main>
 </div>
+
+<!-- Yahan Print Content Jayega -->
+<div id="print-area"></div>
 
 <div id="salPreviewModal" class="md" hidden style="z-index:9999;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);">
   <div class="mb" style="max-width:850px;padding:0;overflow:hidden;border-radius:16px;">
@@ -1950,6 +2000,85 @@ function openProfile(u,per){
   drawCal('pcal',s.username,calM);
 }
 function goStudent(){const s=D.students.find(x=>String(x.username)==String(PU));if(!s) return;$('pm').hidden=true;$('cf').value=s.class;fsf();$('sf').value=s.username;render();show('an');window.scrollTo({top:0,behavior:'smooth'});}
+
+function printReports() {
+  try {
+    const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
+    const q=normalizeUrdu(($('q')&&$('q').value)||'');
+    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||normalizeUrdu(e.name).includes(q)));
+    const E=base.filter(e=>!m||mon(e)==m);
+    
+    const by={};
+    D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)))
+      .forEach(s=>{ (by[s.class]??={})[s.username]={u:s.username,name:s.name,list:[]}; });
+    E.forEach(e=>{ (by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}; by[e.class][e.username].list.push(e); });
+
+    let printHTML = '';
+    let count = 0;
+    
+    Object.keys(by).forEach((k)=>{
+      const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
+      const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
+      A.forEach(s=>withAtt(s,ms,s.u,s.list));
+      const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
+      const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
+      
+      A.forEach(s=>{s.ov=ovOf(s,k,ms);});
+      A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
+      
+      A.forEach(s => {
+         count++;
+         let cardsHtml = `<div class="sc big ${lv(s.ov)}"><div><small>Overall</small><b>${s.ov==null?'—':s.ov+'%'}</b></div><span class="bd ok">${stl(lv(s.ov))}</span></div>`;
+         
+         cardsHtml += ks.map(x=>{
+            if(s.none) return `<div class="sc"><small>${esc(L(x))}</small><b>—</b></div>`;
+            const v=vl(s,x),n=+v.toFixed(1);
+            if(!Tg[x]) return `<div class="sc"><small>${esc(L(x))}</small><b>${n}</b><div class="of">${t('sc_nt')}</div></div>`;
+            const p=Math.round(v/Tg[x]*100),q=lv(p);
+            return `<div class="sc ${q}"><small>${esc(L(x))}</small><b>${n}<span class="of"> / ${+Tg[x].toFixed(1)}</span></b><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><div class="scf"><span class="pc ${q}">${p}%</span><span class="bd ${q}">${stl(q)}</span></div></div>`;
+         }).join('');
+         
+         const ao = attOf(s.u, m);
+         if(ao.t) {
+             cardsHtml += `<div class="sc ${lv(ao.pc)}"><small>Daily Attendance</small><b>${ao.pc}%</b><div class="bar"><i class="${lv(ao.pc)}" style="width:${ao.pc}%"></i></div><div class="scf"><span class="of">${attTxt(ao)}</span></div></div>`;
+         }
+
+         printHTML += `
+         <div class="print-page">
+           <div class="print-header">
+             ${ava(s.u, s.name, 'xxl')}
+             <div>
+               <h1>${esc(s.name)}</h1>
+               <div class="note">${esc(s.class)} · ${esc(s.u)}</div>
+             </div>
+           </div>
+           
+           <h2 class="print-title">Performance — ${esc(m||t('pf_overall'))}</h2>
+           <div class="print-grid">
+             ${cardsHtml}
+           </div>
+         </div>`;
+      });
+    });
+    
+    if(count === 0) {
+       return toast('No data to print.', 1);
+    }
+
+    $('print-area').innerHTML = printHTML;
+    
+    // Wait for images/fonts to load before printing
+    setTimeout(() => {
+      window.print();
+      // Clear after printing
+      setTimeout(() => { $('print-area').innerHTML = ''; }, 1000);
+    }, 500);
+    
+  } catch(e) {
+    console.error(e);
+    toast('Error generating print report.', 1);
+  }
+}
 
 function render(){
   try{
