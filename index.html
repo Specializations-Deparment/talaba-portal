@@ -1072,7 +1072,7 @@ function show(x){
 function reorderTabs(){
   if(!D || !D.me) return;
   const tabs=document.querySelector('.tabs');if(!tabs) return;
-  const order=D.me.role==='student'?['stuatt','sum','an','sal']:(D.me.role==='admin'?['at','en','an','sal','tg','adm']:['at','en','an','sal','tg']);
+  const order=D.me.role==='student'?['stuatt','en','sum','an','sal']:(D.me.role==='admin'?['at','en','an','sal','tg','adm']:['at','en','an','sal','tg']);
   const map={};tabs.querySelectorAll('button').forEach(b=>{map[b.dataset.t]=b;});
   order.forEach(t=>{if(map[t]) tabs.appendChild(map[t]);});
 }
@@ -1182,7 +1182,7 @@ async function login(e){
   $('tbU').hidden=D.me.role!='admin'; $('tbA').hidden=D.me.role=='student';
   $('tbT').hidden=D.me.role=='student'; $('tbS').hidden=false;
   $('tbStuAtt').hidden=D.me.role!='student'; $('tbSum').hidden=D.me.role!='student';
-  $('tbE').hidden=D.me.role=='student';
+  $('tbE').hidden=false;
   $('dt').value=$('tm').value=$('salMonth').value=$('sumMonth').value=new Date().toISOString().slice(0,7);
   $('sa_date').value=new Date().toISOString().slice(0,10);
   $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
