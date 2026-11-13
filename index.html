@@ -6,7 +6,7 @@
 <title>Student Performance Portal</title>
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=Source+Sans+3:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 @font-face{font-family:'JNN';src:local('Jameel Noori Nastaleeq'),local('JameelNooriNastaleeq'),local('Jameel Noori Nastaleeq Kasheeda'),url('JameelNooriNastaleeq.ttf') format('truetype');font-display:swap}
@@ -20,10 +20,12 @@
   --radius:12px;
 }
 html[lang=ur]{--serif:'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif;--sans:'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif}
+html[lang=en]{--serif:'Inter',system-ui,sans-serif;--sans:'Inter',system-ui,sans-serif}
 html[lang=ur] h1,html[lang=ur] h2,html[lang=ur] h3,html[lang=ur] h4,html[lang=ur] .ttl,html[lang=ur] .me b{font-weight:400}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;overflow-x:hidden;width:100%}
 html[lang=ur] body{line-height:2.05;font-size:17px}
+html[lang=en] body{line-height:1.5}
 h1,h2,h3,.ttl{font-family:var(--serif);font-weight:700;line-height:1.3;margin:0}
 html[lang=ur] h1,html[lang=ur] h2,html[lang=ur] h3,html[lang=ur] .ttl{line-height:2.1}
 button,input,select{font:inherit;color:inherit}
@@ -317,31 +319,18 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
 .pass-wrap input { padding-inline-end: 44px; }
 .pass-toggle { position: absolute; inset-inline-end: 4px; background: none; border: none; color: var(--mute); font-weight: 600; cursor: pointer; min-height: 36px; padding: 0 10px; border-radius: 6px; font-size: 13px; }
 .pass-toggle:hover { background: var(--tint); color: var(--pri); }
-
-/* ===== PRINT STYLES ===== */
 @media print {
   @page { margin: 10mm; }
   body { background: #fff; margin: 0; padding: 0; }
   #app, .top, .sidebar, #toast, .md, .vr { display: none !important; }
   #print-area { display: block !important; width: 100%; }
-  .print-page {
-    page-break-after: always;
-    break-after: page;
-    page-break-inside: avoid;
-    break-inside: avoid;
-    padding: 10px 20px;
-    font-family: var(--sans);
-    color: var(--ink);
-  }
+  .print-page { page-break-after: always; break-after: page; page-break-inside: avoid; break-inside: avoid; padding: 10px 20px; font-family: var(--sans); color: var(--ink); }
   .print-page:last-child { page-break-after: auto; break-after: auto; }
-  
   .print-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--pri); padding-bottom: 15px; margin-bottom: 20px; }
   .print-header h1 { font-family: var(--serif); font-size: 28px; color: var(--pri); margin: 0; }
   .print-header .note { font-size: 15px; color: var(--mute); margin-top: 4px; }
   .print-header .ava { width: 80px; height: 80px; border: 3px solid var(--tint); }
-  
   .print-title { font-family: var(--serif); font-size: 20px; color: var(--pri); margin: 0 0 15px 0; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
-  
   .print-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
   .print-grid .sc { border: 1px solid var(--line); padding: 12px 15px; border-radius: 10px; page-break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .print-grid .sc.big { grid-column: 1 / -1; background: var(--pri); color: #fff; display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 15px 20px; }
@@ -352,11 +341,9 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
   .print-grid .sc.big b { color: #fff; }
   .print-grid .sc .of { font-size: 14px; font-weight: 400; color: var(--mute); }
   .print-grid .sc.big .of { color: #ffffffaa; }
-  
   .print-grid .sc.ok { border-left: 4px solid var(--ok); }
   .print-grid .sc.mid { border-left: 4px solid var(--mid); }
   .print-grid .sc.low { border-left: 4px solid var(--low); }
-  
   .print-grid .bar { height: 6px; background: var(--line); border-radius: 3px; margin: 8px 0 4px; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .print-grid .bar i { display: block; height: 100%; }
   .print-grid .bar i.ok { background: var(--ok); }
@@ -367,14 +354,12 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
   .print-grid .bd.mid { background: #FDF3DC; color: #7A5200; border: 1px solid #F9E6B9; }
   .print-grid .bd.low { background: #FBE6E6; color: var(--low); border: 1px solid #F6CDCD; }
   .print-grid .sc.big .bd { background: #fff; color: var(--pri); border: none; margin-top: 5px; }
-  
   .print-grid .scf { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
   .print-grid .pc { font-size: 14px; font-weight: 700; }
   .print-grid .pc.ok { color: var(--ok); }
   .print-grid .pc.mid { color: #7A5200; }
   .print-grid .pc.low { color: var(--low); }
 }
-/* ========================================= */
 @media (max-width:768px){
   body{padding-bottom:80px}
   .wrap{flex-direction:column;padding:10px;gap:16px;width:100%;overflow-x:hidden}
@@ -513,7 +498,7 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
       <h2 style="color:var(--pri);margin-bottom:16px;"><span data-i="t_an"></span> <span id="dash_today_date" style="font-size:14px;color:var(--mute);font-weight:600;"></span></h2>
       <div id="dash_top" class="dash-top-grid"></div>
       <details id="dash_sec_wrap" class="dash-secondary" ontoggle="saveDashSecondary(this.open)">
-        <summary><span>مزید تفصیل</span></summary>
+        <summary><span data-i="more_details">مزید تفصیل</span></summary>
         <div id="dash_secondary"></div>
       </details>
       <div id="dash_darja" class="dash-darja-grid"></div>
@@ -535,26 +520,26 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
       </div>
       <div class="sfs-filters" id="an_filters" style="margin-bottom:16px;">
         <div class="sfs-row">
-          <button class="att-filter-chip on" data-status="" onclick="setAnStatus('')">سب</button>
-          <button class="att-filter-chip" data-status="ok" onclick="setAnStatus('ok')">اچھی کارکردگی</button>
-          <button class="att-filter-chip" data-status="low" onclick="setAnStatus('low')">کمزور کارکردگی</button>
-          <button class="att-filter-chip" data-status="abs" onclick="setAnStatus('abs')">غیر حاضر</button>
-          <button class="sfs-reset" id="an_reset" onclick="resetAnFilters()" hidden>فلٹر ہٹائیں</button>
+          <button class="att-filter-chip on" data-status="" onclick="setAnStatus('')" data-i="all">سب</button>
+          <button class="att-filter-chip" data-status="ok" onclick="setAnStatus('ok')" data-i="good_perf">اچھی کارکردگی</button>
+          <button class="att-filter-chip" data-status="low" onclick="setAnStatus('low')" data-i="low_perf">کمزور کارکردگی</button>
+          <button class="att-filter-chip" data-status="abs" onclick="setAnStatus('abs')" data-i="absent">غیر حاضر</button>
+          <button class="sfs-reset" id="an_reset" onclick="resetAnFilters()" data-i="remove_filter" hidden>فلٹر ہٹائیں</button>
           <span id="an_count" class="sfs-count"></span>
         </div>
       </div>
       <button class="sfs-filter-toggle" onclick="toggleFilters('an_filters')">فلٹر ▾ <span class="sfs-badge" id="an_fcount" hidden></span></button>
-      <label class="f sfs-mobile-sort" style="margin-bottom:16px;"><span>ترتیب</span>
+      <label class="f sfs-mobile-sort" style="margin-bottom:16px;"><span data-i="sort_by">ترتیب</span>
         <select id="an_sort" onchange="setAnSort(this.value)">
-          <option value="">ڈیفالٹ (کارکردگی)</option>
-          <option value="name-1">نام (الف سے ی)</option>
-          <option value="name--1">نام (ی سے الف)</option>
-          <option value="ov--1">سب سے اوپر کارکردگی</option>
-          <option value="ov-1">سب سے کم کارکردگی</option>
-          <option value="att-1">حاضری کم</option>
-          <option value="att--1">حاضری زیادہ</option>
-          <option value="entries--1">اندراجات زیادہ</option>
-          <option value="entries-1">اندراجات کم</option>
+          <option value="" data-i="default_perf">ڈیفالٹ (کارکردگی)</option>
+          <option value="name-1" data-i="name_az">نام (الف سے ی)</option>
+          <option value="name--1" data-i="name_za">نام (ی سے الف)</option>
+          <option value="ov--1" data-i="ov_high">سب سے اوپر کارکردگی</option>
+          <option value="ov-1" data-i="ov_low">سب سے کم کارکردگی</option>
+          <option value="att-1" data-i="att_low">حاضری کم</option>
+          <option value="att--1" data-i="att_high">حاضری زیادہ</option>
+          <option value="entries--1" data-i="entries_high">اندراجات زیادہ</option>
+          <option value="entries-1" data-i="entries_low">اندراجات کم</option>
         </select>
       </label>
       <div id="attcard"></div>
@@ -563,21 +548,21 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
       <h4 data-i="recent"></h4>
       <div class="sfs-bar">
         <div class="sfs-search-wrap">
-          <input id="log_q" class="sfs-search" oninput="$('log_clear').hidden = !this.value; debouncedRenderLog()" placeholder="طالب علم کا نام تلاش کریں" autocomplete="off">
+          <input id="log_q" class="sfs-search" oninput="$('log_clear').hidden = !this.value; debouncedRenderLog()" placeholder="طالب علم کا نام تلاش کریں">
           <button class="sfs-clear" id="log_clear" onclick="$('log_q').value='';$('log_clear').hidden=true;renderLog();" hidden>✕</button>
         </div>
         <div class="sfs-count" id="log_count"></div>
         <button class="sfs-filter-toggle" onclick="toggleFilters('log_filters')">فلٹر ▾ <span class="sfs-badge" id="log_fcount" hidden></span></button>
         <div class="sfs-filters" id="log_filters">
           <div class="sfs-row">
-            <select id="log_cls" onchange="renderLog()"><option value="">سب جماعتیں</option></select>
+            <select id="log_cls" onchange="renderLog()"><option value="" data-i="all_classes">سب جماعتیں</option></select>
             <select id="log_sort" onchange="renderLog()">
-              <option value="date-desc">تاریخ (نئی پہلے)</option>
-              <option value="date-asc">تاریخ (پرانی پہلے)</option>
-              <option value="name-asc">نام (الف سے ی)</option>
-              <option value="name-desc">نام (ی سے الف)</option>
+              <option value="date-desc" data-i="date_newest">تاریخ (نئی پہلے)</option>
+              <option value="date-asc" data-i="date_oldest">تاریخ (پرانی پہلے)</option>
+              <option value="name-asc" data-i="name_az">نام (الف سے ی)</option>
+              <option value="name-desc" data-i="name_za">نام (ی سے الف)</option>
             </select>
-            <button class="sfs-reset" id="log_reset" onclick="resetLogFilters()" hidden>فلٹر ہٹائیں</button>
+            <button class="sfs-reset" id="log_reset" onclick="resetLogFilters()" data-i="remove_filter" hidden>فلٹر ہٹائیں</button>
           </div>
         </div>
       </div>
@@ -614,12 +599,12 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
     </section>
 
     <section id="p_sal" class="panel" hidden>
-      <h2>تنخواہ (Salary)</h2>
-      <p class="note" style="margin-bottom:20px;">Yahan mahine ke hisaab se unki salary calculate hogi. PDF download karne ke liye button dabayein.</p>
+      <h2 data-i="salary">تنخواہ (Salary)</h2>
+      <p class="note" style="margin-bottom:20px;" data-i="salary_note">Yahan mahine ke hisaab se unki salary calculate hogi. PDF download karne ke liye button dabayein.</p>
       <div class="bar-tools">
         <label><span>Month</span><input type="month" id="salMonth" onchange="renderSalary()"></label>
         <label id="salClassWrap"><span>Class</span><select id="salClass" onchange="renderSalary()"><option value="">All Classes</option></select></label>
-        <label id="salSearchWrap"><span>Search Student</span><input id="salSearch" oninput="renderSalary()" autocomplete="off" placeholder="Name or Roll No..." style="border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:15px;min-width:200px;box-shadow:0 1px 2px rgba(0,0,0,0.02);transition:all .2s;" onfocus="this.style.borderColor='var(--pri)';this.style.boxShadow='0 0 0 3px rgba(46, 125, 116, 0.15)'" onblur="this.style.borderColor='var(--line)';this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)'"></label>
+        <label id="salSearchWrap"><span data-i="search_sal">Search Student</span><input id="salSearch" oninput="renderSalary()" autocomplete="off" placeholder="Name or Roll No..." style="border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:15px;min-width:200px;box-shadow:0 1px 2px rgba(0,0,0,0.02);transition:all .2s;" onfocus="this.style.borderColor='var(--pri)';this.style.boxShadow='0 0 0 3px rgba(46, 125, 116, 0.15)'" onblur="this.style.borderColor='var(--line)';this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)'"></label>
       </div>
       <div class="t"><table id="salTable"></table></div>
     </section>
@@ -767,7 +752,6 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
   </main>
 </div>
 
-<!-- Yahan Print Content Jayega -->
 <div id="print-area"></div>
 
 <div id="salPreviewModal" class="md" hidden style="z-index:9999;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);">
@@ -812,11 +796,11 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
 
 <div id="confirmModal" class="md" hidden style="z-index:9999">
   <div class="mb" style="max-width:420px;text-align:center;">
-    <h3 id="confirmTitle" style="color:var(--ink);margin-bottom:12px;">تصدیق کریں</h3>
+    <h3 id="confirmTitle" style="color:var(--ink);margin-bottom:12px;" data-i="confirm">تصدیق کریں</h3>
     <p id="confirmMsg" style="color:var(--mute);font-size:15px;margin-bottom:24px;line-height:1.6;"></p>
     <div style="display:flex;gap:12px;justify-content:center;">
-      <button class="btn ghost" id="confirmCancel" style="flex:1;">منسوخ کریں</button>
-      <button class="btn danger" id="confirmOk" style="flex:1;">حذف کریں</button>
+      <button class="btn ghost" id="confirmCancel" style="flex:1;" data-i="cancel">منسوخ کریں</button>
+      <button class="btn danger" id="confirmOk" style="flex:1;" data-i="delete">حذف کریں</button>
     </div>
   </div>
 </div>
@@ -824,9 +808,9 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
 <div id="helpModal" class="md" hidden style="z-index:9999">
   <div class="mb" style="max-width:400px;text-align:center;">
     <div style="width:48px;height:48px;border-radius:50%;background:var(--tint);color:var(--pri);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;font-weight:bold;">؟</div>
-    <h3 id="helpTitle" style="color:var(--pri);margin-bottom:12px;">رہنمائی</h3>
+    <h3 id="helpTitle" style="color:var(--pri);margin-bottom:12px;" data-i="help">رہنمائی</h3>
     <p id="helpMsg" style="color:var(--mute);font-size:15px;margin-bottom:24px;line-height:1.6;"></p>
-    <button class="btn" onclick="$('helpModal').hidden=true" style="width:100%;">ٹھیک ہے</button>
+    <button class="btn" onclick="$('helpModal').hidden=true" style="width:100%;" data-i="ok">ٹھیک ہے</button>
   </div>
 </div>
 
@@ -838,12 +822,38 @@ let U,P,D,CH=[],TT,EXP=[],EID;
 const VER='38';
 let FORCEM=null;
 let _resetAttempted = false;
-let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
+let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})||'en';
 const TK=['mutalia','hazri','madaniPhool'];
-const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans 3','Noto Naskh Arabic',sans-serif";
+const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Inter',system-ui,sans-serif";
 const CLR={ok:'#2E8B57',mid:'#E0A030',low:'#D64545'};
 const COL=['#2E7D74','#2f6fa3','#2E8B57','#E0A030','#8a4f7d','#D64545','#5d6e6b','#3aa0a0'];
 const THRESHOLDS = { good: 85, warn: 60 };
+
+const CLASS_NAMES = {
+  'تخصص فی الحدیث سال اول': 'Takhassus fil-Hadith – Year 1',
+  'تخصص فی الحدیث سال دوم': 'Takhassus fil-Hadith – Year 2',
+  'تخصص فی الفقہ سال اول': 'Takhassus fil-Fiqh – Year 1',
+  'تخصص فی الفقہ سال دوم': 'Takhassus fil-Fiqh – Year 2',
+  'درس نظامی سال اول': 'Dars-e-Nizami – Year 1',
+  'درس نظامی سال دوم': 'Dars-e-Nizami – Year 2',
+  'درس نظامی سال سوم': 'Dars-e-Nizami – Year 3',
+  'درس نظامی سال چہارم': 'Dars-e-Nizami – Year 4',
+  'درس نظامی سال پنجم': 'Dars-e-Nizami – Year 5',
+  'درس نظامی سال ششم': 'Dars-e-Nizami – Year 6',
+  'درس نظامی سال ہفتم': 'Dars-e-Nizami – Year 7',
+  'حفظ قرآن': 'Hifz-e-Quran'
+};
+
+const displayName = (obj) => (!obj ? '' : (LG === 'en' && obj.nameEn) ? obj.nameEn : (obj.name || ''));
+const displayClass = (cls) => (!cls ? '' : (LG === 'en' && CLASS_NAMES[cls]) ? CLASS_NAMES[cls] : cls);
+const toEnDigits = (str) => String(str).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  const loc = LG === 'ur' ? 'ur-PK' : 'en-GB';
+  const formatted = d.toLocaleDateString(loc, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  return LG === 'en' ? toEnDigits(formatted) : formatted;
+};
 
 const HELP_TEXT = {
   mutalia: { ur: 'اس ماہ پڑھے گئے صفحات کی تعداد۔ زیادہ سے زیادہ 1296۔', en: 'Pages studied this month. Max 1296.' },
@@ -890,7 +900,8 @@ r_admin:'Admin',r_teacher:'Teacher',r_student:'Student',m_save:'Save changes',m_
 ok_perf:'Performance saved',ok_setup:'Setup saved',ok_photo:'Photo saved',bad_photo:'This image could not be opened. Choose a JPG or PNG',ok_user:'User added',ok_upd:'Entry updated',ok_del:'Entry deleted',
 sel_one:'Select at least one performance',confirm_del:'Are you sure you want to delete this entry?',
 no_resp:'No response from the server. Did you paste the new Code.gs, run setup and deploy a New version?',not_dep:'The new version of Code.gs is not deployed',
-f_deeni12:'12 Deeni Kaam',f_mutalia:'Mutalia (Study)',f_madaniPhool:'Madani Phool',f_hazri:'Attendance',f_qafila:'Madani Qafila',f_test:'Monthly Test Result',f_takhrij:'Takhrij-e-Hadith',f_tahqeeq:'Tahqeeq-e-Hadith',f_fatwe:'Fatawa',f_photo:'Student Photo'},
+f_deeni12:'12 Deeni Kaam',f_mutalia:'Mutalia (Study)',f_madaniPhool:'Madani Phool',f_hazri:'Attendance',f_qafila:'Madani Qafila',f_test:'Monthly Test Result',f_takhrij:'Takhrij-e-Hadith',f_tahqeeq:'Tahqeeq-e-Hadith',f_fatwe:'Fatawa',f_photo:'Student Photo',
+more_details:'More Details',search_student:'Search student...',all:'All',good_perf:'Good Performance',low_perf:'Low Performance',absent:'Absent',remove_filter:'Remove Filter',sort_by:'Sort By',default_perf:'Default (Performance)',name_az:'Name (A-Z)',name_za:'Name (Z-A)',ov_high:'Top Performance',ov_low:'Lowest Performance',att_low:'Low Attendance',att_high:'High Attendance',entries_high:'Most Entries',entries_low:'Least Entries',all_classes:'All Classes',date_newest:'Date (Newest First)',date_oldest:'Date (Oldest First)',submit_time:'Submit Time Attendance',date:'Date',status:'Status',in_time:'IN TIME',out_time:'OUT TIME',precaution:'PRECAUTIONARY DEDUCTION',submit_att:'Submit Attendance',hazri_sum:'Hazri Summary',salary:'Salary',salary_note:'Salary will be calculated based on the month. Click to download PDF.',search_sal:'Search Student',name_roll:'Name or Roll No...',sal_preview:'Salary Preview',missing_days:'Missing Days Details',mubarak:'Congratulations!',no_student:'No student found',confirm:'Confirm',cancel:'Cancel',delete:'Delete',help:'Help',ok:'OK',loading:'Loading...',updating:'Updating...',present:'Present',leave:'Leave',qafila:'Madani Qafila',holiday:'Weekly Holiday'},
 ur:{title:'طلبہ کارکردگی پورٹل',sub:'شعبہ تخصصات',logout:'لاگ آؤٹ',signin:'لاگ اِن',user_l:'یوزر نیم',pass_l:'پاس ورڈ',
 side_h:'ہر طالب علم کی ماہانہ کارکردگی',side_p:'مطالعہ، حاضری، مدنی پھول اور جماعت کے مطابق باقی کام، ایک ہی جگہ۔',
 t_an:'تجزیہ',t_en:'کارکردگی درج کریں',t_tg:'ماہانہ ترتیب',t_us:'یوزرز',t_sal:'تنخواہ',
@@ -907,7 +918,9 @@ r_admin:'منتظم',r_teacher:'استاد',r_student:'طالب علم',m_save:'
 ok_perf:'کارکردگی محفوظ ہو گئی',ok_setup:'ترتیب محفوظ ہو گئی',ok_photo:'تصویر محفوظ ہو گئی',bad_photo:'یہ تصویر کھل نہیں سکی، JPG یا PNG چنیں',ok_user:'یوزر شامل ہو گیا',ok_upd:'اندراج درست ہو گئی',ok_del:'اندراج حذف ہو گئی',
 sel_one:'کم از کم ایک کارکردگی منتخب کریں',confirm_del:'کیا آپ واقعی یہ اندراج حذف کرنا چاہتے ہیں؟',
 no_resp:'سرور سے جواب نہیں ملا۔ Apps Script میں نیا Code.gs لگا کر setup چلایا اور New version Deploy کیا ہے؟',not_dep:'Code.gs کا نیا ورژن Deploy نہیں ہوا',
-f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر'}};
+f_deeni12:'12 دینی کام',f_mutalia:'مطالعہ',f_madaniPhool:'مدنی پھول',f_hazri:'حاضری',f_qafila:'مدنی قافلہ',f_test:'ماہانہ ٹیسٹ رزلٹ',f_takhrij:'تخریج حدیث',f_tahqeeq:'تحقیق حدیث',f_fatwe:'فتاویٰ',f_photo:'طالب علم کی تصویر',
+more_details:'مزید تفصیل',search_student:'طالب علم کا نام تلاش کریں...',all:'سب',good_perf:'اچھی کارکردگی',low_perf:'کمزور کارکردگی',absent:'غیر حاضر',remove_filter:'فلٹر ہٹائیں',sort_by:'ترتیب',default_perf:'ڈیفالٹ (کارکردگی)',name_az:'نام (الف سے ی)',name_za:'نام (ی سے الف)',ov_high:'سب سے اوپر کارکردگی',ov_low:'سب سے کم کارکردگی',att_low:'حاضری کم',att_high:'حاضری زیادہ',entries_high:'اندراجات زیادہ',entries_low:'اندراجات کم',all_classes:'سب جماعتیں',date_newest:'تاریخ (نئی پہلے)',date_oldest:'تاریخ (پرانی پہلے)',submit_time:'حاضری درج کریں',date:'تاریخ',status:'حالت',in_time:'آنے کا وقت',out_time:'جانے کا وقت',precaution:'احتیاطی کٹوتی',submit_att:'حاضری جمع کریں',hazri_sum:'حاضری کا خلاصہ',salary:'تنخواہ',salary_note:'Yahan mahine ke hisaab se unki salary calculate hogi. PDF download karne ke liye button dabayein.',search_sal:'طالب علم تلاش کریں',name_roll:'نام یا رول نمبر...',sal_preview:'تنخواہ کا پیش منظر',missing_days:'غائب دنوں کی تفصیل',mubarak:'مبارک ہو!',no_student:'کوئی طالب علم نہیں ملا',confirm:'تصدیق کریں',cancel:'منسوخ کریں',delete:'حذف کریں',help:'رہنمائی',ok:'ٹھیک ہے',loading:'لوڈ ہو رہا ہے...',updating:'اپ ڈیٹ ہو رہا ہے...',present:'حاضر',leave:'رخصت',qafila:'مدنی قافلہ',holiday:'ہفتوار چھٹی'}};
+
 Object.assign(T.en,{s_h:'Monthly setup: performances and targets',s_note:'Choose a class and month. Tick the performances to take this month and enter a target only where you want a percentage.',s_pick:'Performances for this month',s_pick_n:'Untick to remove a performance for this month and tick it again whenever you need it. Saved entries are never deleted.',copy_prev:'Copy previous month',no_prev:'No earlier setup found for this class',need_val:'Enter at least one value before saving'});
 Object.assign(T.ur,{s_h:'ماہانہ ترتیب: کارکردگی اور ہدف',s_note:'جماعت اور ماہ منتخب کریں۔ اس ماہ کی کارکردگیوں پر نشان لگائیں، اور جس کا فیصد چاہیے اس کا ہدف لکھیں۔',s_pick:'اس ماہ کی کارکردگیاں',s_pick_n:'جو کارکردگی اس ماہ نہیں لینی اس کا نشان ہٹا دیں، اور جب چاہیں دوبارہ نشان لگا دیں۔ پہلے سے محفوظ اندراجات ختم نہیں ہوتیں۔',copy_prev:'پچھلے ماہ کی ترتیب نقل کریں',no_prev:'اس جماعت کی پچھلی ترتیب نہیں ملی',need_val:'محفوظ کرنے سے پہلے کم از کم ایک قدر لکھیں'});
 Object.assign(T.en,{sr_l:'Student report',sr_ph:'Select a student…',pf_overall:'Overall (all months)',cal_h:'Attendance calendar',cal_my:'My attendance',cal_none:'No attendance recorded for this month.',pf_pick:'Period',at_today:'Today',at_clear:'Clear all',at_search:'Search student',at_marked:'Marked',at_card_h:'Attendance',at_not_yet:'Attendance has not been marked for this date.',at_last:'Show last recorded day',at_rate:'Present rate',at_auto:'Attendance is counted automatically from the daily attendance, so it is not asked here.',t_at:'Attendance',at_h:'Daily attendance',at_note:'Choose the class and the date, then mark every student as Present, on Leave or Absent. Saving the same date again updates it.',at_date:'Date',at_p:'Present',at_l:'Leave',at_a:'Absent',at_allp:'Mark all unmarked as Present',at_save:'Save attendance',at_unm:'Unmarked',at_need:'Mark every student to enable Save',at_ok:'Attendance saved',at_rec:'Daily attendance',at_rec_p:'recorded present',at_none:'No students in this class',BAD_DATE:'Choose a valid date',cu_h:'Add a new performance',cu_note:'Add a performance that is not in the list above. It appears there unticked: tick it for the months you want and set its target. It can be used for every class.',cu_en:'Name (English)',cu_ur:'Name (Urdu, optional)',cu_mode:'Monthly value is',cu_sum:'Total of entries',cu_avg:'Average of entries',cu_add:'Add performance',cu_list:'Your own performances',cu_need:'Enter a name for the performance',cu_used:'This performance already has saved entries, so it cannot be deleted. Untick it in Monthly Setup instead.',ok_cu:'Performance added',ok_cu_del:'Performance deleted',cu_del_q:'Delete this performance?',filled:'Filled',fill_need:'Fill every field to enable Save',fill_all:'Please fill every field:',pl_h:'Live dashboard link (view only)',pl_note:'Share this link with your seniors. It opens the live dashboard only: no login, no editing, and usernames and passwords are never shown. Anyone who has the link can see the students’ performance, so share it carefully. Creating a new link stops the old one.',pl_create:'Create link',pl_new:'Create new link',pl_off:'Turn off link',pl_copy:'Copy link',pl_open:'Open',pl_copied:'Link copied',pl_none:'No link is active.',pl_old:'Update Code.gs to use this feature.',pl_confirm_new:'Create a new link? The old link will stop working.',pl_confirm_off:'Turn off the link? Nobody will be able to open the dashboard with it.',pl_done:'Link updated',pf_h:'Student profile',pf_open:'Open full analysis',pf_period:'Performance',pf_hist:'Month by month',pf_nophoto:'No photo uploaded yet',chg_photo:'Change photo',pf_all:'All months',du_h:'Delete user',du_note:'This user will no longer be able to log in and will disappear from the lists. Their saved entries stay in the sheet unless you tick the box below.',du_all:'Also delete this user’s performance entries and photo',ok_delU:'User deleted',locked:'This student already has an entry for this month, so a second one cannot be added. The admin or teacher can edit it.',edit_it:'Edit that entry',saved_setups:'Saved setups',perfs:'Performances',targets:'Targets',edit_loaded:'Setup loaded in the form above. Change it and press “Save setup”.',confirm_delT:'Delete this month’s setup? Its targets and list of performances go back to the default. Saved entries are not deleted.',ok_delT:'Setup deleted',print:'Print',ch_ov:'Overall achievement by student',ch_perf:'Class average by performance',ch_trend:'Monthly trend',sc_nt:'No target set',no_nums:'No numbers saved',empty_hint:'Some entries were saved without any numbers. Delete them (🗑️ in Recent Entries, by the admin or teacher) and enter the performance again.',save_to:'This will be saved for {n} in {m}.',
@@ -948,7 +961,7 @@ function normalizeUrdu(s){
     .replace(/\s+/g, ' ').trim().toLowerCase();
 }
 function debounce(fn, ms){ let t; return function(...args){ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args), ms); }; }
-function uLocaleCmp(a,b){ return String(a).localeCompare(String(b), 'ur', {numeric:true}); }
+function uLocaleCmp(a,b){ return String(a).localeCompare(String(b), LG === 'en' ? 'en' : 'ur', {numeric:true}); }
 function saveSFS(key, st){ try{ localStorage.setItem('sfs_'+key, JSON.stringify(st)); }catch(e){} }
 function loadSFS(key){ try{ return JSON.parse(localStorage.getItem('sfs_'+key) || '{}'); }catch(e){ return {}; } }
 function toggleFilters(id){ const el=$(id); if(el) el.classList.toggle('open'); }
@@ -973,7 +986,7 @@ function openAttSheet(status){
   const title=status=='P'?(LG=='ur'?'حاضر طلبہ':'Present'):status=='A'?(LG=='ur'?'غیر حاضر طلبہ':'Absent'):(LG=='ur'?'رخصت طلبہ':'Leave');
   $('dashSheetTitle').textContent=title+' — '+list.length;
   $('dashSheetBody').innerHTML=list.length?
-    list.map(s=>`<div style="padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;"><div><b>${esc(s.name)}</b><div style="font-size:13px;color:var(--mute);">${esc(s.class)}</div></div><button class="ib" onclick="openProfile('${esc(s.username)}');$('dashSheet').hidden=true;">👁️</button></div>`).join('')
+    list.map(s=>`<div style="padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;"><div><b>${esc(displayName(s))}</b><div style="font-size:13px;color:var(--mute);">${esc(displayClass(s.class))}</div></div><button class="ib" onclick="openProfile('${esc(s.username)}');$('dashSheet').hidden=true;">👁️</button></div>`).join('')
     :`<p class="empty">${LG=='ur'?'کوئی طالب علم نہیں':'No students'}</p>`;
   $('dashSheet').hidden=false;
 }
@@ -1005,16 +1018,16 @@ function renderDashboard(){
     const c=$('cf').value, m=$('mf').value, sv=$('sf').value;
     const q=normalizeUrdu($('q')?.value||'');
     const today=todayStr();
-    const L2=D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)));
+    const L2=D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)||normalizeUrdu(s.nameEn||'').includes(q)));
     
     const marks=(D.attlast && D.attlast.date==today)?D.attlast.marks:(ADC[today]||{});
     const cnt={P:0,L:0,A:0};
     L2.forEach(s=>{const st=marks[s.username];if(st=='P')cnt.P++;else if(st=='L')cnt.L++;else if(st=='A')cnt.A++;});
-    const marked=cnt.P+cnt.L+cnt.A;
-    const rate=marked?Math.round(cnt.P/marked*100):null;
+    const total=L2.length;
+    const rate=total?Math.round(cnt.P/total*100):null;
     
-    if(!marked){
-      topEl.innerHTML=`<div class="dash-notmarked"><p style="margin:0 0 12px;color:var(--mute);font-weight:600;font-size:15px;">${LG=='ur'?'آج کی حاضری ابھی نہیں لگی':'Attendance not marked yet'}</p><button class="btn" onclick="show('at')">${LG=='ur'?'آج کی حاضری لگائیں':'Mark Attendance'}</button></div>`;
+    if(!total){
+      topEl.innerHTML=`<div class="dash-notmarked"><p style="margin:0 0 12px;color:var(--mute);font-weight:600;font-size:15px;">${LG=='ur'?'کوئی طالب علم نہیں':'No students'}</p></div>`;
     } else {
       const rc=getStatusColor(rate);
       topEl.innerHTML=`
@@ -1029,7 +1042,7 @@ function renderDashboard(){
       const ag=agg(list);
       const ms=m?[m]:[...new Set(list.map(mon))];
       withAtt(ag, ms, s.username, list);
-      return {u:s.username, name:s.name, class:s.class, list, ag, ms, ov:ovOf(ag, s.class, ms)};
+      return {u:s.username, name:s.name, nameEn:s.nameEn, class:s.class, list, ag, ms, ov:ovOf(ag, s.class, ms)};
     });
     const ovs=A2.filter(s=>s.ov!=null);
     const avgOv=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
@@ -1055,7 +1068,7 @@ function renderDashboard(){
         const vals=students.map(s=>{const tv=tgt(cl,key,s.ms);const avgVal=vl(s.ag,key);return tv>0?Math.round(avgVal/tv*100):null;}).filter(v=>v!=null);
         avgs[key]=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;
       });
-      return `<div class="dash-darja" onclick="onDarjaClick('${esc(cl)}')"><h4>${esc(cl)} <span style="color:var(--mute);font-weight:600;font-size:13px;">(${students.length})</span></h4><div class="dchips">${metrics.map(k=>dashPctChip(L(k), avgs[k])).join('')}</div></div>`;
+      return `<div class="dash-darja" onclick="onDarjaClick('${esc(cl)}')"><h4>${esc(displayClass(cl))} <span style="color:var(--mute);font-weight:600;font-size:13px;">(${students.length})</span></h4><div class="dchips">${metrics.map(k=>dashPctChip(L(k), avgs[k])).join('')}</div></div>`;
     }).join('');
     
     const atRisk=[];
@@ -1063,12 +1076,12 @@ function renderDashboard(){
       const reasons=[];
       if(s.ov!=null && s.ov<THRESHOLDS.warn) reasons.push(LG=='ur'?'کم کارکردگی':'Low');
       if(marks[s.u]=='A') reasons.push(LG=='ur'?'غیر حاضر':'Absent');
-      if(reasons.length) atRisk.push({u:s.u, name:s.name, cls:s.class, reasons, ov:s.ov, level:marks[s.u]=='A'?'low':'mid'});
+      if(reasons.length) atRisk.push({u:s.u, name:s.name, nameEn:s.nameEn, cls:s.class, reasons, ov:s.ov, level:marks[s.u]=='A'?'low':'mid'});
     });
-    $('dash_risk').innerHTML=atRisk.length?`<h4 style="margin-top:24px;">${LG=='ur'?'توجہ طلب طلبہ':'At Risk'} <span class="chip" style="margin-inline-start:8px;">${atRisk.length}</span></h4><div class="dash-risk-list">${atRisk.slice(0,20).map(r=>`<div class="dash-risk-item ${r.level}" onclick="openProfile('${esc(r.u)}')" style="cursor:pointer;"><div style="flex:1;"><b>${esc(r.name)}</b> <span style="color:var(--mute);font-size:13px;">— ${esc(r.cls)}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap;">${r.reasons.map(re=>`<span class="bd ${re===('غیر حاضر')||re==='Absent'?'low':'mid'}">${re}</span>`).join('')}</div></div>`).join('')}</div>`:'';
+    $('dash_risk').innerHTML=atRisk.length?`<h4 style="margin-top:24px;">${LG=='ur'?'توجہ طلب طلبہ':'At Risk'} <span class="chip" style="margin-inline-start:8px;">${atRisk.length}</span></h4><div class="dash-risk-list">${atRisk.slice(0,20).map(r=>`<div class="dash-risk-item ${r.level}" onclick="openProfile('${esc(r.u)}')" style="cursor:pointer;"><div style="flex:1;"><b>${esc(displayName(r))}</b> <span style="color:var(--mute);font-size:13px;">— ${esc(displayClass(r.cls))}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap;">${r.reasons.map(re=>`<span class="bd ${re===('غیر حاضر')||re==='Absent'?'low':'mid'}">${re}</span>`).join('')}</div></div>`).join('')}</div>`:'';
     
     const perfs=[...ovs].sort((a,b)=>b.ov-a.ov).slice(0,3);
-    $('dash_top_perf').innerHTML=perfs.length?`<h4 style="margin-top:24px;">${LG=='ur'?'اس ماہ کے بہترین طلبہ':'Top Performers'}</h4><div class="dash-perf-list">${perfs.map((p,i)=>`<div class="dash-perf-item ok" onclick="openProfile('${esc(p.u)}')" style="cursor:pointer;"><span class="dash-rank">${i+1}</span><div style="flex:1;"><b>${esc(p.name)}</b> <span style="color:var(--mute);font-size:13px;">— ${esc(p.class)}</span></div><span class="bd ok">${p.ov}%</span></div>`).join('')}</div>`:'';
+    $('dash_top_perf').innerHTML=perfs.length?`<h4 style="margin-top:24px;">${LG=='ur'?'اس ماہ کے بہترین طلبہ':'Top Performers'}</h4><div class="dash-perf-list">${perfs.map((p,i)=>`<div class="dash-perf-item ok" onclick="openProfile('${esc(p.u)}')" style="cursor:pointer;"><span class="dash-rank">${i+1}</span><div style="flex:1;"><b>${esc(displayName(p))}</b> <span style="color:var(--mute);font-size:13px;">— ${esc(displayClass(p.class))}</span></div><span class="bd ok">${p.ov}%</span></div>`).join('')}</div>`:'';
   }catch(e){console.error('dashboard', e);}
 }
 
@@ -1077,7 +1090,7 @@ function saveAnState(){ saveSFS('an',{status:SFS_AN.status,sort:SFS_AN.sort}); }
 function setAnStatus(s){ SFS_AN.status=s; document.querySelectorAll('#an_filters [data-status]').forEach(b=>b.classList.toggle('on',b.dataset.status===s)); saveAnState(); render(); }
 function sortBy(key){ if(SFS_AN.sort.key===key){ if(SFS_AN.sort.dir===1) SFS_AN.sort.dir=-1; else if(SFS_AN.sort.dir===-1) SFS_AN.sort={key:'',dir:0}; else SFS_AN.sort.dir=1; } else { SFS_AN.sort={key,dir:1}; } saveAnState(); render(); }
 function setAnSort(val){ if(!val) SFS_AN.sort={key:'',dir:0}; else { const [k,d]=val.split('-'); SFS_AN.sort={key:k,dir:+d}; } saveAnState(); render(); }
-function resetAnFilters(){ SFS_AN.status=''; SFS_AN.sort={key:'',dir:0}; if($('q')) $('q').value=''; if($('q_clear')) $('q_clear').hidden=true; if($('cf')) $('cf').value=''; if($('mf')) $('mf').value=''; if($('sf')) $('sf').value=''; if($('an_sort')) $('an_sort').value=''; fsf(); document.querySelectorAll('#an_filters [data-status]').forEach(b=>b.classList.toggle('on',b.dataset.status==='')); saveAnState(); render(); }
+function resetAnFilters(){ SFS_AN.status=''; SFS_AN.sort={key:'',dir:0}; if($('q')) $('q').value=''; if($('q_clear')) $('q_clear').hidden=true; if($('cf')) $('cf').value=''; if($('mf')) $('mf').value=''; if($('sf')) $('sf').value=''; if($('an_sort')) $('an_sort').value=''; fsf(); document.querySelectorAll('#an_filters [data-status]').forEach(b=>b.classList.toggle('on', b.dataset.status==='')); saveAnState(); render(); }
 function clearSearch(){ if($('q')) $('q').value=''; if($('q_clear')) $('q_clear').hidden=true; render(); }
 const debouncedRender=debounce(render,250);
 
@@ -1128,13 +1141,15 @@ function reorderTabs(){
 }
 function setLang(l){
   LG=l;try{localStorage.setItem('lg',l)}catch(e){}
+  const scrollY = window.scrollY;
   document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
   document.title=t('title');$('lgb').textContent=l=='en'?'اردو':'English';
   document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i));
   const sl=document.querySelector('#atsave .save-label');
   if(sl && $('atsave') && !$('atsave').disabled) sl.textContent=t('at_save');
   const pt=$('p_toggle'); if(pt) pt.textContent = $('p').type === 'password' ? t('show_pass') : t('hide_pass');
-  if(D){$('who').textContent=D.me.name+' — '+t('r_'+D.me.role);fill();}
+  if(D){$('who').textContent=displayName(D.me)+' — '+t('r_'+D.me.role);fill();}
+  setTimeout(()=>window.scrollTo(0,scrollY),10);
 }
 
 async function call(o){
@@ -1235,7 +1250,7 @@ async function login(e){
   $('tbE').hidden=false;
   $('dt').value=$('tm').value=$('salMonth').value=$('sumMonth').value=new Date().toISOString().slice(0,7);
   $('sa_date').value=new Date().toISOString().slice(0,10);
-  $('who').textContent=D.me.name+' — '+t('r_'+D.me.role);
+  $('who').textContent=displayName(D.me)+' — '+t('r_'+D.me.role);
   fill(); checkSunday(); reorderTabs();
   
   if(D.me.role=='student'){
@@ -1323,7 +1338,7 @@ function renderSalary(){
   const selectedClass=$('salClass')?$('salClass').value:'';
   const searchQ=$('salSearch')?$('salSearch').value.trim().toLowerCase():'';
   const [year,month]=m.split('-');const totalDaysInMonth=new Date(year,month,0).getDate();
-  if($('salClass').options.length<=1){const cls=[...new Set(D.students.filter(s=>s.basicSalary).map(s=>s.class))].sort();$('salClass').innerHTML=`<option value="">All Classes</option>`+cls.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');}
+  if($('salClass').options.length<=1){const cls=[...new Set(D.students.filter(s=>s.basicSalary).map(s=>s.class))].sort();$('salClass').innerHTML=`<option value="">All Classes</option>`+cls.map(c=>`<option value="${esc(c)}">${esc(displayClass(c))}</option>`).join('');}
   if(D.me.role==='student'){$('salClassWrap').style.display='none';$('salSearchWrap').style.display='none';if(!D.publishedSalaries||D.publishedSalaries.length===0){$('salTable').innerHTML=`<tr><td colspan="5" class="empty">Aapki koi salary abhi tak publish nahi hui hai.</td></tr>`;return;}}
   else{$('salClassWrap').style.display='flex';$('salSearchWrap').style.display='flex';}
   let html=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th>${t('f_deeni12')}</th><th>${t('at_rec')}</th><th>Action</th></tr></thead><tbody>`;
@@ -1331,7 +1346,7 @@ function renderSalary(){
   D.students.forEach(s=>{
     if(!s.basicSalary) return;
     if(selectedClass && s.class!==selectedClass) return;
-    if(searchQ && !String(s.name).toLowerCase().includes(searchQ) && !String(s.username).toLowerCase().includes(searchQ)) return;
+    if(searchQ && !String(displayName(s)).toLowerCase().includes(searchQ) && !String(s.username).toLowerCase().includes(searchQ)) return;
     const isPublished=(D.publishedSalaries||[]).some(p=>p.username===String(s.username)&&p.month===m);
     if(D.me.role==='student' && !isPublished) return;
     found=true;
@@ -1341,7 +1356,7 @@ function renderSalary(){
     let attText=`<b style="color:${attColor};cursor:pointer;text-decoration:underline;" onclick="showMissingDays('${s.username}','${m}')">${markedDays} / ${totalDaysInMonth} days</b>`;
     let btnPublish='';
     if(D.me.role==='admin'){btnPublish=isPublished?`<button class="btn danger sm" style="margin-left:4px;" onclick="toggleRowPublish('${s.username}','${m}',false)">Unpublish</button>`:`<button class="btn sm" style="margin-left:4px;background:var(--ok);" onclick="toggleRowPublish('${s.username}','${m}',true)">Publish</button>`;}
-    html+=`<tr><td class="l">${esc(s.name)}</td><td class="l">${esc(s.class)}</td><td>₹ ${s.basicSalary}</td><td>${attText}</td><td style="white-space:nowrap;"><button class="btn ghost sm" onclick="previewSalary('${s.username}','${m}')">${t('t_sal')}</button><button class="btn ghost sm" style="margin-left:4px;" onclick="showTimeSummary('${s.username}','${m}')">${t('ts_title')}</button>${btnPublish}</td></tr>`;
+    html+=`<tr><td class="l">${esc(displayName(s))}</td><td class="l">${esc(displayClass(s.class))}</td><td>₹ ${s.basicSalary}</td><td>${attText}</td><td style="white-space:nowrap;"><button class="btn ghost sm" onclick="previewSalary('${s.username}','${m}')">${t('t_sal')}</button><button class="btn ghost sm" style="margin-left:4px;" onclick="showTimeSummary('${s.username}','${m}')">${t('ts_title')}</button>${btnPublish}</td></tr>`;
   });
   if(!found) html+=`<tr><td colspan="5" class="empty">${t('empty')}</td></tr>`;
   html+='</tbody>';$('salTable').innerHTML=html;
@@ -1361,7 +1376,7 @@ async function showTimeSummary(username,month){
   const summary=r.summary,totalLate=r.totalLate||0;
   let p=0,l=0,a=0;if(summary['Present'])p=summary['Present'].length;if(summary['Leave'])l=summary['Leave'].length;if(summary['Absent'])a=summary['Absent'].length;
   let html=`<div style="background:var(--pri);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;font:600 18px var(--serif);">${t('ts_title')}</h3><button onclick="document.getElementById('timeSummaryModal').hidden=true" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;opacity:0.8;">✕</button></div><div style="padding:24px;max-height:70vh;overflow-y:auto;">`;
-  html+=`<p style="margin-bottom:16px;font-size:15px;"><b>${t('ts_name')}:</b> ${esc(s.name)} (${esc(s.class)})<br><b>${t('ts_month')}:</b> ${month}</p>`;
+  html+=`<p style="margin-bottom:16px;font-size:15px;"><b>${t('ts_name')}:</b> ${esc(displayName(s))} (${esc(displayClass(s.class))})<br><b>${t('ts_month')}:</b> ${month}</p>`;
   html+=`<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;"><div style="background:#E4F4EA;color:var(--ok);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #CDEBD6;">${t('ts_present')}: ${p}</div><div style="background:#FDF3DC;color:#7A5200;padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #F9E6B9;">${t('ts_leave')}: ${l}</div><div style="background:#FBE6E6;color:var(--low);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #F6CDCD;">${t('ts_absent')}: ${a}</div><div style="background:var(--tint);color:var(--pri);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid var(--line);">${t('ts_total_late')}: ${totalLate}</div></div>`;
   html+=`<table style="min-width:100%;"><thead><tr><th style="text-align:left;">${t('ts_date')}</th><th>${t('ts_status')}</th><th>${t('ts_in')}</th><th>${t('ts_out')}</th><th>${t('ts_late')}</th></tr></thead><tbody>`;
   let allRecs=[];for(let st in summary){summary[st].forEach(rec=>allRecs.push({...rec,status:st}));}
@@ -1388,7 +1403,7 @@ function showMissingDays(username,month){
   const markedDates=new Set(userAtt.map(a=>String(a.date).slice(0,10)));
   let missing=[];for(let d=1;d<=totalDays;d++){const dateStr=`${year}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(!markedDates.has(dateStr)) missing.push(d);}
   let html=`<div style="background:var(--pri);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;font:600 18px var(--serif);">Missing Days Details</h3><button onclick="document.getElementById('missingDaysModal').hidden=true" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;opacity:0.8;">✕</button></div><div style="padding:24px;">`;
-  html+=`<p style="margin-bottom:12px;font-size:16px;"><b>Name:</b> ${esc(s.name)}</p><p style="margin-bottom:20px;font-size:16px;"><b>Month:</b> ${month}</p>`;
+  html+=`<p style="margin-bottom:12px;font-size:16px;"><b>Name:</b> ${esc(displayName(s))}</p><p style="margin-bottom:20px;font-size:16px;"><b>Month:</b> ${month}</p>`;
   if(!missing.length) html+=`<p style="color:var(--ok);font-weight:bold;font-size:16px;background:#E4F4EA;padding:12px;border-radius:8px;">Mubarak ho! Is mahine ki poori hazri lagi hui hai.</p>`;
   else {html+=`<p style="color:var(--low);font-weight:bold;margin-bottom:16px;">In ${missing.length} din ki hazri baqi hai:</p><div style="display:flex;flex-wrap:wrap;gap:10px;">`;missing.forEach(d=>{html+=`<span style="background:#FBE6E6;color:var(--low);padding:8px 14px;border-radius:8px;font-weight:600;border:1px solid #F6CDCD;font-size:14px;">${d} ${new Date(year,m-1,d).toLocaleString('default',{month:'short'})}</span>`;});html+=`</div>`;}
   html+=`<div style="margin-top:24px;text-align:right;"><button class="btn" onclick="document.getElementById('missingDaysModal').hidden=true">OK</button></div></div>`;
@@ -1409,12 +1424,12 @@ async function downloadPDF(){
 function fill(){
   applyClassCorrections();setVer();
   const sv=$('st').value,cv=$('cf').value,mv=$('mf').value,tv=$('tc').value;
-  $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(s.name)} (${esc(s.class)})</option>`).join('');
+  $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(displayName(s))} (${esc(displayClass(s.class))})</option>`).join('');
   if(sv)$('st').value=sv;
   const cl=[...new Set(D.students.map(s=>s.class))];
-  $('cf').innerHTML=`<option value="">${t('all_c')}</option>`+cl.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  $('cf').innerHTML=`<option value="">${t('all_c')}</option>`+cl.map(c=>`<option value="${esc(c)}">${esc(displayClass(c))}</option>`).join('');
   $('cf').value=cv;
-  $('tc').innerHTML=cl.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if(tv)$('tc').value=tv;
+  $('tc').innerHTML=cl.map(c=>`<option value="${esc(c)}">${esc(displayClass(c))}</option>`).join('');if(tv)$('tc').value=tv;
   const ms=[...new Set(D.entries.map(mon))].sort().reverse();
   $('mf').innerHTML=`<option value="">${t('all_m')}</option>`+ms.map(m=>`<option>${m}</option>`).join('');
   const want=FORCEM&&ms.includes(FORCEM)?FORCEM:null;FORCEM=null;
@@ -1423,13 +1438,13 @@ function fill(){
 }
 function fsf(){
   const c=$('cf').value,v=$('sf').value,ss=D.students.filter(s=>!c||s.class==c);
-  $('sf').innerHTML=`<option value="">${t('all_s')}</option>`+ss.map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('');
+  $('sf').innerHTML=`<option value="">${t('all_s')}</option>`+ss.map(s=>`<option value="${esc(s.username)}">${esc(displayName(s))}</option>`).join('');
   if(ss.some(s=>s.username==v))$('sf').value=v;
   $('sf').parentElement.hidden=D.me.role=='student';
 }
 function ulist(){
   if(!D.users){$('ul').innerHTML=`<tr><td>${t('u_nolist')}</td></tr>`;$('uc').textContent='';return;}
-  if($('ul_cls') && $('ul_cls').options.length<=1){const classes=[...new Set(D.users.map(u=>u.class).filter(Boolean))].sort();$('ul_cls').innerHTML=`<option value="">سب جماعتیں</option>`+classes.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');}
+  if($('ul_cls') && $('ul_cls').options.length<=1){const classes=[...new Set(D.users.map(u=>u.class).filter(Boolean))].sort();$('ul_cls').innerHTML=`<option value="">سب جماعتیں</option>`+classes.map(c=>`<option value="${esc(c)}">${esc(displayClass(c))}</option>`).join('');}
   const q=normalizeUrdu($('ul_q')?$('ul_q').value:'');
   const role=$('ul_role')?$('ul_role').value:'';
   const cls=$('ul_cls')?$('ul_cls').value:'';
@@ -1439,13 +1454,13 @@ function ulist(){
   let rows=[...D.users];
   if(role) rows=rows.filter(u=>u.role===role);
   if(cls) rows=rows.filter(u=>u.class===cls);
-  if(q) rows=rows.filter(u=>normalizeUrdu(u.name).includes(q)||normalizeUrdu(u.username).includes(q));
-  rows.sort((a,b)=>uLocaleCmp(a.name,b.name));
+  if(q) rows=rows.filter(u=>normalizeUrdu(u.name).includes(q)||normalizeUrdu(u.nameEn||'').includes(q)||normalizeUrdu(u.username).includes(q));
+  rows.sort((a,b)=>uLocaleCmp(displayName(a),displayName(b)));
   $('uc').textContent=`${D.users.length} میں سے ${rows.length} یوزرز`;
   if($('ul_count')) $('ul_count').textContent=t('u_tot')+' '+D.users.length;
   const thead=`<thead><tr><th class="l">${t('name')}</th><th class="l">${t('user_l')}</th><th class="l">${t('role')}</th><th class="l">${t('cls')}</th><th class="l">Basic Salary</th><th></th></tr></thead>`;
   if(!rows.length){$('ul').innerHTML=thead+`<tbody><tr><td colspan="6" class="sfs-empty">کوئی طالب علم نہیں ملا</td></tr></tbody>`;return;}
-  $('ul').innerHTML=thead+'<tbody>'+rows.map(u=>`<tr><td class="l">${esc(u.name)}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(u.class)}</td><td class="l">${esc(u.basicSalary||'—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="Edit" onclick="editUser('${esc(u.username)}')">✏️</button><button class="ib" title="${t('del')}" onclick="askDelUser('${esc(u.username)}')">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
+  $('ul').innerHTML=thead+'<tbody>'+rows.map(u=>`<tr><td class="l">${esc(displayName(u))}</td><td class="l">${esc(u.username)}</td><td class="l">${T[LG]['r_'+u.role]||esc(u.role)}</td><td class="l">${esc(displayClass(u.class))}</td><td class="l">${esc(u.basicSalary||'—')}</td><td>${String(u.username)==String(U)?'':`<button class="ib" title="Edit" onclick="editUser('${esc(u.username)}')">✏️</button><button class="ib" title="${t('del')}" onclick="askDelUser('${esc(u.username)}')">🗑️</button>`}</td></tr>`).join('')+'</tbody>';
 }
 const debouncedRenderUl=debounce(ulist,250);
 function resetUlFilters(){
@@ -1464,7 +1479,7 @@ function shareBox(){
     html+=`<div class="row"><input id="shl" readonly dir="ltr" style="flex:1;min-width:260px;border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:#f9fafa;font-family:monospace;" value="${esc(shareUrl())}"><button class="btn sm" onclick="copyShare('shl')">${t('pl_copy')}</button><a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(shareUrl())}">${t('pl_open')}</a></div><div class="row" style="margin-top:16px;"><button class="btn ghost sm" onclick="mkShare(true)">${t('pl_new')}</button><button class="btn danger sm" onclick="offShare()">${t('pl_off')}</button></div>`;
     if(D.classes && D.classes.length){
       html+=`<h5 style="margin:32px 0 8px;font:700 17px var(--serif);color:var(--pri)">Class-wise Links (Har Class ka Alag Dashboard)</h5><p class="note">In links ko copy karke apni marzi se share karein. Har link sirf apni class ka data dikhayega.</p><div class="grid" style="margin-top:16px">`;
-      D.classes.forEach(c=>{const link=shareUrl(c.class);html+=`<div class="cbox" style="padding:16px;background:#f9fafa;box-shadow:none;"><b style="font-size:15px;color:var(--pri)">${esc(c.class)}</b><div class="row" style="margin-top:10px"><input readonly value="${esc(link)}" onclick="this.select()" style="flex:1;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:8px 12px;background:#fff;font-family:monospace;"></div><button class="btn sm" style="margin-top:10px;width:100%" onclick="copyShare('link_${esc(c.class)}')" id="link_${esc(c.class)}" data-url="${esc(link)}">Copy Link</button></div>`;});
+      D.classes.forEach(c=>{const link=shareUrl(c.class);html+=`<div class="cbox" style="padding:16px;background:#f9fafa;box-shadow:none;"><b style="font-size:15px;color:var(--pri)">${esc(displayClass(c.class))}</b><div class="row" style="margin-top:10px"><input readonly value="${esc(link)}" onclick="this.select()" style="flex:1;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:8px 12px;background:#fff;font-family:monospace;"></div><button class="btn sm" style="margin-top:10px;width:100%" onclick="copyShare('link_${esc(c.class)}')" id="link_${esc(c.class)}" data-url="${esc(link)}">Copy Link</button></div>`;});
       html+=`</div>`;
     }
   } else {html+=`<p class="note">${t('pl_none')}</p><div class="row"><button class="btn sm" onclick="mkShare(false)">${t('pl_create')}</button></div>`;}
@@ -1477,7 +1492,7 @@ let DU=null;
 function askDelUser(arg){
   DU=typeof arg==='number'?D.users[arg]:D.users.find(u=>u.username===arg);
   if(!DU) return;
-  confirmAction(t('msg_confirm_del').replace('{item}', DU.name), () => doDelUser());
+  confirmAction(t('msg_confirm_del').replace('{item}', displayName(DU)), () => doDelUser());
 }
 async function doDelUser(){
   const r=await call({action:'delUser',username:DU.username,wipe:$('du_all').checked});
@@ -1486,14 +1501,14 @@ async function doDelUser(){
   D=r;fill();toast(t('ok_delU'));
 }
 let AT={},ATT_FILTER='',attDirty=false,TUndo=null,SERVER_STATE=null;
-const dayLabel=d=>d?new Date(d+'T00:00:00').toLocaleDateString(LG=='ur'?'ur-PK':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'';
+const dayLabel = d => d ? formatDate(d) : '';
 function attDraftKey(c,d){return 'attDraft_'+c+'_'+d;}
 function saveAttDraft(){if(!$('ac').value||!$('ad').value) return;try{localStorage.setItem(attDraftKey($('ac').value,$('ad').value),JSON.stringify(AT));}catch(e){}}
 function loadAttDraft(c,d){try{const s=localStorage.getItem(attDraftKey(c,d));return s?JSON.parse(s):null;}catch(e){return null;}}
 function clearAttDraft(c,d){try{localStorage.removeItem(attDraftKey(c,d));}catch(e){}}
 function onAttClassChange(){try{localStorage.setItem('lastAttClass',$('ac').value);}catch(e){}loadAtt();}
 function setAttFilter(f){ATT_FILTER=f;document.querySelectorAll('.att-filter-chip').forEach(b=>b.classList.toggle('on',b.dataset.f===f));drawAtt();}
-function attOpen(){const cl=[...new Set(D.students.map(s=>s.class))];let cv=$('ac').value;if(!cv){try{cv=localStorage.getItem('lastAttClass')||'';}catch(e){}}$('ac').innerHTML=cl.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if(cl.includes(cv)) $('ac').value=cv;else if(cl.length) $('ac').value=cl[0];$('ad').max=todayStr();if(!$('ad').value) $('ad').value=todayStr();loadAtt();}
+function attOpen(){const cl=[...new Set(D.students.map(s=>s.class))];let cv=$('ac').value;if(!cv){try{cv=localStorage.getItem('lastAttClass')||'';}catch(e){}}$('ac').innerHTML=cl.map(c=>`<option value="${esc(c)}">${esc(displayClass(c))}</option>`).join('');if(cl.includes(cv)) $('ac').value=cv;else if(cl.length) $('ac').value=cl[0];$('ad').max=todayStr();if(!$('ad').value) $('ad').value=todayStr();loadAtt();}
 async function loadAtt(){
   const c=$('ac').value,d=$('ad').value;
   if(!c||!d){AT={};return drawAtt();}
@@ -1522,11 +1537,11 @@ function drawAtt(){
   const marked=cnt.P+cnt.L+cnt.A;
   if($('atprogress')) $('atprogress').innerHTML=`${t('att_progress')}: <b>${marked}</b> / ${L2.length}`;
   if($('atday')) $('atday').textContent=dayLabel($('ad').value);
-  const shown=L2.filter(s=>{if(q && !String(s.name).toLowerCase().includes(q)) return false;const st=AT[s.username];if(ATT_FILTER==='A' && st!=='A') return false;if(ATT_FILTER==='L' && st!=='L') return false;if(ATT_FILTER==='U' && st) return false;return true;});
+  const shown=L2.filter(s=>{if(q && !String(displayName(s)).toLowerCase().includes(q) && !String(s.name).toLowerCase().includes(q)) return false;const st=AT[s.username];if(ATT_FILTER==='A' && st!=='A') return false;if(ATT_FILTER==='L' && st!=='L') return false;if(ATT_FILTER==='U' && st) return false;return true;});
   $('atsave').disabled=L2.length==0||cnt.U>0;
   if(!L2.length){$('attbl').innerHTML=`<div class="empty">${t('at_none')}</div>`;return;}
   if(!shown.length){$('attbl').innerHTML=`<div class="empty">—</div>`;return;}
-  $('attbl').innerHTML=shown.map(s=>{const st=AT[s.username]||'';return `<div class="att-student st-${st.toLowerCase()}"><div class="att-student-info">${ava(s.username,s.name)}<span class="att-student-name">${esc(s.name)}</span></div><div class="att-status-btns"><button class="att-status-btn p ${st=='P'?'on':''}" onclick="setAtt('${esc(s.username)}','P')">${t('at_p')}</button><button class="att-status-btn a ${st=='A'?'on':''}" onclick="setAtt('${esc(s.username)}','A')">${t('at_a')}</button><button class="att-status-btn l ${st=='L'?'on':''}" onclick="setAtt('${esc(s.username)}','L')">${t('at_l')}</button></div></div>`;}).join('');
+  $('attbl').innerHTML=shown.map(s=>{const st=AT[s.username]||'';return `<div class="att-student st-${st.toLowerCase()}"><div class="att-student-info">${ava(s.username,displayName(s))}<span class="att-student-name">${esc(displayName(s))}</span></div><div class="att-status-btns"><button class="att-status-btn p ${st=='P'?'on':''}" onclick="setAtt('${esc(s.username)}','P')">${t('at_p')}</button><button class="att-status-btn a ${st=='A'?'on':''}" onclick="setAtt('${esc(s.username)}','A')">${t('at_a')}</button><button class="att-status-btn l ${st=='L'?'on':''}" onclick="setAtt('${esc(s.username)}','L')">${t('at_l')}</button></div></div>`;}).join('');
 }
 function setAtt(u,s){AT[u]=s;attDirty=true;saveAttDraft();drawAtt();}
 function allPresent(){D.students.filter(s=>s.class==$('ac').value).forEach(s=>{AT[s.username]='P';});attDirty=true;saveAttDraft();drawAtt();}
@@ -1604,8 +1619,8 @@ function fields(){
   }).join('');
   
   $('autoat').textContent=fs.includes('hazri')?t('at_auto')+(ao.t?' ('+attTxt(ao)+')':''):'';
-  $('pv').innerHTML=ava(s.username,s.name,'xl');
-  $('svto').textContent=ex?'':t('save_to').replace('{n}',s.name).replace('{m}',m);
+  $('pv').innerHTML=ava(s.username,displayName(s),'xl');
+  $('svto').textContent=ex?'':t('save_to').replace('{n}',displayName(s)).replace('{m}',m);
   LOCK=!!ex;$('no').disabled=!!ex;chk();
   $('lockmsg').hidden=!ex;
   if(ex)$('lockmsg').innerHTML=`<span>${t('locked')}</span>`+(canE(ex)?`<button class="btn ghost sm" onclick="editE('${esc(ex.id)}')">${t('edit_it')}</button>`:'');
@@ -1637,7 +1652,7 @@ function validateField(el, max) {
   el.classList.remove('invalid', 'valid');
   if(errEl) errEl.style.display = 'none';
   
-  if(val === '') return true; // required check handled on submit
+  if(val === '') return true;
   
   const n = num(val);
   if(isNaN(n) || n < 0) {
@@ -1683,11 +1698,11 @@ function tlist(){
   if(month) rows=rows.filter(r=>String(r.month).slice(0,7)===month);
   if(q) rows=rows.filter(r=>normalizeUrdu(r.class).includes(q));
   const [sk,sd]=sortVal.split('-'),dir=sd==='desc'?-1:1;
-  rows.sort((a,b)=>{if(sk==='month') return String(a.month).localeCompare(String(b.month))*dir;if(sk==='class') return uLocaleCmp(a.class,b.class)*dir;return 0;});
+  rows.sort((a,b)=>{if(sk==='month') return String(a.month).localeCompare(String(b.month))*dir;if(sk==='class') return uLocaleCmp(displayClass(a.class),displayClass(b.class))*dir;return 0;});
   if($('tlist_count')) $('tlist_count').textContent=`${D.targets.length} میں سے ${rows.length} ترتیبات`;
   TL=rows;
   if(!rows.length){$('tlist').innerHTML=`<tr><td class="sfs-empty">کوئی طالب علم نہیں ملا</td></tr>`;return;}
-  $('tlist').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('cls')}</th><th class="l">${t('perfs')}</th><th class="l">${t('targets')}</th><th></th></tr></thead><tbody>`+rows.map((r,i)=>{const on=r.fields?String(r.fields).split(','):fk(cfg(r.class)),tv=tjo(r);return `<tr><td class="l" style="white-space:nowrap">${esc(String(r.month).slice(0,7))}</td><td class="l">${esc(r.class)}</td><td class="l">${on.map(k=>esc(L(k))).join(', ')}</td><td class="l">${Object.entries(tv).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(', ')||'—'}</td><td style="white-space:nowrap"><button class="ib" title="${t('edit')}" onclick="editT(${i})">✏️</button><button class="ib" title="${t('del')}" onclick="askDelT(${i})">🗑️</button></td></tr>`;}).join('')+'</tbody>';
+  $('tlist').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('cls')}</th><th class="l">${t('perfs')}</th><th class="l">${t('targets')}</th><th></th></tr></thead><tbody>`+rows.map((r,i)=>{const on=r.fields?String(r.fields).split(','):fk(cfg(r.class)),tv=tjo(r);return `<tr><td class="l" style="white-space:nowrap">${esc(String(r.month).slice(0,7))}</td><td class="l">${esc(displayClass(r.class))}</td><td class="l">${on.map(k=>esc(L(k))).join(', ')}</td><td class="l">${Object.entries(tv).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(', ')||'—'}</td><td style="white-space:nowrap"><button class="ib" title="${t('edit')}" onclick="editT(${i})">✏️</button><button class="ib" title="${t('del')}" onclick="askDelT(${i})">🗑️</button></td></tr>`;}).join('')+'</tbody>';
 }
 const debouncedRenderTlist=debounce(tlist,250);
 function resetTlistFilters(){if($('tlist_q')) $('tlist_q').value='';if($('tlist_clear')) $('tlist_clear').hidden=true;if($('tlist_month')) $('tlist_month').value='';if($('tlist_sort')) $('tlist_sort').value='month-desc';tlist();}
@@ -1695,7 +1710,7 @@ function editT(i){const r=TL[i];$('tc').value=r.class;$('tm').value=String(r.mon
 
 function askDelT(i) {
   const r = TL[i];
-  confirmAction(t('msg_confirm_del').replace('{item}', r.class + ' (' + String(r.month).slice(0,7) + ')'), () => delT(r));
+  confirmAction(t('msg_confirm_del').replace('{item}', displayClass(r.class) + ' (' + String(r.month).slice(0,7) + ')'), () => delT(r));
 }
 
 async function delT(r){
@@ -1719,8 +1734,8 @@ function editUser(username) {
   $('nfnEn').value = u.fatherNameEn || '';
   $('nadhr').value = u.aadhar || '';
   $('nu').value = u.username || '';
-  $('nu').disabled = true; // Username change nahi ho sakta
-  $('np').value = ''; // Password blank rakhein
+  $('nu').disabled = true;
+  $('np').value = '';
   $('nr').value = u.role || 'student';
   $('nc').value = u.class || '';
   $('ncEn').value = u.classEn || '';
@@ -1818,7 +1833,6 @@ function pick(inp,u){
 }
 
 async function addUser(){
-  // Agar editing mode mein hai
   if (editingUser) {
     const btn = $('addUserBtn');
     btn.disabled = true;
@@ -1843,7 +1857,7 @@ async function addUser(){
       btn.disabled = false;
       btn.textContent = t('u_add');
     }
-    return; // Yahan ruk jayein
+    return;
   }
 
   const u = $('nu').value.trim();
@@ -1891,13 +1905,13 @@ async function addUser(){
 }
 
 const canE=e=>e.id&&(D.me.role=='admin'||(D.me.role=='teacher'&&D.me.class==e.class));
-function editE(id){const e=D.entries.find(x=>x.id==id);if(!e) return;EID=id;const v=V(e);$('e_h').textContent=e.name+' — '+e.class;$('e_m').value=mon(e);$('e_n').value=e.note||'';$('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).filter(k=>k!='hazri'||v.hazri!==undefined).map(k=>`<label class="f"><span>${esc(L(k))}</span><input id="e_${k}" inputmode="numeric" autocomplete="off" value="${v[k]??''}"></label>`).join('');$('md').hidden=false;}
+function editE(id){const e=D.entries.find(x=>x.id==id);if(!e) return;EID=id;const v=V(e);$('e_h').textContent=displayName(e)+' — '+displayClass(e.class);$('e_m').value=mon(e);$('e_n').value=e.note||'';$('e_f').innerHTML=ordk(new Set([...fset(e.class,mon(e)),...Object.keys(v)])).filter(k=>k!='hazri'||v.hazri!==undefined).map(k=>`<label class="f"><span>${esc(L(k))}</span><input id="e_${k}" inputmode="numeric" autocomplete="off" value="${v[k]??''}"></label>`).join('');$('md').hidden=false;}
 async function saveE(){const vals={};D.keys.forEach(k=>{const el=$('e_'+k);if(el){const v=num(el.value);if(!isNaN(v))vals[k]=v;}});if(!Object.keys(vals).length) return toast(t('need_val'),1);const r=await call({action:'editEntry',id:EID,date:$('e_m').value,vals,note:$('e_n').value});if(!r.ok) return toast(r.msg,1);D=r;$('md').hidden=true;fill();toast(t('ok_upd'));}
 
 function askDelE(id) {
   const e = D.entries.find(x => x.id == id);
   if(!e) return;
-  confirmAction(t('msg_confirm_del').replace('{item}', e.name + ' (' + mon(e) + ')'), () => performDelE(e));
+  confirmAction(t('msg_confirm_del').replace('{item}', displayName(e) + ' (' + mon(e) + ')'), () => performDelE(e));
 }
 
 async function performDelE(e){
@@ -1934,7 +1948,7 @@ async function drawCal(box,u,mm){
   el.innerHTML=`<div class="cal" data-b="${box}" data-u="${esc(u)}" data-m="${mm}"><div class="hd"><h3>${box=='mycal'?t('cal_my'):t('cal_h')} — ${esc(title)}</h3><div class="dstep" dir="ltr"><button class="btn ghost sm" onclick="calGo(this,-1)">‹</button><button class="btn ghost sm" onclick="calGo(this,1)">›</button></div></div>`+(mk?`<div class="cleg"><span class="bd ok">${t('at_p')} ${P}</span><span class="bd mid">${t('at_l')} ${Lc}</span><span class="bd low">${t('at_a')} ${A}</span><span class="chip">${t('at_rate')} ${rate}%</span></div>`:`<p class="note">${t('cal_none')}</p>`)+`<div class="cgrid" dir="ltr">${wd.map(w=>`<div class="w">${esc(w)}</div>`).join('')}${cells}</div></div>`;
 }
 function calGo(btn,n){const c=btn.closest('.cal'),[Y,M]=c.dataset.m.split('-').map(Number),d=new Date(Y,M-1+n,1);drawCal(c.dataset.b,c.dataset.u,d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
-function srFill(){const sel=$('sr');if(!sel) return;sel.parentElement.hidden=D.me.role=='student';const by={};D.students.forEach(s=>{(by[s.class]??=[]).push(s);});sel.innerHTML=`<option value="">${t('sr_ph')}</option>`+Object.keys(by).sort().map(c=>`<optgroup label="${esc(c)}">`+by[c].slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(s=>`<option value="${esc(s.username)}">${esc(s.name)}</option>`).join('')+'</optgroup>').join('');}
+function srFill(){const sel=$('sr');if(!sel) return;sel.parentElement.hidden=D.me.role=='student';const by={};D.students.forEach(s=>{(by[s.class]??=[]).push(s);});sel.innerHTML=`<option value="">${t('sr_ph')}</option>`+Object.keys(by).sort().map(c=>`<optgroup label="${esc(displayClass(c))}">`+by[c].slice().sort((a,b)=>uLocaleCmp(displayName(a),displayName(b))).map(s=>`<option value="${esc(s.username)}">${esc(displayName(s))}</option>`).join('')+'</optgroup>').join('');}
 function srOpen(sel){const u=sel.value;sel.value='';if(u)openProfile(u,'');}
 const todayStr=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
 function withAtt(s,ms,u,list){
@@ -1951,11 +1965,11 @@ async function attCard(){
 }
 function drawAttCard(d,marks){
   const c=$('cf').value,sv=$('sf').value,q=($('q')&&$('q').value||'').trim().toLowerCase();
-  const L2=D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||String(s.name).toLowerCase().includes(q)));
+  const L2=D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||String(displayName(s)).toLowerCase().includes(q)||String(s.name).toLowerCase().includes(q)));
   const ab=[],lvv=[];let P=0,Lc=0,A=0;
   L2.forEach(s=>{const st=marks[s.username];if(st=='P')P++;else if(st=='L'){Lc++;lvv.push(s);}else if(st=='A'){A++;ab.push(s);}});
-  const mk=P+Lc+A,un=L2.length-mk,rate=mk?Math.round(P/mk*100):null;
-  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(s.name)} <span style="opacity:.7;font-size:12px">(${esc(s.class)})</span></span>`;
+  const mk=P+Lc+A,un=L2.length-mk,rate=L2.length?Math.round(P/L2.length*100):null;
+  const chip=(s,k)=>`<span class="nmchip ${k}" data-u="${esc(s.username)}" onclick="openProfile(this.dataset.u)">${esc(displayName(s))} <span style="opacity:.7;font-size:12px">(${esc(displayClass(s.class))})</span></span>`;
   let body;
   if(!L2.length)body=`<p class="note">${t('at_none')}</p>`;
   else if(!mk)body=`<p class="note">${t('at_not_yet')}</p>`+(D.attlast&&D.attlast.date!=d?`<button class="btn ghost sm" onclick="attPick('${D.attlast.date}')">${t('at_last')} (${D.attlast.date})</button>`:'');
@@ -1978,10 +1992,10 @@ function ptable(A,ks,Tg,tf,m){
   const sh=(key,inner)=>{const active=SFS_AN.sort.key===key;const arrow=active?(SFS_AN.sort.dir===1?'▲':SFS_AN.sort.dir===-1?'▼':''):'';return `<th class="sortable" onclick="sortBy('${key}')">${inner}${arrow?` <span class="sort-arrow">${arrow}</span>`:''}</th>`;};
   const cell=(s,x)=>{if(s.none)return `<td><span class="of">—</span></td>`;const v=vl(s,x),n=+v.toFixed(1);if(!Tg[x])return `<td><span class="num">${n}</span></td>`;const p=Math.round(v/Tg[x]*100),q=lv(p);return `<td><div class="c2"><div dir="ltr"><span class="num">${n}</span><span class="of"> / ${+Tg[x].toFixed(1)}</span></div><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><span class="pc ${q}">${p}%</span></div></td>`;};
   const atc=s=>{const o=attOf(s.u,m);return o.t?`<td><div class="c2"><b class="pc ${lv(o.pc)}">${o.pc}%</b><div class="bar"><i class="${lv(o.pc)}" style="width:${Math.min(o.pc,100)}%"></i></div><small class="of" style="white-space:nowrap">${attTxt(o)}</small></div></td>`:`<td><span class="of">—</span></td>`;};
-  return `<div class="t"><table><thead><tr><th class="rk">#</th>`+sh('name',t('name'))+sh('entries',t('entries'))+ks.map(x=>sh(x,`${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}`)).join('')+(hasAt?sh('att',t('at_rec')):'')+(tf.length?sh('ov',t('overall')):'')+'</tr></thead><tbody>'+A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,s.name)}<span class="nmt">${esc(s.name)}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+(tf.length?(s.ov==null?`<td>${ovBadge(s)}</td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b>${ovBadge(s)}</div></td>`):'')+'</tr>').join('')+'</tbody></table></div>';
+  return `<div class="t"><table><thead><tr><th class="rk">#</th>`+sh('name',t('name'))+sh('entries',t('entries'))+ks.map(x=>sh(x,`${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}`)).join('')+(hasAt?sh('att',t('at_rec')):'')+(tf.length?sh('ov',t('overall')):'')+'</tr></thead><tbody>'+A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,displayName(s))}<span class="nmt">${esc(displayName(s))}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+(tf.length?(s.ov==null?`<td>${ovBadge(s)}</td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b>${ovBadge(s)}</div></td>`):'')+'</tr>').join('')+'</tbody></table></div>';
 }
 let PU=null;
-function openPhoto(u){const s=D.students.find(x=>String(x.username)==String(u));if(!D.photos[u]) return toast(t('pf_nophoto'),1);$('lbi').src=D.photos[u];$('lbc').textContent=s?s.name:'';$('lb').hidden=false;}
+function openPhoto(u){const s=D.students.find(x=>String(x.username)==String(u));if(!D.photos[u]) return toast(t('pf_nophoto'),1);$('lbi').src=D.photos[u];$('lbc').textContent=s?displayName(s):'';$('lb').hidden=false;}
 function openProfile(u,per){
   const s=D.students.find(x=>String(x.username)==String(u));if(!s) return;PU=s.username;PP=per===undefined?'':per;
   const m=PP,all=D.entries.filter(e=>String(e.username)==String(u)),list=all.filter(e=>!m||mon(e)==m);
@@ -1993,7 +2007,7 @@ function openProfile(u,per){
   const months=[...new Set([...all.map(mon),...(D.attsum||[]).filter(r=>String(r.username)==String(u)).map(r=>r.month)])].sort().reverse();
   const photo=D.photos[s.username],calM=m||lastAttMonth(s.username)||(hs.length?hs[hs.length-1].mm:todayStr().slice(0,7));
   const trend=hs.filter(x=>x.o2!=null);
-  $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,s.name,'xxl')}</span><div><h2>${esc(s.name)}</h2><div class="note" style="unicode-bidi:plaintext;font-size:15px;">${esc(s.class)} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div><div class="row" style="margin-bottom:12px;margin-top:16px;"><label class="btn ghost sm">${t('chg_photo')}<input type="file" accept="image/*" hidden onchange="pick(this,PU)"></label><button class="btn sm" onclick="goStudent()">${t('pf_open')}</button><label class="f" style="flex-direction:row;align-items:center;gap:8px;text-transform:none;"><span>${t('pf_pick')}</span><select class="pps" onchange="openProfile(PU,this.value)"><option value="">${t('pf_overall')}</option>${months.map(x=>`<option ${x==m?'selected':''}>${x}</option>`).join('')}</select></label></div><h4 style="margin-top:24px;">${t('pf_period')} — ${esc(m||t('pf_overall'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+(trend.length>1?`<div class="cbox" style="margin-top:20px;"><h5>${t('ch_trend')}</h5><div style="height:210px"><canvas id="pch"></canvas></div></div>`:'')+`<div id="pcal" style="margin-top:20px;"></div>`+(hist?`<h4 style="margin-top:32px;">${t('pf_hist')}</h4><div class="t"><table><thead><tr><th class="l">${t('month')}</th><th>${t('overall')}</th><th></th><th class="l">${t('details')}</th><th class="l">${t('at_rec')}</th></tr></thead><tbody>${hist}</tbody></table></div>`:'');
+  $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,displayName(s),'xxl')}</span><div><h2>${esc(displayName(s))}</h2><div class="note" style="unicode-bidi:plaintext;font-size:15px;">${esc(displayClass(s.class))} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div><div class="row" style="margin-bottom:12px;margin-top:16px;"><label class="btn ghost sm">${t('chg_photo')}<input type="file" accept="image/*" hidden onchange="pick(this,PU)"></label><button class="btn sm" onclick="goStudent()">${t('pf_open')}</button><label class="f" style="flex-direction:row;align-items:center;gap:8px;text-transform:none;"><span>${t('pf_pick')}</span><select class="pps" onchange="openProfile(PU,this.value)"><option value="">${t('pf_overall')}</option>${months.map(x=>`<option ${x==m?'selected':''}>${x}</option>`).join('')}</select></label></div><h4 style="margin-top:24px;">${t('pf_period')} — ${esc(m||t('pf_overall'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+(trend.length>1?`<div class="cbox" style="margin-top:20px;"><h5>${t('ch_trend')}</h5><div style="height:210px"><canvas id="pch"></canvas></div></div>`:'')+`<div id="pcal" style="margin-top:20px;"></div>`+(hist?`<h4 style="margin-top:32px;">${t('pf_hist')}</h4><div class="t"><table><thead><tr><th class="l">${t('month')}</th><th>${t('overall')}</th><th></th><th class="l">${t('details')}</th><th class="l">${t('at_rec')}</th></tr></thead><tbody>${hist}</tbody></table></div>`:'');
   $('pm').hidden=false;
   if(PCH){PCH.destroy();PCH=null;}
   if(trend.length>1&&typeof Chart!='undefined'){PCH=new Chart($('pch'),{type:'line',data:{labels:trend.map(x=>x.mm),datasets:[{data:trend.map(x=>x.o2),borderColor:'#2E7D74',backgroundColor:'#2E7D7422',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#2E7D74'}]},options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]});}
@@ -2005,13 +2019,13 @@ function printReports() {
   try {
     const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
     const q=normalizeUrdu(($('q')&&$('q').value)||'');
-    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||normalizeUrdu(e.name).includes(q)));
+    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||normalizeUrdu(e.name).includes(q)||normalizeUrdu(e.nameEn||'').includes(q)));
     const E=base.filter(e=>!m||mon(e)==m);
     
     const by={};
-    D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)))
-      .forEach(s=>{ (by[s.class]??={})[s.username]={u:s.username,name:s.name,list:[]}; });
-    E.forEach(e=>{ (by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]}; by[e.class][e.username].list.push(e); });
+    D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)||normalizeUrdu(s.nameEn||'').includes(q)))
+      .forEach(s=>{ (by[s.class]??={})[s.username]={u:s.username,name:s.name,nameEn:s.nameEn,list:[]}; });
+    E.forEach(e=>{ (by[e.class]??={})[e.username]??={u:e.username,name:e.name,nameEn:e.nameEn,list:[]}; by[e.class][e.username].list.push(e); });
 
     let printHTML = '';
     let count = 0;
@@ -2024,7 +2038,7 @@ function printReports() {
       const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
       
       A.forEach(s=>{s.ov=ovOf(s,k,ms);});
-      A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
+      A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(displayName(a)).localeCompare(displayName(b)));
       
       A.forEach(s => {
          count++;
@@ -2046,10 +2060,10 @@ function printReports() {
          printHTML += `
          <div class="print-page">
            <div class="print-header">
-             ${ava(s.u, s.name, 'xxl')}
+             ${ava(s.u, displayName(s), 'xxl')}
              <div>
-               <h1>${esc(s.name)}</h1>
-               <div class="note">${esc(s.class)} · ${esc(s.u)}</div>
+               <h1>${esc(displayName(s))}</h1>
+               <div class="note">${esc(displayClass(s.class))} · ${esc(s.u)}</div>
              </div>
            </div>
            
@@ -2067,10 +2081,8 @@ function printReports() {
 
     $('print-area').innerHTML = printHTML;
     
-    // Wait for images/fonts to load before printing
     setTimeout(() => {
       window.print();
-      // Clear after printing
       setTimeout(() => { $('print-area').innerHTML = ''; }, 1000);
     }, 500);
     
@@ -2091,15 +2103,15 @@ function render(){
     const anFiltersActive=((($('q')&&$('q').value)||'')||SFS_AN.status||c||m||sv)?1:0;
     if($('an_reset')) $('an_reset').hidden=!anFiltersActive;
     setFilterBadge('an_fcount',(SFS_AN.status?1:0)+(c?1:0)+(m?1:0));
-    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||normalizeUrdu(e.name).includes(q)));
+    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||normalizeUrdu(e.name).includes(q)||normalizeUrdu(e.nameEn||'').includes(q)));
     const E=base.filter(e=>!m||mon(e)==m);
-    const qs=q?D.students.filter(s=>(!c||s.class==c)&&normalizeUrdu(s.name).includes(q)):[];
+    const qs=q?D.students.filter(s=>(!c||s.class==c)&&normalizeUrdu(s.name).includes(q)||normalizeUrdu(s.nameEn||'').includes(q)):[];
     const bs=sv?D.students.find(x=>x.username==sv):(qs.length==1?qs[0]:null);
     $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
-    if(bs)$('mine').innerHTML=ava(bs.username,bs.name,'xl')+`<div><b>${esc(bs.name)}</b><div class="note">${esc(bs.class)}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
+    if(bs)$('mine').innerHTML=ava(bs.username,displayName(bs),'xl')+`<div><b>${esc(displayName(bs))}</b><div class="note">${esc(displayClass(bs.class))}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
     const by={};
-    D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q))).forEach(s=>{(by[s.class]??={})[s.username]={u:s.username,name:s.name,list:[]};});
-    E.forEach(e=>{(by[e.class]??={})[e.username]??={u:e.username,name:e.name,list:[]};by[e.class][e.username].list.push(e);});
+    D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)||normalizeUrdu(s.nameEn||'').includes(q))).forEach(s=>{(by[s.class]??={})[s.username]={u:s.username,name:s.name,nameEn:s.nameEn,list:[]};});
+    E.forEach(e=>{(by[e.class]??={})[e.username]??={u:e.username,name:e.name,nameEn:e.nameEn,list:[]};by[e.class][e.username].list.push(e);});
     const allk=D.keys.filter(k=>k!='photo');
     EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
     let h='';const items=[],ALL=[];
@@ -2113,12 +2125,12 @@ function render(){
       const tf=ks.filter(x=>Tg[x]>0);
       A.forEach(s=>{s.ov=ovOf(s,k,ms);});
       if(SFS_AN.status){A=A.filter(s=>{if(SFS_AN.status==='ok') return s.ov!=null && s.ov>=HIGH;if(SFS_AN.status==='low') return s.ov!=null && s.ov<LOW;if(SFS_AN.status==='abs'){const ao=attOf(s.u,m);return ao.t>0 && ao.pc<50;}return true;});}
-      if(SFS_AN.sort.key){const key=SFS_AN.sort.key,dir=SFS_AN.sort.dir||1;A.sort((a,b)=>{if(key==='name') return uLocaleCmp(a.name,b.name)*dir;if(key==='entries') return (a.n-b.n)*dir;if(key==='ov') return ((a.ov??-1)-(b.ov??-1))*dir;if(key==='att'){const ao=attOf(a.u,m),bo=attOf(b.u,m);return ((ao.pc??0)-(bo.pc??0))*dir;}const av=vl(a,key),bv=vl(b,key);return (av-bv)*dir;});}
-      else A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(String(b.name)));
-      A.forEach(s=>{ALL.push(s);const ao=attOf(s.u,m);EXP.push([k,s.name,s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);});
+      if(SFS_AN.sort.key){const key=SFS_AN.sort.key,dir=SFS_AN.sort.dir||1;A.sort((a,b)=>{if(key==='name') return uLocaleCmp(displayName(a),displayName(b))*dir;if(key==='entries') return (a.n-b.n)*dir;if(key==='ov') return ((a.ov??-1)-(b.ov??-1))*dir;if(key==='att'){const ao=attOf(a.u,m),bo=attOf(b.u,m);return ((ao.pc??0)-(bo.pc??0))*dir;}const av=vl(a,key),bv=vl(b,key);return (av-bv)*dir;});}
+      else A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||uLocaleCmp(displayName(a),displayName(b)));
+      A.forEach(s=>{ALL.push(s);const ao=attOf(s.u,m);EXP.push([displayClass(k),displayName(s),s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);});
       const live=A.filter(s=>!s.none);
       const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
-      if(A.length){h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);}else{return;}
+      if(A.length){h+=`<section class="cls"><div class="clsh"><h3>${esc(displayClass(k))}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);}else{return;}
       let cg='';
       if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
       if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
@@ -2157,7 +2169,7 @@ function render(){
       const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
       const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
       items.forEach(({i,A,tf,Tg,bm,tr})=>{
-        const o1=$('co'+i);if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
+        const o1=$('co'+i);if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>displayName(s)),w.map(s=>s.ov),16);}
         const o2=$('cp'+i);if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
         const o3=$('ct'+i);if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#2E7D74',backgroundColor:'#2E7D7422',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#2E7D74',spanGaps:true}]},options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
       });
@@ -2172,7 +2184,7 @@ function render(){
 }
 function renderLog(){
   if(!D || !D.entries) return;
-  if($('log_cls') && $('log_cls').options.length<=1){const classes=[...new Set(D.entries.map(e=>e.class))].sort();$('log_cls').innerHTML=`<option value="">سب جماعتیں</option>`+classes.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');}
+  if($('log_cls') && $('log_cls').options.length<=1){const classes=[...new Set(D.entries.map(e=>e.class))].sort();$('log_cls').innerHTML=`<option value="">سب جماعتیں</option>`+classes.map(c=>`<option value="${esc(c)}">${esc(displayClass(c))}</option>`).join('');}
   const q=normalizeUrdu($('log_q')?$('log_q').value:'');
   const cls=$('log_cls')?$('log_cls').value:'';
   const sortVal=$('log_sort')?$('log_sort').value:'date-desc';
@@ -2181,12 +2193,12 @@ function renderLog(){
   setFilterBadge('log_fcount',cls?1:0);
   let rows=[...D.entries];
   if(cls) rows=rows.filter(e=>e.class===cls);
-  if(q) rows=rows.filter(e=>normalizeUrdu(e.name).includes(q));
+  if(q) rows=rows.filter(e=>normalizeUrdu(e.name).includes(q)||normalizeUrdu(e.nameEn||'').includes(q));
   const [sk,sd]=sortVal.split('-');
-  rows.sort((a,b)=>{if(sk==='date') return mon(a).localeCompare(mon(b))*(sd==='desc'?-1:1);if(sk==='name') return uLocaleCmp(a.name,b.name)*(sd==='desc'?-1:1);return 0;});
+  rows.sort((a,b)=>{if(sk==='date') return mon(a).localeCompare(mon(b))*(sd==='desc'?-1:1);if(sk==='name') return uLocaleCmp(displayName(a),displayName(b))*(sd==='desc'?-1:1);return 0;});
   if($('log_count')) $('log_count').textContent=`${D.entries.length} میں سے ${rows.length} اندراجات`;
   if(!rows.length){$('log').innerHTML=`<tbody><tr><td colspan="6" class="sfs-empty">کوئی طالب علم نہیں ملا</td></tr></tbody>`;return;}
-  $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+rows.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(e.name)}</td><td class="l">${esc(e.class)}</td><td class="l">${Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="askDelE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
+  $('log').innerHTML=`<thead><tr><th class="l">${t('month')}</th><th class="l">${t('name')}</th><th class="l">${t('cls')}</th><th class="l">${t('details')}</th><th class="l">${t('note')}</th><th></th></tr></thead><tbody>`+rows.slice(-60).reverse().map(e=>`<tr><td class="l" style="white-space:nowrap">${esc(mon(e))}</td><td class="l">${esc(displayName(e))}</td><td class="l">${esc(displayClass(e.class))}</td><td class="l">${Object.entries(V(e)).map(([k,v])=>`${esc(L(k))}: <b>${v}</b>`).join(LG=='ur'?'، ':', ')}</td><td class="l">${esc(e.note)}</td><td style="white-space:nowrap">${canE(e)?`<button class="ib" title="${t('edit')}" onclick="editE('${esc(e.id)}')">✏️</button><button class="ib" title="${t('del')}" onclick="askDelE('${esc(e.id)}')">🗑️</button>`:''}</td></tr>`).join('')+'</tbody>';
 }
 const debouncedRenderLog=debounce(renderLog,250);
 function resetLogFilters(){if($('log_q')) $('log_q').value='';if($('log_clear')) $('log_clear').hidden=true;if($('log_cls')) $('log_cls').value='';if($('log_sort')) $('log_sort').value='date-desc';renderLog();}
