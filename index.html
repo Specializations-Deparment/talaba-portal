@@ -1456,7 +1456,7 @@ async function loadAtt(){
   D.students.filter(s=>s.class==c).forEach(s=>{
     if(draft && draft[s.username]) AT[s.username]=draft[s.username];
     else if(existing[s.username]) AT[s.username]=existing[s.username];
-    else AT[s.username]='P';
+    else AT[s.username]='';
   });
   attDirty=!!draft;try{localStorage.setItem('lastAttClass',c);}catch(e){}
   drawAtt();
@@ -1473,10 +1473,10 @@ function drawAtt(){
   if($('atprogress')) $('atprogress').innerHTML=`${t('att_progress')}: <b>${marked}</b> / ${L2.length}`;
   if($('atday')) $('atday').textContent=dayLabel($('ad').value);
   const shown=L2.filter(s=>{if(q && !String(s.name).toLowerCase().includes(q)) return false;const st=AT[s.username];if(ATT_FILTER==='A' && st!=='A') return false;if(ATT_FILTER==='L' && st!=='L') return false;if(ATT_FILTER==='U' && st) return false;return true;});
-  $('atsave').disabled=L2.length==0;
+  $('atsave').disabled=L2.length==0||cnt.U>0;
   if(!L2.length){$('attbl').innerHTML=`<div class="empty">${t('at_none')}</div>`;return;}
   if(!shown.length){$('attbl').innerHTML=`<div class="empty">—</div>`;return;}
-  $('attbl').innerHTML=shown.map(s=>{const st=AT[s.username]||'P';return `<div class="att-student st-${st.toLowerCase()}"><div class="att-student-info">${ava(s.username,s.name)}<span class="att-student-name">${esc(s.name)}</span></div><div class="att-status-btns"><button class="att-status-btn p ${st=='P'?'on':''}" onclick="setAtt('${esc(s.username)}','P')">${t('at_p')}</button><button class="att-status-btn a ${st=='A'?'on':''}" onclick="setAtt('${esc(s.username)}','A')">${t('at_a')}</button><button class="att-status-btn l ${st=='L'?'on':''}" onclick="setAtt('${esc(s.username)}','L')">${t('at_l')}</button></div></div>`;}).join('');
+  $('attbl').innerHTML=shown.map(s=>{const st=AT[s.username]||'';return `<div class="att-student st-${st.toLowerCase()}"><div class="att-student-info">${ava(s.username,s.name)}<span class="att-student-name">${esc(s.name)}</span></div><div class="att-status-btns"><button class="att-status-btn p ${st=='P'?'on':''}" onclick="setAtt('${esc(s.username)}','P')">${t('at_p')}</button><button class="att-status-btn a ${st=='A'?'on':''}" onclick="setAtt('${esc(s.username)}','A')">${t('at_a')}</button><button class="att-status-btn l ${st=='L'?'on':''}" onclick="setAtt('${esc(s.username)}','L')">${t('at_l')}</button></div></div>`;}).join('');
 }
 function setAtt(u,s){AT[u]=s;attDirty=true;saveAttDraft();drawAtt();}
 function allPresent(){D.students.filter(s=>s.class==$('ac').value).forEach(s=>{AT[s.username]='P';});attDirty=true;saveAttDraft();drawAtt();}
@@ -1484,7 +1484,6 @@ function clearAtt(){D.students.filter(s=>s.class==$('ac').value).forEach(s=>{del
 async function saveAtt(){
   const c=$('ac').value,d=$('ad').value;
   const L2=D.students.filter(s=>s.class==c);if(!L2.length) return;
-  L2.forEach(s=>{if(!AT[s.username]) AT[s.username]='P';});
   const undoMarks=SERVER_STATE?JSON.parse(JSON.stringify(SERVER_STATE)):{};
   const btn=$('atsave'),lbl=btn.querySelector('.save-label'),spin=btn.querySelector('.save-spinner');
   btn.disabled=true;if(lbl) lbl.textContent=t('att_saving');if(spin) spin.hidden=false;
@@ -1496,7 +1495,7 @@ async function saveAtt(){
     ADC={};ACM={};
     if(d===todayStr()){
       const todayMarks=(D.attlast&&D.attlast.date===todayStr())?{...D.attlast.marks}:{};
-      L2.forEach(s=>{todayMarks[s.username]=AT[s.username]||'P';});
+      L2.forEach(s=>{if(AT[s.username]) todayMarks[s.username]=AT[s.username];});
       D.attlast={date:d,marks:todayMarks};
     } else { D.attlast=null; }
     ADT.date=d;
@@ -1505,7 +1504,7 @@ async function saveAtt(){
     render();
     toastWithUndo(t('att_saved'),async()=>{
       if(!undoMarks||Object.keys(undoMarks).length===0){toast(t('att_nothing_undo'),1);return;}
-      D.students.filter(s=>s.class==c).forEach(s=>{AT[s.username]=undoMarks[s.username]||'P';});
+      D.students.filter(s=>s.class==c).forEach(s=>{AT[s.username]=undoMarks[s.username]||'';});
       drawAtt();
       try{
         const r2=await call({action:'saveAtt',cls:c,date:d,marks:AT});
