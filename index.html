@@ -2239,6 +2239,11 @@ function confirmAction(msg, onConfirm, okText) {
   newBtnCancel.focus();
 }
 
-setLang(LG);setVer();
+try {
+  setLang(LG);
+  setVer();
+} catch (error) {
+  console.error("Initialization error:", error);
+}
 </script>
 </body></html>
