@@ -112,7 +112,6 @@ td.l .nm{white-space:nowrap;min-width:130px}
 .sc.ok{border-left:4px solid var(--ok)}.sc.mid{border-left:4px solid var(--mid)}.sc.low{border-left:4px solid var(--low)}
 .sc.big.ok,.sc.big.mid,.sc.big.low{border-left-width:1px}
 .scf{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
-@media print{.top,.tabs,.bar-tools,.vr,#toast,.md,.ib,.hint{display:none!important}body{background:#fff}.panel{border:0;padding:0}.cls{break-inside:avoid}}
 .cbox h5{margin:0 0 8px;font:700 15px var(--sans);color:var(--mute);letter-spacing:.02em}
 .hint{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px;background:#fdfaf2;border:1px solid #f5e8c8;color:#7A5200;border-radius:12px;padding:10px 16px; font-size:14px;}
 .note{color:var(--mute);font-size:14px;margin:6px 0 0}
@@ -154,8 +153,105 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
 .vr{text-align:center;color:var(--mute);font-size:12px;padding:18px 10px 26px}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 22px;border-radius:12px;z-index:9;font-weight:600; box-shadow:var(--shadow-md);}
 #toast.bad{background:var(--low)}
-@media(max-width:700px){.top{padding:8px 12px}.panel{padding:14px}.ttl{font-size:17px}.bar-tools .sp{display:none}}
+
+/* Dashboard Styles */
+.dash-top-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.dash-card{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;background:#fff;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:4px;position:relative;min-height:88px}
+.dash-card small{font-size:12px;color:var(--mute);font-weight:700;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+.dash-card small svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+.dash-card b{font:700 28px/1.2 var(--serif);color:var(--ink)}
+.dash-card.ok b{color:var(--ok)}
+.dash-card.mid b{color:var(--mid)}
+.dash-card.low b{color:var(--low)}
+.dash-card .status-lbl{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;align-self:flex-start;margin-top:2px}
+.dash-card.ok .status-lbl{background:#E4F4EA;color:var(--ok)}
+.dash-card.mid .status-lbl{background:#FDF3DC;color:#7A5200}
+.dash-card.low .status-lbl{background:#FBE6E6;color:var(--low)}
+.dash-notmarked{grid-column:1/-1;background:var(--tint);border:1px dashed var(--line);border-radius:var(--radius);padding:20px;text-align:center}
+.dash-secondary{margin-bottom:20px;border:0;background:transparent}
+.dash-secondary summary{cursor:pointer;padding:12px 16px;background:var(--tint);border:1px solid var(--line);border-radius:var(--radius);font-weight:700;color:var(--pri);list-style:none;user-select:none;display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.dash-secondary summary::-webkit-details-marker{display:none}
+.dash-secondary summary::after{content:'▾';color:var(--pri);font-size:14px}
+.dash-secondary[open] summary::after{content:'▴'}
+.dash-secondary>div{padding-top:12px}
+.dash-darja-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:20px}
+.dash-darja{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;background:#fff;box-shadow:var(--shadow-sm);cursor:pointer;transition:all .15s}
+.dash-darja:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.dash-darja h4{margin:0 0 10px;font-size:15px;color:var(--pri);font-family:var(--sans)}
+.dchips{display:flex;flex-wrap:wrap;gap:6px}
+.dash-risk-list,.dash-perf-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.dash-risk-item,.dash-perf-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);border-inline-start:4px solid var(--line)}
+.dash-risk-item.low{border-inline-start-color:var(--low);background:#FBE6E640}
+.dash-risk-item.mid{border-inline-start-color:var(--mid);background:#FDF3DC40}
+.dash-perf-item.ok{border-inline-start-color:var(--ok)}
+.dash-rank{background:var(--pri);color:#fff;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;flex-shrink:0;font-size:13px}
+
+@media(max-width:700px){
+  .top{padding:8px 12px}.panel{padding:14px}.ttl{font-size:17px}.bar-tools .sp{display:none}
+  .dash-top-grid{grid-template-columns:repeat(2,1fr)}
+  .dash-darja-grid{grid-template-columns:1fr}
+  .dash-card{padding:12px;min-height:80px}
+  .dash-card b{font-size:24px}
+}
 @media(prefers-reduced-motion:no-preference){.lang{transition:color .15s,background .15s}}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  @page { margin: 10mm; }
+  body { background: #fff; margin: 0; padding: 0; }
+  #app, .top, .sidebar, #toast, .md, .vr, #print-area { display: none !important; }
+  .print-body { display: block !important; width: 100%; }
+  .print-page {
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    padding: 10px 20px;
+    font-family: var(--sans);
+    color: var(--ink);
+  }
+  .print-page:last-child { page-break-after: auto; break-after: auto; }
+  
+  .print-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--pri); padding-bottom: 15px; margin-bottom: 20px; }
+  .print-header h1 { font-family: var(--serif); font-size: 28px; color: var(--pri); margin: 0; }
+  .print-header .note { font-size: 15px; color: var(--mute); margin-top: 4px; }
+  .print-header .ava { width: 80px; height: 80px; border: 3px solid var(--tint); }
+  
+  .print-title { font-family: var(--serif); font-size: 20px; color: var(--pri); margin: 0 0 15px 0; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  
+  .print-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+  .print-grid .sc { border: 1px solid var(--line); padding: 12px 15px; border-radius: 10px; page-break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-grid .sc.big { grid-column: 1 / -1; background: var(--pri); color: #fff; display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 15px 20px; }
+  .print-grid .sc.big b { font-size: 36px; margin: 0; }
+  .print-grid .sc.big small { color: #ffffffcc; }
+  .print-grid .sc small { font-weight: 700; color: var(--mute); text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
+  .print-grid .sc b { font-family: var(--serif); font-size: 24px; color: var(--ink); margin-top: 5px; display: block; }
+  .print-grid .sc.big b { color: #fff; }
+  .print-grid .sc .of { font-size: 14px; font-weight: 400; color: var(--mute); }
+  .print-grid .sc.big .of { color: #ffffffaa; }
+  
+  .print-grid .sc.ok { border-left: 4px solid var(--ok); }
+  .print-grid .sc.mid { border-left: 4px solid var(--mid); }
+  .print-grid .sc.low { border-left: 4px solid var(--low); }
+  
+  .print-grid .bar { height: 6px; background: var(--line); border-radius: 3px; margin: 8px 0 4px; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-grid .bar i { display: block; height: 100%; }
+  .print-grid .bar i.ok { background: var(--ok); }
+  .print-grid .bar i.mid { background: var(--mid); }
+  .print-grid .bar i.low { background: var(--low); }
+  .print-grid .bd { display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: bold; border-radius: 20px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-grid .bd.ok { background: #E4F4EA; color: var(--ok); border: 1px solid #CDEBD6; }
+  .print-grid .bd.mid { background: #FDF3DC; color: #7A5200; border: 1px solid #F9E6B9; }
+  .print-grid .bd.low { background: #FBE6E6; color: var(--low); border: 1px solid #F6CDCD; }
+  .print-grid .sc.big .bd { background: #fff; color: var(--pri); border: none; margin-top: 5px; }
+  
+  .print-grid .scf { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+  .print-grid .pc { font-size: 14px; font-weight: 700; }
+  .print-grid .pc.ok { color: var(--ok); }
+  .print-grid .pc.mid { color: #7A5200; }
+  .print-grid .pc.low { color: var(--low); }
+}
+/* ========================================= */
 </style>
 </head>
 <body>
@@ -178,13 +274,26 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
   
   <div id="app" hidden>
     <section class="panel">
+      <h2 style="color:var(--pri);margin-bottom:16px;"><span data-i="title"></span> <span id="dash_today_date" style="font-size:14px;color:var(--mute);font-weight:600;"></span></h2>
+      
+      <!-- New Dashboard Analysis System -->
+      <div id="dash_top" class="dash-top-grid"></div>
+      <details id="dash_sec_wrap" class="dash-secondary" ontoggle="saveDashSecondary(this.open)">
+        <summary><span>مزید تفصیل</span></summary>
+        <div id="dash_secondary"></div>
+      </details>
+      <div id="dash_darja" class="dash-darja-grid"></div>
+      <div id="dash_risk"></div>
+      <div id="dash_top_perf"></div>
+      <!-- End New Dashboard Analysis -->
+
       <div class="bar-tools">
         <label><span data-i="month"></span><select id="mf" onchange="render()"></select></label>
         <label><span data-i="cls"></span><select id="cf" onchange="fsf();render()"></select></label>
         <label><span data-i="stu"></span><select id="sf" onchange="render()"></select></label>
         <input id="q" oninput="render()" autocomplete="off" placeholder="Search student..." style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px;min-width:190px; box-shadow:0 1px 2px rgba(0,0,0,0.02);" onfocus="this.style.borderColor='var(--pri)';this.style.boxShadow='0 0 0 3px rgba(46, 125, 116, 0.15)'" onblur="this.style.borderColor='var(--line)';this.style.boxShadow='0 1px 2px rgba(0,0,0,0.02)'">
         <span class="sp"></span>
-        <button class="btn ghost sm" onclick="window.print()" data-i="print"></button>
+        <button class="btn ghost sm" onclick="printReports()" data-i="print"></button>
       </div>
       
       <!-- Attendance Card Container -->
@@ -197,6 +306,9 @@ h4{font:700 18px var(--serif);color:var(--pri);margin:28px 0 8px}
     </section>
   </div>
 </div>
+
+<!-- Print Area -->
+<div id="print-area"></div>
 
 <div id="ver" class="vr"></div>
 <div id="pm" class="md" hidden><div class="mb pmb">
@@ -214,6 +326,7 @@ let ADC={},ADT={date:null},ACM={};
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
 const UF="'JNN','Noto Nastaliq Urdu','Noto Naskh Arabic',serif",EF="'Source Sans 3','Noto Naskh Arabic',sans-serif";
 const CLR={ok:'#2E8B57',mid:'#E0A030',low:'#D64545'};
+const THRESHOLDS = { good: 85, warn: 60 };
 
 function fixSpecificClasses() {
   if (!D) return;
@@ -507,83 +620,265 @@ function drawAttCard(d,marks){
 }
 function attPick(d){if(!d)return;ADT.date=d;attCard();}
 
-function render(){
-  CH.forEach(c=>c.destroy());CH=[];
-  Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5B6769';
-  const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
-  const q=($('q')&&$('q').value||'').trim().toLowerCase();
-  const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
-  const E=base.filter(e=>!m||mon(e)==m);
-  
-  const by={};
-  D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)) && (!URL_CLS || s.class === URL_CLS))
-    .forEach(s => {
-        if (!by[s.class]) by[s.class] = {};
-        by[s.class][s.username] = {u: s.username, name: s.name, list: []};
-    });
-  E.forEach(e => {
-      if (!by[e.class]) by[e.class] = {};
-      if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
-      by[e.class][e.username].list.push(e);
-  });
+function saveDashSecondary(open){try{localStorage.setItem('dash_sec_open',open?'1':'0')}catch(e){}}
 
-  const allk=D.keys.filter(k=>k!='photo');
-  let h='';const items=[],ALL=[];
-  Object.keys(by).forEach((k,i)=>{
-    const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
-    const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
-    A.forEach(s=>withAtt(s,ms,s.u,s.list));
-    const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
-    E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
-    const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
-    const tf=ks.filter(x=>Tg[x]>0);
-    A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);});
-    A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
-    const live=A.filter(s=>!s.none);
-    const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
-    h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
-    h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
-    let cg='';
-    if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
-    if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
-    const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
-    const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
-      const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
-    if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
-    if(cg)h+=`<div class="cg">${cg}</div>`;
-    if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span></div>`;
-    h+='</section>';
-    items.push({i,A,tf,Tg,bm,tr});
-  });
-  const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
-  const low=ovs.filter(s=>s.ov<LOW).length;
-  const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
-    `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
-    `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
-  $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
-  
-  const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
-  const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
-    options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
-  items.forEach(({i,A,tf,Tg,bm,tr})=>{
-    const o1=$('co'+i);
-    if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
-    const o2=$('cp'+i);
-    if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
-    const o3=$('ct'+i);
-    if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#2E7D74',backgroundColor:'#2E7D7422',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#2E7D74',spanGaps:true}]},
-      options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
-  });
-  
-  attCard();
-
-  $('log').innerHTML=`<thead><tr><th>${t('cls')}</th><th>${t('user_l')}</th><th class="l">${t('name')}</th></tr></thead><tbody>`+
-    E.slice(-60).reverse().map(e=>`<tr>
-      <td>${esc(e.class)}</td>
-      <td>${esc(e.username)}</td>
-      <td class="l">${esc(e.name)}</td>
-    </tr>`).join('')+'</tbody>';
+function dashPctChip(label, pct){
+  const c=lv(pct);
+  const style=c=='ok'?'background:#E4F4EA;color:var(--ok);border-color:#CDEBD6':c=='mid'?'background:#FDF3DC;color:#7A5200;border-color:#F9E6B9':c=='low'?'background:#FBE6E6;color:var(--low);border-color:#F6CDCD':'';
+  return `<span class="chip" style="${style}">${esc(label)}: ${pct==null?'—':pct+'%'}${c?` · ${stl(c)}`:''}</span>`;
 }
+
+function renderDashboard(){
+  try{
+    if(!D || !D.students) return;
+    const topEl=$('dash_top'); if(!topEl) return;
+    if($('dash_today_date')) $('dash_today_date').textContent=dayLabel(todayStr());
+    
+    const c=$('cf').value, m=$('mf').value, sv=$('sf').value;
+    const q=($('q')&&$('q').value||'').trim().toLowerCase();
+    const today=todayStr();
+    const L2=D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||String(s.name).toLowerCase().includes(q)));
+    
+    const marks=(D.attlast && D.attlast.date==today)?D.attlast.marks:(ADC[today]||{});
+    const cnt={P:0,L:0,A:0};
+    L2.forEach(s=>{const st=marks[s.username];if(st=='P')cnt.P++;else if(st=='L')cnt.L++;else if(st=='A')cnt.A++;});
+    const marked=cnt.P+cnt.L+cnt.A;
+    const rate=marked?Math.round(cnt.P/marked*100):null;
+    
+    if(!marked){
+      topEl.innerHTML=`<div class="dash-notmarked"><p style="margin:0 0 12px;color:var(--mute);font-weight:600;font-size:15px;">${LG=='ur'?'آج کی حاضری ابھی نہیں لگی':'Attendance not marked yet'}</p></div>`;
+    } else {
+      const rc=lv(rate);
+      topEl.innerHTML=`
+        <div class="dash-card ok"><small><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>${LG=='ur'?'حاضر':'Present'}</small><b>${cnt.P}</b></div>
+        <div class="dash-card low"><small><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>${LG=='ur'?'غیر حاضر':'Absent'}</small><b>${cnt.A}</b></div>
+        <div class="dash-card mid"><small><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>${LG=='ur'?'رخصت':'Leave'}</small><b>${cnt.L}</b></div>
+        <div class="dash-card ${rc}"><small><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 4 4 5-5"/></svg>${LG=='ur'?'حاضری کی شرح':'Rate'}</small><b>${rate}%</b><span class="status-lbl">${stl(rc)}</span></div>`;
+    }
+    
+    const A2=L2.map(s=>{
+      const list=D.entries.filter(e=>String(e.username)==String(s.username)&&(!m||mon(e)==m));
+      const ag=agg(list);
+      const ms=m?[m]:[...new Set(list.map(mon))];
+      withAtt(ag, ms, s.username, list);
+      return {u:s.username, name:s.name, class:s.class, list, ag, ms, ov:ovOf(ag, s.class, ms)};
+    });
+    const ovs=A2.filter(s=>s.ov!=null);
+    const avgOv=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
+    const needAtt=ovs.filter(s=>s.ov<THRESHOLDS.warn).length;
+    const totalEntries=A2.reduce((a,s)=>a+s.list.length,0);
+    const ac=lv(avgOv);
+    const acStyle=ac==='ok'?'background:#E4F4EA;color:var(--ok)':ac==='mid'?'background:#FDF3DC;color:#7A5200':ac==='low'?'background:#FBE6E6;color:var(--low)':'';
+    
+    $('dash_secondary').innerHTML=`<div class="kpis">
+      <div class="kpi"><small>${t('k_stu')}</small><b>${L2.length}</b></div>
+      <div class="kpi"><small>${t('k_ent')}</small><b>${totalEntries}</b></div>
+      <div class="kpi ${ac}"><small>${t('k_ach')}</small><b>${avgOv==null?'—':avgOv+'%'}</b>${avgOv!=null?`<span class="status-lbl" style="font-size:11px;padding:2px 8px;border-radius:6px;margin-top:4px;align-self:flex-start;${acStyle};">${stl(ac)}</span>`:''}</div>
+      <div class="kpi ${ovs.length?(needAtt?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?needAtt:'—'}</b></div>
+    </div>`;
+    
+    const classes=[...new Set(L2.map(s=>s.class))].sort();
+    $('dash_darja').innerHTML=classes.map(cl=>{
+      const students=A2.filter(s=>s.class==cl);
+      if(!students.length) return '';
+      const metrics=['mutalia','madaniPhool','qafila','test'];
+      const avgs={};
+      metrics.forEach(key=>{
+        const vals=students.map(s=>{const tv=tgt(cl,key,s.ms);const avgVal=vl(s.ag,key);return tv>0?Math.round(avgVal/tv*100):null;}).filter(v=>v!=null);
+        avgs[key]=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;
+      });
+      return `<div class="dash-darja"><h4>${esc(cl)} <span style="color:var(--mute);font-weight:600;font-size:13px;">(${students.length})</span></h4><div class="dchips">${metrics.map(k=>dashPctChip(L(k), avgs[k])).join('')}</div></div>`;
+    }).join('');
+    
+    const atRisk=[];
+    A2.forEach(s=>{
+      const reasons=[];
+      if(s.ov!=null && s.ov<THRESHOLDS.warn) reasons.push(LG=='ur'?'کم کارکردگی':'Low');
+      if(marks[s.u]=='A') reasons.push(LG=='ur'?'غیر حاضر':'Absent');
+      if(reasons.length) atRisk.push({u:s.u, name:s.name, cls:s.class, reasons, ov:s.ov, level:marks[s.u]=='A'?'low':'mid'});
+    });
+    $('dash_risk').innerHTML=atRisk.length?`<h4 style="margin-top:24px;">${LG=='ur'?'توجہ طلب طلبہ':'At Risk'} <span class="chip" style="margin-inline-start:8px;">${atRisk.length}</span></h4><div class="dash-risk-list">${atRisk.slice(0,20).map(r=>`<div class="dash-risk-item ${r.level}" onclick="openProfile('${esc(r.u)}')" style="cursor:pointer;"><div style="flex:1;"><b>${esc(r.name)}</b> <span style="color:var(--mute);font-size:13px;">— ${esc(r.cls)}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap;">${r.reasons.map(re=>`<span class="bd ${re===('غیر حاضر')||re==='Absent'?'low':'mid'}">${re}</span>`).join('')}</div></div>`).join('')}</div>`:'';
+    
+    const perfs=[...ovs].sort((a,b)=>b.ov-a.ov).slice(0,3);
+    $('dash_top_perf').innerHTML=perfs.length?`<h4 style="margin-top:24px;">${LG=='ur'?'اس ماہ کے بہترین طلبہ':'Top Performers'}</h4><div class="dash-perf-list">${perfs.map((p,i)=>`<div class="dash-perf-item ok" onclick="openProfile('${esc(p.u)}')" style="cursor:pointer;"><span class="dash-rank">${i+1}</span><div style="flex:1;"><b>${esc(p.name)}</b> <span style="color:var(--mute);font-size:13px;">— ${esc(p.class)}</span></div><span class="bd ok">${p.ov}%</span></div>`).join('')}</div>`:'';
+  }catch(e){console.error('dashboard', e);}
+}
+
+function printReports() {
+  try {
+    const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
+    const q=($('q')&&$('q').value||'').trim().toLowerCase();
+    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
+    const E=base.filter(e=>!m||mon(e)==m);
+    
+    const by={};
+    D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)) && (!URL_CLS || s.class === URL_CLS))
+      .forEach(s => {
+          if (!by[s.class]) by[s.class] = {};
+          by[s.class][s.username] = {u: s.username, name: s.name, list: []};
+      });
+    E.forEach(e => {
+        if (!by[e.class]) by[e.class] = {};
+        if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
+        by[e.class][e.username].list.push(e);
+    });
+
+    let printHTML = '';
+    let count = 0;
+    
+    Object.keys(by).forEach((k)=>{
+      const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
+      const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
+      A.forEach(s=>withAtt(s,ms,s.u,s.list));
+      const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
+      E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
+      const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
+      
+      A.forEach(s=>{s.ov=ovOf(s,k,ms);});
+      A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
+      
+      A.forEach(s => {
+         count++;
+         let cardsHtml = `<div class="sc big ${lv(s.ov)}"><div><small>Overall</small><b>${s.ov==null?'—':s.ov+'%'}</b></div><span class="bd ok">${stl(lv(s.ov))}</span></div>`;
+         
+         cardsHtml += ks.map(x=>{
+            if(s.none) return `<div class="sc"><small>${esc(L(x))}</small><b>—</b></div>`;
+            const v=vl(s,x),n=+v.toFixed(1);
+            if(!Tg[x]) return `<div class="sc"><small>${esc(L(x))}</small><b>${n}</b><div class="of">${t('sc_nt')}</div></div>`;
+            const p=Math.round(v/Tg[x]*100),q=lv(p);
+            return `<div class="sc ${q}"><small>${esc(L(x))}</small><b>${n}<span class="of"> / ${+Tg[x].toFixed(1)}</span></b><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><div class="scf"><span class="pc ${q}">${p}%</span><span class="bd ${q}">${stl(q)}</span></div></div>`;
+         }).join('');
+         
+         const ao = attOf(s.u, m);
+         if(ao.t) {
+             cardsHtml += `<div class="sc ${lv(ao.pc)}"><small>Daily Attendance</small><b>${ao.pc}%</b><div class="bar"><i class="${lv(ao.pc)}" style="width:${ao.pc}%"></i></div><div class="scf"><span class="of">${attTxt(ao)}</span></div></div>`;
+         }
+
+         printHTML += `
+         <div class="print-page">
+           <div class="print-header">
+             ${ava(s.u, s.name, 'xxl')}
+             <div>
+               <h1>${esc(s.name)}</h1>
+               <div class="note">${esc(s.class)} · ${esc(s.u)}</div>
+             </div>
+           </div>
+           
+           <h2 class="print-title">Performance — ${esc(m||t('pf_overall'))}</h2>
+           <div class="print-grid">
+             ${cardsHtml}
+           </div>
+         </div>`;
+      });
+    });
+    
+    if(count === 0) {
+       return toast('No data to print.', 1);
+    }
+
+    $('print-area').innerHTML = printHTML;
+    
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => { $('print-area').innerHTML = ''; }, 1000);
+    }, 500);
+    
+  } catch(e) {
+    console.error(e);
+    toast('Error generating print report.', 1);
+  }
+}
+
+function render(){
+  try {
+    renderDashboard();
+    
+    CH.forEach(c=>c.destroy());CH=[];
+    Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5B6769';
+    const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
+    const q=($('q')&&$('q').value||'').trim().toLowerCase();
+    const base=D.entries.filter(e=>(!c||e.class==c)&&(!sv||e.username==sv)&&(!q||String(e.name).toLowerCase().includes(q)));
+    const E=base.filter(e=>!m||mon(e)==m);
+    
+    const by={};
+    D.students.filter(s => (!c || s.class == c) && (!sv || s.username == sv) && (!q || String(s.name).toLowerCase().includes(q)) && (!URL_CLS || s.class === URL_CLS))
+      .forEach(s => {
+          if (!by[s.class]) by[s.class] = {};
+          by[s.class][s.username] = {u: s.username, name: s.name, list: []};
+      });
+    E.forEach(e => {
+        if (!by[e.class]) by[e.class] = {};
+        if (!by[e.class][e.username]) by[e.class][e.username] = {u: e.username, name: e.name, list: []};
+        by[e.class][e.username].list.push(e);
+    });
+
+    const allk=D.keys.filter(k=>k!='photo');
+    let h='';const items=[],ALL=[];
+    Object.keys(by).forEach((k,i)=>{
+      const A=Object.values(by[k]).map(o=>Object.assign(o,agg(o.list)));
+      const ms=m?[m]:[...new Set(E.filter(e=>e.class==k).map(mon))].sort();
+      A.forEach(s=>withAtt(s,ms,s.u,s.list));
+      const st=new Set();ms.forEach(x=>fset(k,x).forEach(y=>st.add(y)));
+      E.filter(e=>e.class==k).forEach(e=>Object.keys(V(e)).forEach(y=>st.add(y)));
+      const ks=ordk(st),Tg={};ks.forEach(x=>{Tg[x]=tgt(k,x,ms)});
+      const tf=ks.filter(x=>Tg[x]>0);
+      A.forEach(s=>{s.ov=ovOf(s,k,ms);ALL.push(s);});
+      A.sort((a,b)=>(b.ov??-1)-(a.ov??-1)||String(a.name).localeCompare(b.name));
+      const live=A.filter(s=>!s.none);
+      const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
+      h+=`<section class="cls"><div class="clsh"><h3>${esc(k)}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;
+      h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);
+      let cg='';
+      if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
+      if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
+      const bm=[...new Set(base.filter(e=>e.class==k).map(mon))].sort();
+      const tr=bm.map(mm=>{const per={};base.filter(e=>e.class==k&&mon(e)==mm).forEach(e=>{(per[e.username]??=[]).push(e)});
+        const o=Object.entries(per).map(([u,l])=>{const a=agg(l);withAtt(a,[mm],u,l);return ovOf(a,k,[mm]);}).filter(x=>x!=null);return o.length?Math.round(o.reduce((a,b)=>a+b,0)/o.length):null;});
+      if(tr.filter(x=>x!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_trend')}</h5><div style="height:240px"><canvas id="ct${i}"></canvas></div></div>`;
+      if(cg)h+=`<div class="cg">${cg}</div>`;
+      if(!tf.length)h+=`<div class="hint"><span>${t('chart_none')}</span></div>`;
+      h+='</section>';
+      items.push({i,A,tf,Tg,bm,tr});
+    });
+    const ovs=ALL.filter(s=>s.ov!=null),avg=ovs.length?Math.round(ovs.reduce((a,s)=>a+s.ov,0)/ovs.length):null;
+    const low=ovs.filter(s=>s.ov<LOW).length;
+    const cards=ALL.length?`<div class="kpis"><div class="kpi"><small>${t('k_stu')}</small><b>${ALL.length}</b></div><div class="kpi"><small>${t('k_ent')}</small><b>${E.length}</b></div>`+
+      `<div class="kpi ${avg==null?'':lv(avg)}"><small>${t('k_ach')}</small><b>${avg==null?'—':avg+'%'}</b></div>`+
+      `<div class="kpi ${ovs.length?(low?'low':'ok'):''}"><small>${t('k_att')}</small><b>${ovs.length?low:'—'}</b></div></div>`:'';
+    $('out').innerHTML=ALL.length?cards+h:`<div class="empty">${t('empty')}</div>`;
+    
+    const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
+    const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},
+      options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
+    items.forEach(({i,A,tf,Tg,bm,tr})=>{
+      const o1=$('co'+i);
+      if(o1){const w=A.filter(s=>s.ov!=null);bar(o1,w.map(s=>s.name),w.map(s=>s.ov),16);}
+      const o2=$('cp'+i);
+      if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
+      const o3=$('ct'+i);
+      if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#2E7D74',backgroundColor:'#2E7D7422',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#2E7D74',spanGaps:true}]},
+        options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
+    });
+    
+    attCard();
+
+    $('log').innerHTML=`<thead><tr><th>${t('cls')}</th><th>${t('user_l')}</th><th class="l">${t('name')}</th></tr></thead><tbody>`+
+      E.slice(-60).reverse().map(e=>`<tr>
+        <td>${esc(e.class)}</td>
+        <td>${esc(e.username)}</td>
+        <td class="l">${esc(e.name)}</td>
+      </tr>`).join('')+'</tbody>';
+  } catch(err) {
+    console.error(err);
+  }
+}
+
+(function(){
+  try{
+    const s=localStorage.getItem('dash_sec_open');
+    if(s==='1' && $('dash_sec_wrap')) $('dash_sec_wrap').open=true;
+  }catch(e){}
+})();
 
 setLang(LG);
 </script>
