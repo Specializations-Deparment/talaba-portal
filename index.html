@@ -763,6 +763,7 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
     <div id="salPreviewContent" style="padding:24px;max-height:70vh;overflow-y:auto;background:#F7F5EF;"></div>
     <div style="padding:16px 24px;background:#fff;border-top:1px solid var(--line);text-align:right;display:flex;justify-content:flex-end;gap:12px;">
       <button class="btn ghost" onclick="document.getElementById('salPreviewModal').hidden=true">Close</button>
+      <button class="btn" id="downloadExcelBtn" onclick="downloadExcel()" style="background:var(--ok);">Download Excel</button>
       <button class="btn" id="downloadSalBtn" onclick="downloadPDF()">Download PDF</button>
     </div>
   </div>
@@ -1686,6 +1687,16 @@ async function downloadPDF(){
   const bc=atob(r.data),bn=new Array(bc.length);for(let i=0;i<bc.length;i++) bn[i]=bc.charCodeAt(i);
   const ba=new Uint8Array(bn),blob=new Blob([ba],{type:'application/pdf'});
   const url=window.URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=r.filename;a.click();window.URL.revokeObjectURL(url);toast('PDF Downloaded!');
+}
+async function downloadExcel(){
+  if(!currentPreviewUser) return;
+  const btn=$('downloadExcelBtn');btn.disabled=true;btn.textContent='Downloading...';
+  const r=await call({action:'downloadSalaryExcel',username:currentPreviewUser,month:currentPreviewMonth});
+  btn.disabled=false;btn.textContent='Download Excel';
+  if(!r.ok) return toast(r.msg,1);
+  const bc=atob(r.data),bn=new Array(bc.length);for(let i=0;i<bc.length;i++) bn[i]=bc.charCodeAt(i);
+  const ba=new Uint8Array(bn),blob=new Blob([ba],{type:'application/vnd.ms-excel'});
+  const url=window.URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=r.filename;a.click();window.URL.revokeObjectURL(url);toast('Excel Downloaded!');
 }
 function fill(){
   applyClassCorrections();setVer();
