@@ -794,6 +794,35 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
   <div id="dashSheetBody"></div>
 </div></div>
 
+<div id="tsEditModal" class="md" hidden style="z-index:10000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);">
+  <div class="mb" style="max-width:400px;">
+    <h3 style="margin-top:0; color:var(--pri);">Edit Hazri</h3>
+    <p id="tsEditDate" style="font-weight:bold; margin-bottom:12px; color:var(--mute);"></p>
+    
+    <label class="f" style="margin-bottom:10px;"><span>Status</span>
+      <select id="te_status" onchange="toggleTeTimeInputs(this.value)">
+        <option value="Present">Present</option>
+        <option value="Leave">Leave</option>
+        <option value="Absent">Absent</option>
+        <option value="Qafila">Madani Qafila</option>
+        <option value="Haftawar Tatti">Haftawar Tatti (Holiday)</option>
+      </select>
+    </label>
+    
+    <div id="te_timewrap">
+      <label class="f" style="margin-bottom:10px;"><span>IN Time (08:00 AM - 11:59 AM)</span><input type="time" id="te_in" min="08:00" max="11:59"></label>
+      <label class="f" style="margin-bottom:10px;"><span>OUT Time (12:00 PM - 04:00 PM)</span><input type="time" id="te_out" min="12:00" max="16:00"></label>
+    </div>
+    
+    <label class="f" style="margin-bottom:20px;"><span>Precautionary Deduction (₹)</span><input type="number" id="te_prec" value="0"></label>
+    
+    <div class="row" style="margin-top:0;">
+      <button class="btn" onclick="tsSaveEdit()">Save Changes</button>
+      <button class="btn ghost" onclick="$('tsEditModal').hidden=true">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div id="confirmModal" class="md" hidden style="z-index:9999">
   <div class="mb" style="max-width:420px;text-align:center;">
     <h3 id="confirmTitle" style="color:var(--ink);margin-bottom:12px;" data-i="confirm">تصدیق کریں</h3>
@@ -1404,7 +1433,7 @@ function toggleRowPublish(username,month,publish){
   });
 }
 
-// ========== TIME SUMMARY MODAL — PER-DAY + BULK APPROVAL ==========
+// ========== TIME SUMMARY MODAL — PER-DAY + BULK APPROVAL + EDIT ==========
 let TS_CTX = null;
 
 function tsSetStatus(username, month, status, dates, all) {
@@ -1486,6 +1515,7 @@ function tsRender(r) {
         <button class="btn sm" style="background:var(--ok);padding:4px 8px;min-height:30px;" title="Approve" onclick="tsDay('${esc(rec.date)}','Approved')">✓</button>
         <button class="btn sm" style="background:var(--low);padding:4px 8px;min-height:30px;" title="Reject" onclick="tsDay('${esc(rec.date)}','Rejected')">✕</button>
         <button class="btn sm" style="background:var(--mute);padding:4px 8px;min-height:30px;" title="Reset" onclick="tsDay('${esc(rec.date)}','Pending')">↺</button>
+        <button class="btn sm" style="background:var(--tint);color:var(--pri);padding:4px 8px;min-height:30px;border:1px solid var(--line);" title="Edit" onclick="tsEdit('${esc(rec.date)}','${esc(rec.status)}','${esc(rec.inTimeRaw||'')}','${esc(rec.outTimeRaw||'')}',${rec.precaution||0})">✏️</button>
       </td>
     </tr>`;
   });
@@ -1569,6 +1599,58 @@ async function refreshTS() {
   if (!TS_CTX) return;
   const r = await call({ action: 'getTimeSummary', username: TS_CTX.username, month: TS_CTX.month });
   if (r.ok) tsRender(r);
+}
+
+function tsEdit(date, status, inRaw, outRaw, prec) {
+  $('tsEditDate').textContent = date;
+  $('tsEditModal').dataset.date = date;
+  $('te_status').value = status;
+  $('te_in').value = inRaw || '';
+  $('te_out').value = outRaw || '';
+  $('te_prec').value = prec || 0;
+  toggleTeTimeInputs(status);
+  $('tsEditModal').hidden = false;
+}
+
+function toggleTeTimeInputs(status) {
+  const hide = ['Leave', 'Absent', 'Qafila', 'Haftawar Tatti'].includes(status);
+  $('te_timewrap').style.display = hide ? 'none' : 'block';
+}
+
+async function tsSaveEdit() {
+  const date = $('tsEditModal').dataset.date;
+  const status = $('te_status').value;
+  const inT = $('te_timewrap').style.display === 'none' ? '' : $('te_in').value;
+  const outT = $('te_timewrap').style.display === 'none' ? '' : $('te_out').value;
+  const prec = $('te_prec').value;
+
+  if (inT) {
+    const m = parseInt(inT.split(':')[0]) * 60 + parseInt(inT.split(':')[1]);
+    if (m < 480) return toast('Roster Error: IN Time 08:00 AM se pehle ka nahi ho sakta!', 1);
+    if (m >= 720) return toast('Roster Error: IN Time subah (AM) ka hona chahiye! (12:00 PM se pehle)', 1);
+  }
+  if (outT) {
+    const m = parseInt(outT.split(':')[0]) * 60 + parseInt(outT.split(':')[1]);
+    if (m > 960) return toast('Roster Error: OUT Time 04:00 PM ke baad ka nahi ho sakta!', 1);
+    if (m < 720) return toast('Roster Error: OUT Time shaam (PM) ka hona chahiye! (12:00 PM ke baad)', 1);
+  }
+
+  const r = await call({
+    action: 'editTimeAttendance',
+    username: TS_CTX.username,
+    date: date,
+    status: status,
+    inTime: inT,
+    outTime: outT,
+    precaution: prec
+  });
+
+  if (!r.ok) return toast(r.msg, 1);
+  D = r;
+  $('tsEditModal').hidden = true;
+  await refreshTS();
+  if (typeof renderSalary === 'function') renderSalary();
+  toast('Record updated ✓');
 }
 // ========== END TIME SUMMARY MODAL ==========
 
