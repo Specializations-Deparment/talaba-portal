@@ -1390,7 +1390,7 @@ function renderSalary(){
 }
 async function toggleApp(username, month, status) {
     toast('Updating...');
-    const r = await call({action:'toggleAttendanceApproval', username, month, status});
+    const r = await call({action:'toggleAttendanceApproval', username, month, status, all: true});
     if(!r.ok) return toast(r.msg,1);
     D = r;
     renderSalary();
@@ -1403,26 +1403,175 @@ function toggleRowPublish(username,month,publish){
     D=r;renderSalary();toast(publish?'Salary Published successfully!':'Salary Unpublished!');
   });
 }
-async function showTimeSummary(username,month){
-  toast('Loading Time Summary...');
-  const r=await call({action:'getTimeSummary',username,month});
-  if(!r.ok) return toast(r.msg,1);
-  const s=D.students.find(x=>String(x.username)===String(username));
-  const summary=r.summary,totalLate=r.totalLate||0;
-  let p=0,l=0,a=0;if(summary['Present'])p=summary['Present'].length;if(summary['Leave'])l=summary['Leave'].length;if(summary['Absent'])a=summary['Absent'].length;
-  let html=`<div style="background:var(--pri);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;font:600 18px var(--serif);">${t('ts_title')}</h3><button onclick="document.getElementById('timeSummaryModal').hidden=true" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;opacity:0.8;">✕</button></div><div style="padding:24px;max-height:70vh;overflow-y:auto;">`;
-  html+=`<p style="margin-bottom:16px;font-size:15px;"><b>${t('ts_name')}:</b> ${esc(displayName(s))} (${esc(displayClass(s.class))})<br><b>${t('ts_month')}:</b> ${month}</p>`;
-  html+=`<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;"><div style="background:#E4F4EA;color:var(--ok);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #CDEBD6;">${t('ts_present')}: ${p}</div><div style="background:#FDF3DC;color:#7A5200;padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #F9E6B9;">${t('ts_leave')}: ${l}</div><div style="background:#FBE6E6;color:var(--low);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #F6CDCD;">${t('ts_absent')}: ${a}</div><div style="background:var(--tint);color:var(--pri);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid var(--line);">${t('ts_total_late')}: ${totalLate}</div></div>`;
-  html+=`<table style="min-width:100%;"><thead><tr><th style="text-align:left;">${t('ts_date')}</th><th>${t('ts_status')}</th><th>${t('ts_in')}</th><th>${t('ts_out')}</th><th>${t('ts_late')}</th></tr></thead><tbody>`;
-  let allRecs=[];for(let st in summary){summary[st].forEach(rec=>allRecs.push({...rec,status:st}));}
-  allRecs.sort((a,b)=>new Date(a.date)-new Date(b.date));
-  if(!allRecs.length) html+=`<tr><td colspan="5" style="text-align:center;">${t('empty')}</td></tr>`;
-  else allRecs.forEach(rec=>{let stName=rec.status==='Present'?t('ts_present'):rec.status==='Leave'?t('ts_leave'):rec.status==='Absent'?t('ts_absent'):t('ts_holiday');let clr=rec.status==='Present'?'var(--ok)':rec.status==='Leave'?'var(--mid)':'var(--low)';html+=`<tr><td style="text-align:left;">${rec.date}</td><td style="color:${clr};font-weight:bold;">${stName}</td><td>${rec.inTime||'--'}</td><td>${rec.outTime||'--'}</td><td>${rec.lateMins||0}</td></tr>`;});
-  html+=`</tbody></table></div><div style="padding:16px 24px;background:#fff;border-top:1px solid var(--line);text-align:right;"><button class="btn ghost" onclick="document.getElementById('timeSummaryModal').hidden=true">${t('ts_close')}</button></div>`;
-  let modal=document.getElementById('timeSummaryModal');
-  if(!modal){modal=document.createElement('div');modal.id='timeSummaryModal';modal.className='md';modal.style.zIndex='9999';modal.style.background='rgba(0,0,0,0.6)';modal.style.backdropFilter='blur(4px)';modal.innerHTML=`<div class="mb" style="padding:0;max-width:650px;border-radius:16px;overflow:hidden;"></div>`;document.body.appendChild(modal);}
-  modal.querySelector('.mb').innerHTML=html;modal.hidden=false;
+
+// ========== TIME SUMMARY MODAL — PER-DAY + BULK APPROVAL ==========
+let TS_CTX = null;
+
+function tsSetStatus(username, month, status, dates, all) {
+  return call({ action: 'toggleAttendanceApproval', username, month, status, dates, all });
 }
+
+function tsBadge(v) {
+  if (v === 'Approved') return `<span class="bd ok">${t('app_approved')}</span>`;
+  if (v === 'Rejected') return `<span class="bd low">${t('app_rejected')}</span>`;
+  return `<span class="bd mid">${t('app_pending')}</span>`;
+}
+
+function tsRender(r) {
+  const s = D.students.find(x => String(x.username) === String(TS_CTX.username));
+  const summary = r.summary || {};
+  const totalLate = r.totalLate || 0;
+
+  let p=0,l=0,a=0;
+  if (summary['Present']) p = summary['Present'].length;
+  if (summary['Leave'])   l = summary['Leave'].length;
+  if (summary['Absent'])  a = summary['Absent'].length;
+
+  let allRecs = [];
+  for (let st in summary) summary[st].forEach(rec => allRecs.push({...rec, status: st}));
+  allRecs.sort((x,y)=> new Date(x.date) - new Date(y.date));
+
+  let statusHtml = '';
+  if (r.appStatus === 'Approved') statusHtml = `<div class="hint" style="background:#E4F4EA;border-color:#CDEBD6;color:var(--ok);"><b>${t('app_approved')}</b></div>`;
+  else if (r.appStatus === 'Rejected') statusHtml = `<div class="hint" style="background:#FBE6E6;border-color:#F6CDCD;color:var(--low);"><b>${t('app_rejected')}</b></div>`;
+  else statusHtml = `<div class="hint" style="background:#FDF3DC;border-color:#F9E6B9;color:#7A5200;"><b>${t('app_pending')}</b></div>`;
+
+  let html = `<div style="background:var(--pri);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <h3 style="margin:0;font:600 18px var(--serif);">${t('ts_title')}</h3>
+    <button onclick="closeTSModal()" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;opacity:0.8;">✕</button>
+  </div>
+  <div style="padding:24px;max-height:70vh;overflow-y:auto;">
+    <p style="margin-bottom:12px;font-size:15px;"><b>${t('ts_name')}:</b> ${esc(displayName(s))} (${esc(displayClass(s.class))})<br><b>${t('ts_month')}:</b> ${TS_CTX.month}</p>
+    ${statusHtml}
+    <div style="display:flex;gap:12px;margin:16px 0;flex-wrap:wrap;">
+      <div style="background:#E4F4EA;color:var(--ok);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #CDEBD6;">${t('ts_present')}: ${p}</div>
+      <div style="background:#FDF3DC;color:#7A5200;padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #F9E6B9;">${t('ts_leave')}: ${l}</div>
+      <div style="background:#FBE6E6;color:var(--low);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid #F6CDCD;">${t('ts_absent')}: ${a}</div>
+      <div style="background:var(--tint);color:var(--pri);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid var(--line);">${t('ts_total_late')}: ${totalLate}</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 12px;padding:10px 12px;background:#f9fafa;border:1px solid var(--line);border-radius:8px;">
+      <b style="margin-inline-end:6px;">Bulk (selected):</b>
+      <button class="btn sm" style="background:var(--ok);" onclick="tsBulk('Approved')">Approve</button>
+      <button class="btn sm" style="background:var(--low);" onclick="tsBulk('Rejected')">Reject</button>
+      <button class="btn sm" style="background:var(--mute);" onclick="tsBulk('Pending')">Reset</button>
+      <span style="flex:1;"></span>
+      <button class="btn ghost sm" onclick="tsBulkAll('Approved')">Approve All Days</button>
+      <button class="btn ghost sm" onclick="tsBulkAll('Rejected')">Reject All Days</button>
+      <button class="btn ghost sm" onclick="tsBulkAll('Pending')">Reset All</button>
+    </div>
+    <table style="min-width:100%;"><thead><tr>
+      <th style="width:32px;"><input type="checkbox" id="tsSelAll" onchange="tsToggleAll(this.checked)"></th>
+      <th style="text-align:left;">${t('ts_date')}</th>
+      <th>${t('ts_status')}</th>
+      <th>${t('ts_in')}</th>
+      <th>${t('ts_out')}</th>
+      <th>${t('ts_late')}</th>
+      <th>Approval</th>
+      <th>Action</th>
+    </tr></thead><tbody>`;
+
+  if (!allRecs.length) html += `<tr><td colspan="8" style="text-align:center;">${t('empty')}</td></tr>`;
+  else allRecs.forEach(rec => {
+    const stName = rec.status==='Present'?t('ts_present'):rec.status==='Leave'?t('ts_leave'):rec.status==='Absent'?t('ts_absent'):t('ts_holiday');
+    const clr = rec.status==='Present'?'var(--ok)':rec.status==='Leave'?'var(--mid)':'var(--low)';
+    html += `<tr>
+      <td><input type="checkbox" class="tsSel" data-date="${esc(rec.date)}"></td>
+      <td style="text-align:left;">${rec.date}</td>
+      <td style="color:${clr};font-weight:bold;">${stName}</td>
+      <td>${rec.inTime||'--'}</td>
+      <td>${rec.outTime||'--'}</td>
+      <td>${rec.lateMins||0}</td>
+      <td>${tsBadge(rec.approved)}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn sm" style="background:var(--ok);padding:4px 8px;min-height:30px;" title="Approve" onclick="tsDay('${esc(rec.date)}','Approved')">✓</button>
+        <button class="btn sm" style="background:var(--low);padding:4px 8px;min-height:30px;" title="Reject" onclick="tsDay('${esc(rec.date)}','Rejected')">✕</button>
+        <button class="btn sm" style="background:var(--mute);padding:4px 8px;min-height:30px;" title="Reset" onclick="tsDay('${esc(rec.date)}','Pending')">↺</button>
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>
+  <div style="padding:16px 24px;background:#fff;border-top:1px solid var(--line);text-align:right;">
+    <button class="btn ghost" onclick="closeTSModal()">${t('ts_close')}</button>
+  </div>`;
+
+  let modal = document.getElementById('timeSummaryModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'timeSummaryModal';
+    modal.className = 'md';
+    modal.style.zIndex = '9999';
+    modal.style.background = 'rgba(0,0,0,0.6)';
+    modal.style.backdropFilter = 'blur(4px)';
+    modal.innerHTML = `<div class="mb" style="padding:0;max-width:820px;border-radius:16px;overflow:hidden;"></div>`;
+    document.body.appendChild(modal);
+  }
+  modal.querySelector('.mb').innerHTML = html;
+  modal.hidden = false;
+}
+
+async function showTimeSummary(username, month) {
+  TS_CTX = { username, month };
+  toast('Loading Time Summary...');
+  const r = await call({ action: 'getTimeSummary', username, month });
+  if (!r.ok) return toast(r.msg, 1);
+  tsRender(r);
+}
+
+function closeTSModal() {
+  const m = document.getElementById('timeSummaryModal');
+  if (m) m.hidden = true;
+  TS_CTX = null;
+}
+
+function tsToggleAll(checked) {
+  document.querySelectorAll('.tsSel').forEach(c => c.checked = checked);
+}
+
+function tsSelected() {
+  return Array.from(document.querySelectorAll('.tsSel:checked')).map(c => c.dataset.date);
+}
+
+async function tsDay(date, status) {
+  if (!TS_CTX) return;
+  const r = await tsSetStatus(TS_CTX.username, TS_CTX.month, status, [date], false);
+  if (!r.ok) return toast(r.msg, 1);
+  D = r;
+  await refreshTS();
+  if (typeof renderSalary === 'function') renderSalary();
+  toast('Updated: ' + date + ' → ' + status);
+}
+
+async function tsBulk(status) {
+  const dates = tsSelected();
+  if (!dates.length) return toast('Select at least one day', 1);
+  if (!TS_CTX) return;
+  const r = await tsSetStatus(TS_CTX.username, TS_CTX.month, status, dates, false);
+  if (!r.ok) return toast(r.msg, 1);
+  D = r;
+  await refreshTS();
+  if (typeof renderSalary === 'function') renderSalary();
+  toast(dates.length + ' day(s) → ' + status);
+}
+
+async function tsBulkAll(status) {
+  if (!TS_CTX) return;
+  if (!confirm('Is month ke SARE dinon par "' + status + '" lagana hai?')) return;
+  const r = await tsSetStatus(TS_CTX.username, TS_CTX.month, status, null, true);
+  if (!r.ok) return toast(r.msg, 1);
+  D = r;
+  await refreshTS();
+  if (typeof renderSalary === 'function') renderSalary();
+  toast('All days → ' + status);
+}
+
+async function refreshTS() {
+  if (!TS_CTX) return;
+  const r = await call({ action: 'getTimeSummary', username: TS_CTX.username, month: TS_CTX.month });
+  if (r.ok) tsRender(r);
+}
+// ========== END TIME SUMMARY MODAL ==========
+
 async function previewSalary(username,month){
   toast('Loading Preview...');
   const r=await call({action:'getSalaryPreview',username,month});
