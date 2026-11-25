@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Student Performance Portal</title>
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -445,16 +445,47 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
   .dash-card{padding:12px;min-height:80px}
   .dash-card b{font-size:24px}
 }
+
+.mobile-native{display:none!important}
+@media(max-width:768px){
+:root{--mh:56px;--mn:64px;--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{padding:0;font-size:16px}html[lang=ur] body{font-size:17px;line-height:2}
+.mobile-native:not([hidden]){display:flex!important}
+.top{position:fixed;inset:0 0 auto;height:calc(var(--mh) + var(--st));padding:var(--st) 8px 0;flex-wrap:nowrap;box-shadow:none;z-index:1001}
+.top .brand{justify-content:center}.top .brand>div{min-width:0}.top .ttl{font-size:20px;text-align:center}.top .mark,.top .tr,.top small,#ver{display:none!important}
+#nativeBack,#nativeOverflow{flex:0 0 48px;width:48px;height:48px;align-items:center;justify-content:center;border:0;border-radius:50%;background:transparent;color:white;font-size:24px!important}#nativeBack[hidden]{display:flex!important;visibility:hidden}html[dir=rtl] #nativeBack span{transform:scaleX(-1)}
+#app.wrap{position:fixed;inset:calc(var(--mh) + var(--st)) 0 calc(var(--mn) + var(--sb));height:auto;min-height:0;padding:0;margin:0;gap:0;overflow:hidden;display:block}
+#app .main-content{height:100%;overflow:auto;overscroll-behavior:none;padding:16px;min-width:0}
+#login{position:fixed;inset:calc(var(--mh) + var(--st)) 0 var(--sb);margin:0;max-width:none;width:100%;overflow:auto;border:0;border-radius:0;box-shadow:none;display:block}
+#app .sidebar{height:calc(var(--mn) + var(--sb));padding:0 4px var(--sb)!important;box-shadow:none!important}
+#app .tabs{height:64px;gap:2px!important;justify-content:space-around!important}
+#app .tabs button{height:64px;min-height:48px!important;flex:1 1 0!important;background:transparent!important;color:var(--mute);box-shadow:none!important;border-radius:0!important;transform:none;gap:4px!important;padding:5px 2px!important}
+#app .tabs button.native-extra,#app .tabs button[hidden]{display:none!important}
+#app .tabs button.on{color:var(--pri2)!important}#app .tabs button.on:before{top:3px;left:50%;right:auto;transform:translateX(-50%);width:min(54px,90%);height:30px;border-radius:20px;background:var(--tint)}
+#app .tabs button svg,#app .tabs .nav-label{position:relative;z-index:1}#app .tabs button svg{width:22px!important;height:22px!important}html[lang=ur] #app .tabs .nav-label{font-size:12px!important;line-height:1.6!important}
+#app .tabs button[data-badge=true]:after{content:'';position:absolute;top:5px;inset-inline-end:18%;width:8px;height:8px;background:var(--low);border-radius:50%;z-index:2}
+.panel,.kpi,.sc,.cbox,.cal,.att-card,.dash-card{border-radius:16px;box-shadow:none;border:1px solid var(--line)}.panel{padding:16px}.btn:hover,.kpi:hover,.dash-card:hover{transform:none;box-shadow:none}button{min-height:48px;user-select:none;-webkit-user-select:none}button:active:not(:disabled){transform:scale(.98)}#app .tabs button:active{background:var(--tint)!important}
+.att-quick-actions,.sfs-bar{top:0}.att-save-wrap{bottom:calc(var(--mn) + var(--sb));box-shadow:none}
+.md:not(#lb):not(#pm):not(#confirmModal){display:flex;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:none;background:rgba(0,0,0,.42)}
+.md:not(#lb):not(#pm):not(#confirmModal)>.mb{width:100%;max-width:none;max-height:90vh;max-height:90dvh;margin:0;padding:12px 16px calc(24px + var(--sb));border-radius:24px 24px 0 0;box-shadow:none;overflow:auto;animation:nativeSheet .18s ease-out}
+#nativeMenu{z-index:2000}#nativeMenu .mb{display:flex;flex-direction:column;gap:16px}.native-handle{height:28px;align-items:center;justify-content:center;touch-action:none;flex:none}.native-handle:before{content:'';width:36px;height:4px;border-radius:4px;background:var(--line)}
+.native-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.native-grid button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:88px;padding:8px 4px;border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink)}.native-grid svg{width:24px;height:24px;stroke:var(--pri);fill:none;stroke-width:2}.native-grid .nav-label{font-size:12px;line-height:1.5}.native-menu-list{display:grid;gap:8px}.native-menu-list button{min-height:52px}
+#confirmModal .mb{width:100%;max-width:360px;border-radius:24px;box-shadow:none}#confirmModal .row{flex-direction:row}#confirmModal .row button{flex:1;min-height:48px}
+.native-enter{animation:nativeEnter .18s ease-out}@keyframes nativeEnter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}@keyframes nativeSheet{from{transform:translateY(100%);opacity:.7}to{transform:translateY(0);opacity:1}}
+@media(prefers-reduced-motion:reduce){.native-enter,.md>.mb{animation:none!important}button{transition:none!important}}
+}
 </style>
 </head>
 <body>
 <header class="top">
+<button type="button" id="nativeBack" class="mobile-native" aria-label="Back" hidden><span>←</span></button>
   <div class="brand"><span class="mark"><img src="logo.png" alt="" onerror="this.replaceWith('SD')"></span><div><div class="ttl" data-i="title"></div><small data-i="sub"></small></div></div>
   <div class="tr">
     <span class="vtag" id="vtag"></span>
     <button class="lang" id="lgb" onclick="setLang(LG=='en'?'ur':'en')"></button>
     <div id="user" class="user" hidden><span id="who"></span><button class="btn" onclick="confirmLogout()" data-i="logout"></button></div>
   </div>
+<button type="button" id="nativeOverflow" class="mobile-native" aria-label="Menu" aria-haspopup="dialog">⋮</button>
 </header>
 
 <div id="login" class="login">
@@ -1151,7 +1182,7 @@ function show(x){
   if(x=='sum')loadHazriSummary();
   try{ localStorage.setItem('lastTab',x); }catch(e){}
   const active=document.querySelector('.tabs button.on');
-  if(active && window.innerWidth<=768) active.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+
 }
 function reorderTabs(){
   if(!D || !D.me) return;
@@ -2524,5 +2555,37 @@ try {
 }
 </script>
 <script src="passout.js"></script>
+
+<div id="nativeMenu" class="md mobile-native" hidden><div class="mb" role="dialog" aria-modal="true" aria-labelledby="nativeTitle" tabindex="-1"><h2 id="nativeTitle"></h2><div id="nativeBody"></div><button id="nativeClose" class="btn ghost" type="button"></button></div></div>
+<script>
+(()=>{'use strict';
+const mq=matchMedia('(max-width:768px)'), id=x=>document.getElementById(x), app=id('app'), nav=document.querySelector('.tabs'), main=document.querySelector('.main-content'), title=document.querySelector('.top .ttl'), menu=id('nativeMenu'), back=id('nativeBack'), overflow=id('nativeOverflow');
+const tr=(en,ur)=>document.documentElement.lang==='ur'?ur:en;
+const more=document.createElement('button');more.type='button';more.className='mobile-native';more.hidden=true;more.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span class="nav-label"></span>';more.setAttribute('aria-haspopup','dialog');nav.append(more);
+const tabs=()=>[...nav.querySelectorAll('button[data-t]')], allowed=()=>tabs().filter(b=>!b.hidden), primary=['at','stuatt','en','an','sal'];
+const direct=()=>allowed().filter(b=>primary.includes(b.dataset.t)).sort((a,b)=>primary.indexOf(a.dataset.t)-primary.indexOf(b.dataset.t)).slice(0,4);
+const extras=()=>allowed().filter(b=>!direct().includes(b));
+const label=b=>b.dataset.t==='alumni'?tr('Alumni','پاس آؤٹ طلبہ'):b.querySelector('.nav-label').textContent.trim();
+let current='',previous='',queued=false,restoring=false,dialog=null,focusBefore=null,callback=null,initialized=false;
+function state(sheet=false){return {nativePortal:true,tab:current,sheet};}
+function activate(key){const b=allowed().find(b=>b.dataset.t===key);if(b)b.click();}
+function sync(){queued=false;if(!mq.matches)return;const directTabs=direct(), extra=extras();tabs().forEach(b=>{b.classList.toggle('native-extra',!directTabs.includes(b));b.style.setProperty('--native-order',primary.indexOf(b.dataset.t));});more.hidden=app.hidden||!extra.length;const ml=more.querySelector('.nav-label'), mt=tr('More','مزید');if(ml.textContent!==mt)ml.textContent=mt;more.setAttribute('aria-label',mt);overflow.setAttribute('aria-label',tr('Menu','مینو'));back.setAttribute('aria-label',tr('Back','واپس'));
+const active=allowed().find(b=>b.classList.contains('on'));more.classList.toggle('on',!!active&&extra.includes(active));if(app.hidden){title.textContent=t('title');back.hidden=true;}else if(active){title.textContent=label(active);const key=active.dataset.t;if(key!==current){previous=current;current=key;if(!initialized){history.replaceState(state(), '');initialized=true;}else if(!restoring)history.pushState(state(),'');main.scrollTop=0;const section=id('p_'+key)||id(key);if(section){section.classList.remove('native-enter');requestAnimationFrame(()=>section.classList.add('native-enter'));}}back.hidden=!extra.includes(active)||!previous;}
+const visible=[...document.querySelectorAll('.md')].filter(e=>!e.hidden&&e.getClientRects().length).sort((a,b)=>(+getComputedStyle(a).zIndex||0)-(+getComputedStyle(b).zIndex||0));const next=visible.at(-1)||null;
+if(next!==dialog){const old=dialog;dialog=next;if(next){if(!old)focusBefore=document.activeElement;prepare(next);if(!restoring&&!history.state?.sheet)history.pushState(state(true),'');app.inert=true;id('login').inert=true;document.querySelector('.top').inert=true;(next.querySelector('.mb')||next).focus({preventScroll:true});}else{app.inert=false;id('login').inert=false;document.querySelector('.top').inert=false;focusBefore?.focus({preventScroll:true});if(!restoring&&history.state?.sheet){history.back();return;}}}
+if(!dialog&&callback&&!history.state?.sheet){const fn=callback;callback=null;fn();}}
+function schedule(){if(!queued){queued=true;requestAnimationFrame(sync);}}
+function close(d){if(!d)return;if(d.id)d.hidden=true;else d.remove();schedule();}
+function prepare(d){const b=d.querySelector('.mb')||d;b.tabIndex=-1;b.setAttribute('role','dialog');b.setAttribute('aria-modal','true');if(!b.hasAttribute('aria-labelledby'))b.setAttribute('aria-label',b.querySelector('h2,h3')?.textContent||tr('Dialog','مکالمہ'));if(['pm','lb','confirmModal'].includes(d.id)||b.querySelector('.native-handle'))return;const h=document.createElement('div');h.className='mobile-native native-handle';h.setAttribute('aria-hidden','true');b.prepend(h);let y=0,dy=0;h.addEventListener('pointerdown',e=>{y=e.clientY;dy=0;h.setPointerCapture(e.pointerId);});h.addEventListener('pointermove',e=>{if(!h.hasPointerCapture(e.pointerId))return;dy=Math.max(0,e.clientY-y);b.style.transform=`translateY(${dy}px)`;});h.addEventListener('pointerup',()=>{b.style.transform='';if(dy>80)close(d);});h.addEventListener('pointercancel',()=>{b.style.transform='';});}
+function open(type){if(!mq.matches)return;const body=id('nativeBody');body.replaceChildren();id('nativeTitle').textContent=type==='more'?tr('More','مزید'):tr('Menu','مینو');id('nativeClose').textContent=tr('Close','بند کریں');body.className=type==='more'?'native-grid':'native-menu-list';function action(text,fn,svg){const b=document.createElement('button');b.type='button';if(svg)b.append(svg.cloneNode(true));const l=document.createElement('span');l.className='nav-label';l.textContent=text;b.append(l);b.onclick=()=>{callback=fn;close(menu);};body.append(b);}if(type==='more')extras().forEach(b=>action(label(b),()=>activate(b.dataset.t),b.querySelector('svg')));else{action(tr('Language — اردو','زبان — English'),()=>id('lgb').click());if(!id('user').hidden)action(t('logout'),()=>confirmAction(t('msg_confirm_logout'),()=>location.reload(),t('logout')));}menu.hidden=false;schedule();}
+more.onclick=()=>open('more');overflow.onclick=()=>open('menu');id('nativeClose').onclick=()=>close(menu);back.onclick=()=>{if(previous)history.back();};
+nav.addEventListener('click',e=>{if(!mq.matches)return;const b=e.target.closest('button[data-t]');if(b&&b.dataset.t!=='alumni'&&id('p_alumni'))id('p_alumni').hidden=true;},true);
+document.addEventListener('click',e=>{if(mq.matches&&e.target.matches('.md:not(#confirmModal)'))close(e.target);});
+document.addEventListener('keydown',e=>{if(!mq.matches||!dialog)return;if(e.key==='Escape'){e.preventDefault();close(dialog);}if(e.key==='Tab'){const a=[...dialog.querySelectorAll('button,input,select,textarea,a[href],[tabindex="0"]')].filter(x=>!x.disabled&&x.getClientRects().length);if(!a.length){e.preventDefault();return;}if(e.shiftKey&&document.activeElement===a[0]){e.preventDefault();a.at(-1).focus();}else if(!e.shiftKey&&document.activeElement===a.at(-1)){e.preventDefault();a[0].focus();}}});
+window.addEventListener('popstate',e=>{if(!mq.matches)return;restoring=true;if(dialog)close(dialog);else if(e.state?.tab&&e.state.tab!==current)activate(e.state.tab);sync();restoring=false;schedule();});
+new MutationObserver(schedule).observe(nav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','class']});new MutationObserver(schedule).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir']});new MutationObserver(rs=>{if(rs.some(r=>r.type==='attributes'?(r.target===app||r.target.matches('.md')):[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&(n.matches('.md')||n.querySelector('.md')))))schedule();}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden']});
+function mode(){if(mq.matches)schedule();else{menu.hidden=true;more.hidden=true;tabs().forEach(b=>b.classList.remove('native-extra'));app.inert=false;id('login').inert=false;document.querySelector('.top').inert=false;dialog=null;title.textContent=t('title');}}mq.addEventListener('change',mode);mode();
+})();
+</script>
 </body>
 </html>
