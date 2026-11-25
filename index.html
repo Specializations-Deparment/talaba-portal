@@ -502,6 +502,41 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{padding:0;fo
 html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileRTL{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 @media(prefers-reduced-motion:reduce){#pm>.pmb,.native-student-card{animation:none!important;transition:none!important}}
 }
+
+/* Step 2.1 — mobile profile viewport correction */
+@media (max-width:768px) {
+  body > #pm:not([hidden]) {
+    position:fixed !important; inset:0 !important;
+    display:block !important; z-index:3000 !important;
+    width:100% !important; height:100% !important;
+    padding:0 !important; margin:0 !important;
+    background:var(--paper,#F7F5EF) !important;
+    overflow:hidden !important; backdrop-filter:none !important;
+  }
+  body > #pm > .pmb {
+    position:absolute !important; inset:0 !important;
+    display:flex !important; flex-direction:column !important;
+    width:100% !important; max-width:none !important;
+    height:100% !important; max-height:none !important;
+    box-sizing:border-box; padding:0 !important; margin:0 !important;
+    border:0 !important; border-radius:0 !important;
+    overflow:hidden !important; box-shadow:none !important;
+  }
+  #pm .pmx {
+    position:relative !important; inset:auto !important;
+    flex:0 0 calc(56px + var(--st)); width:100% !important;
+    height:calc(56px + var(--st)) !important;
+    margin:0 !important; padding:var(--st) 16px 0 !important;
+    border-radius:0 !important; box-sizing:border-box;
+    gap:12px; color:white !important; background:var(--pri) !important;
+  }
+  #pm .pmx svg { flex:none; fill:none; stroke:currentColor; stroke-width:2; }
+  #pm_in { flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden;
+    padding:16px 16px calc(16px + var(--sb)); overscroll-behavior:contain; }
+  body > #lb { z-index:3100 !important; }
+  body:has(> #pm:not([hidden])) > .top { visibility:hidden; }
+}
+
 </style>
 </head>
 <body>
@@ -2638,6 +2673,14 @@ function mode(){if(mq.matches)schedule();else{menu.hidden=true;more.hidden=true;
  for(const id of ['attbl','salTable','ul','log','tlist']){const el=document.getElementById(id);if(el)new MutationObserver(schedule).observe(el,{childList:true,subtree:true});}
  mq.addEventListener('change',()=>{if(!mq.matches&&att)att.querySelectorAll('.att-student-info').forEach(el=>{el.removeAttribute('tabindex');el.removeAttribute('role');});else schedule();});schedule();
 })();
+</script>
+<script>
+(()=>{const p=document.getElementById('pm');if(!p)return;
+const mq=matchMedia('(max-width:768px)');
+const parent=p.parentNode, anchor=p.nextSibling;
+const b=p.querySelector('.pmx span');
+function update(){if(mq.matches){if(p.parentNode!==document.body)document.body.append(p);if(b)b.textContent=document.documentElement.lang==='ur'?'طالب علم کی پروفائل':'Student Profile';}else{if(p.parentNode!==parent)parent.insertBefore(p,anchor&&anchor.parentNode===parent?anchor:null);if(b)b.textContent=t('att_back');}}
+mq.addEventListener('change',update);new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir']});update();})();
 </script>
 </body>
 </html>
