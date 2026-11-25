@@ -537,6 +537,42 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
   body:has(> #pm:not([hidden])) > .top { visibility:hidden; }
 }
 
+
+/* Step 3: mobile forms and actions */
+.native3-only{display:none!important}
+@media(max-width:768px){
+.native3-only:not([hidden]){display:flex!important}
+#app .grid,#login .grid,.md .grid{grid-template-columns:minmax(0,1fr)!important;gap:16px}
+#app .f,.md .f,#login .f{min-width:0!important;max-width:100%;gap:8px}
+#app input:not([type=checkbox]):not([type=radio]):not([type=file]),#app select,#app textarea,.md input:not([type=checkbox]):not([type=radio]):not([type=file]),.md select,.md textarea,#login input:not([type=checkbox]){font-size:16px!important;min-height:52px;max-width:100%;min-width:0!important;border-radius:12px;box-shadow:none!important}
+#app .bar-tools{gap:8px;flex-wrap:wrap}#app .bar-tools label{min-width:0!important;flex:1 1 100%}
+#app .dstep{display:flex;gap:4px;flex-wrap:wrap}#app .dstep input{flex:1;min-width:110px!important;width:0}
+#app .sfs-bar{position:sticky;top:0;z-index:12;background:var(--paper);padding:8px 0;gap:8px}
+#app .sfs-search-wrap{min-width:0!important;flex:1 1 100%}#app .sfs-search{width:100%;padding-inline-end:48px}
+#app .sfs-clear{min-width:48px;min-height:48px}
+#app .sfs-filter-toggle,.native3-filter{min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--pri);padding:8px 16px;align-items:center;justify-content:center}
+#native3Filters{z-index:2100}#native3Filters .mb{display:flex;flex-direction:column;gap:16px}#native3Filters .sfs-filters{display:block!important;margin:0}#native3Filters .sfs-row{display:flex;flex-wrap:wrap;gap:8px}#native3Filters select{width:100%}#native3Filters label{display:flex;flex-direction:column;gap:8px}#native3Filters .att-filter-chip{min-height:48px}
+.native3-chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}.native3-chips button{flex:1 1 auto;min-height:48px;padding:8px 12px;border:1px solid var(--line);border-radius:24px;background:var(--card);color:var(--ink);font:inherit}.native3-chips button[aria-pressed=true]{background:var(--tint);color:var(--pri2);border-color:var(--pri)}select.native3-segmented{display:none!important}
+#toast{inset-inline:16px;left:16px;right:16px;bottom:calc(var(--mn) + var(--sb) + 84px);transform:none;width:auto;max-width:none;min-height:52px;z-index:2200;border-radius:12px;padding:12px 16px;box-shadow:none;font-size:15px}#toast .undo-btn{min-height:48px;flex-shrink:0}#toast[hidden]{display:none!important}
+#app .att-save-wrap{position:sticky;bottom:0;inset-inline:auto;padding:8px 0;background:var(--paper);z-index:15;border:0}#app .att-save-btn{width:100%}
+#p_en #savebtn,#adm #addUserBtn{width:100%;min-height:52px}
+#native3Fab{position:fixed;inset-inline-end:16px;bottom:calc(var(--mn) + var(--sb) + 16px);z-index:950;min-height:56px;max-width:calc(100% - 32px);border:0;border-radius:18px;background:var(--pri);color:white;padding:12px 18px;gap:8px;align-items:center;font:inherit;box-shadow:0 3px 8px #0002}#native3Fab:disabled{opacity:.65}#native3Fab[aria-busy=true]::before{content:'…';font-weight:bold}
+#app .main-content{padding-bottom:88px}#app .main-content:focus-within{scroll-padding-bottom:88px}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+}
+
+/* Step 3.1: mobile card progress and navigation order */
+@media(max-width:768px){
+#app .native-student-card{height:auto;max-height:none;overflow:hidden;box-sizing:border-box;white-space:normal}
+#app .native-metrics{align-items:start;row-gap:16px;column-gap:12px}
+#app .native-metric{display:flex;flex-direction:column;align-items:stretch;gap:4px;min-width:0;line-height:1.45}
+#app .native-metric small,#app .native-metric strong{display:block;position:static;white-space:normal;overflow-wrap:anywhere}
+#app .native-metric .bar{display:block!important;position:relative;width:100%;height:6px!important;min-height:6px!important;max-height:6px!important;min-width:0;flex:0 0 6px;margin:2px 0 0;padding:0;overflow:hidden;border-radius:4px;box-sizing:border-box}
+#app .native-metric .bar i{display:block!important;position:static;height:6px!important;min-height:0!important;max-height:6px!important;padding:0;margin:0;border-radius:4px}
+#app .tabs button[data-t]{order:var(--native-order, 50)!important}
+#app .tabs button.mobile-native:not([data-t]){order:100!important}
+}
+
 </style>
 </head>
 <body>
@@ -2682,5 +2718,22 @@ const b=p.querySelector('.pmx span');
 function update(){if(mq.matches){if(p.parentNode!==document.body)document.body.append(p);if(b)b.textContent=document.documentElement.lang==='ur'?'طالب علم کی پروفائل':'Student Profile';}else{if(p.parentNode!==parent)parent.insertBefore(p,anchor&&anchor.parentNode===parent?anchor:null);if(b)b.textContent=t('att_back');}}
 mq.addEventListener('change',update);new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir']});update();})();
 </script>
-</body>
+<div id="native3Filters" class="md mobile-native" hidden><div class="mb" role="dialog" aria-modal="true" aria-labelledby="native3Title" tabindex="-1"><h2 id="native3Title"></h2><div id="native3Fields"></div><button type="button" class="btn" id="native3Done"></button></div></div><button id="native3Fab" class="native3-only" type="button" hidden></button><script>
+(()=>{
+const mq=matchMedia('(max-width:768px)'), id=x=>document.getElementById(x), ur=()=>document.documentElement.lang==='ur', tr=(a,b)=>ur()?b:a;
+const sheet=id('native3Filters'), fields=id('native3Fields'), fab=id('native3Fab');let moved=[], pending=false;
+function restore(){for(const [el,anchor] of moved){if(anchor.parentNode)anchor.replaceWith(el);el.classList.remove('native3-moved');}moved=[];fields.replaceChildren();}
+function open(elements){if(!mq.matches)return;restore();for(const el of elements){if(!el||el.hidden||el.style.display==='none')continue;const anchor=document.createComment('native filter position');el.before(anchor);moved.push([el,anchor]);fields.append(el);el.classList.add('native3-moved');}id('native3Title').textContent=tr('Filters','فلٹر');id('native3Done').textContent=tr('Done','مکمل');sheet.hidden=false;schedule();}
+id('native3Done').onclick=()=>{sheet.hidden=true;};new MutationObserver(()=>{if(sheet.hidden)restore();}).observe(sheet,{attributes:true,attributeFilter:['hidden']});
+// Reuse actual controls and handlers, not copies of filter state.
+document.addEventListener('click',e=>{if(!mq.matches)return;const b=e.target.closest('.sfs-filter-toggle');if(!b)return;const match=(b.getAttribute('onclick')||'').match(/toggleFilters\(['"]([^'"]+)/);if(!match)return;e.preventDefault();e.stopImmediatePropagation();const f=id(match[1]);const list=[f];if(match[1]==='an_filters'){list.push(...document.querySelectorAll('#p_an .bar-tools > label'),document.querySelector('#p_an .sfs-mobile-sort'));}open(list);},true);
+function addFilter(section,selector){const root=id(section);if(!root)return;const bar=root.querySelector('.bar-tools');if(!bar)return;const b=document.createElement('button');b.type='button';b.className='native3-only native3-filter';b.dataset.native3Filter='1';b.onclick=()=>open([...bar.querySelectorAll(selector)]);bar.append(b);}
+addFilter('p_sal','label:not(#salSearchWrap)');
+const segments=new Map();
+function chips(){for(const sel of document.querySelectorAll('#app select,.md select')){if(!['sa_status','nr','cu_mode','an_sort','log_sort','ul_sort','tlist_sort'].includes(sel.id))continue;const opts=[...sel.options];if(opts.length<2||opts.length>4||sel.multiple)continue;let group=segments.get(sel);const sig=JSON.stringify(opts.map(o=>[o.value,o.textContent,o.disabled]));if(!group){group=document.createElement('div');group.className='native3-only native3-chips';group.setAttribute('role','group');sel.after(group);segments.set(sel,group);}if(group.dataset.sig!==sig){group.replaceChildren();group.dataset.sig=sig;for(const o of opts){const b=document.createElement('button');b.type='button';b.textContent=o.textContent;b.dataset.value=o.value;b.disabled=o.disabled;b.onclick=()=>{sel.value=o.value;sel.dispatchEvent(new Event('change',{bubbles:true}));schedule();};group.append(b);}}group.setAttribute('aria-label',sel.closest('label')?.querySelector('span')?.textContent||tr('Options','اختیارات'));sel.classList.toggle('native3-segmented',mq.matches);for(const b of group.children){b.disabled=sel.disabled||opts.find(o=>o.value===b.dataset.value)?.disabled;b.setAttribute('aria-pressed',String(sel.value===b.dataset.value));}}}
+function sync(){pending=false;if(!mq.matches){fab.hidden=true;sheet.hidden=true;restore();for(const [sel] of segments)sel.classList.remove('native3-segmented');return;}chips();document.querySelectorAll('[data-native3-filter]').forEach(b=>{b.textContent=tr('Filters','فلٹر');});document.querySelectorAll('#flds input[type=number],#app input[type=number]').forEach(e=>{if(!e.hasAttribute('inputmode'))e.inputMode='decimal';});const active=document.querySelector('.tabs button.on[data-t]')?.dataset.t;const target=id(({at:'atsave',en:'savebtn',adm:'addUserBtn'})[active]);const modal=[...document.querySelectorAll('.md')].some(x=>!x.hidden&&x.getClientRects().length);fab.hidden=!target||id('app').hidden||modal||!target.getClientRects().length;if(!fab.hidden){const text=target.textContent.trim()||tr('Save','محفوظ کریں');if(fab.textContent!==text)fab.textContent=text;fab.disabled=target.disabled;fab.setAttribute('aria-busy',String(target.disabled&&active==='at'&&!target.querySelector('.save-spinner')?.hidden));fab.onclick=()=>{if(!target.disabled)target.click();schedule();};}const toast=id('toast');toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');}
+function schedule(){if(!pending){pending=true;requestAnimationFrame(sync);}}
+new MutationObserver(rs=>{if(rs.some(r=>!fab.contains(r.target)&&!([...segments.values()].some(g=>g.contains(r.target)))&&!(r.target.nodeType===1&&r.target.matches('[data-native3-filter]'))))schedule();}).observe(id('app'),{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','disabled','class']});new MutationObserver(schedule).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir']});for(const d of document.querySelectorAll('.md'))new MutationObserver(schedule).observe(d,{attributes:true,attributeFilter:['hidden']});document.addEventListener('change',schedule);mq.addEventListener('change',schedule);schedule();
+})();
+</script></body>
 </html>
