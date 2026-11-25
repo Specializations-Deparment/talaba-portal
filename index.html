@@ -2766,5 +2766,71 @@ new MutationObserver(rs=>{if(rs.some(r=>!fab.contains(r.target)&&!([...segments.
 <style>#nativeLogoutDialog::backdrop{background:rgba(0,0,0,.55)}</style>
 <script>
 (()=>{const d=document.getElementById('nativeLogoutDialog');document.getElementById('nativeLogoutNo').onclick=()=>d.close();document.getElementById('nativeLogoutYes').onclick=()=>{window.nativeConfirmedLogout=true;d.close();try{U='';P='';D=null;}catch(e){console.error(e);}try{document.querySelectorAll('.md').forEach(x=>x.hidden=true);for(const k of ['app','user'])document.getElementById(k).hidden=true;const l=document.getElementById('login');l.hidden=false;l.inert=false;document.getElementById('app').inert=false;document.querySelector('.top').inert=false;document.getElementById('p').value='';document.querySelector('.top .ttl').textContent=t('title');}finally{location.reload();}};})();
-</script></body>
+</script><style>
+#native4Refresh{display:none}
+@media(max-width:768px){
+#native4Refresh:not([hidden]){display:flex;position:fixed;top:calc(56px + env(safe-area-inset-top,0px) + 8px);left:50%;transform:translate(-50%,var(--pull,0px));z-index:1050;align-items:center;gap:8px;padding:10px 16px;border-radius:24px;background:var(--card);color:var(--pri);border:1px solid var(--line);pointer-events:none;font-size:14px;white-space:nowrap}
+#native4Refresh[aria-busy=true] .native4spin{animation:native4spin .8s linear infinite}
+.native4spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--pri);border-radius:50%}
+@keyframes native4spin{to{transform:rotate(360deg)}}
+#app .att-student{touch-action:pan-y pinch-zoom;transition:transform .15s ease}
+#app .empty:not(:empty)::before,#app .sfs-empty:not(:empty)::before{content:'◇';display:block;font-size:28px;color:var(--pri);text-align:center}
+#app .native4-loading{position:relative;min-height:100px}
+#app .native4-loading::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,var(--paper) 20%,var(--card) 50%,var(--paper) 80%);opacity:.86;border-radius:16px;pointer-events:none}
+#app .tabs button[data-t=at][data-badge=true]::after{content:'';position:absolute;top:5px;inset-inline-end:20%;width:9px;height:9px;background:#b94040;border-radius:50%;border:2px solid var(--card)}
+@media(prefers-reduced-motion:reduce){#native4Refresh .native4spin{animation:none!important}#app .att-student{transition:none}}
+}
+</style>
+<div id="native4Refresh" hidden role="status" aria-live="polite"><span class="native4spin" aria-hidden="true"></span><span id="native4Text"></span></div>
+<script>
+(()=>{
+'use strict';
+const mq=matchMedia('(max-width:768px)'), main=document.querySelector('#app .main-content'), app=document.getElementById('app'), indicator=document.getElementById('native4Refresh'), label=document.getElementById('native4Text');
+const tr=(en,ur)=>document.documentElement.lang==='ur'?ur:en;
+const tab=()=>document.querySelector('.tabs button.on[data-t]')?.dataset.t;
+const listTabs=new Set(['at','an','sal','adm','sum','stuatt']);
+const modal=()=>!!document.querySelector('dialog[open]')||[...document.querySelectorAll('.md')].some(e=>!e.hidden&&e.getClientRects().length);
+let gesture=null,busy=false, suppress=0;
+function buzz(){try{navigator.vibrate?.(10)}catch(e){}}
+function reset(){if(gesture?.row)gesture.row.style.transform='';gesture=null;if(!busy){indicator.hidden=true;indicator.style.removeProperty('--pull');}}
+function badge(){const b=document.querySelector('.tabs button[data-t=at]');if(b){if(mq.matches&&attDirty)b.dataset.badge='true';else delete b.dataset.badge;}}
+async function refresh(){
+ if(busy||!mq.matches||app.hidden||!D||modal()||!listTabs.has(tab()))return;
+ if(attDirty){toast(tr('Save attendance before refreshing.','ریفریش سے پہلے حاضری محفوظ کریں۔'),1);return;}
+ const key=tab(), old=D, user=U, pass=P;
+ busy=true;indicator.hidden=false;indicator.style.removeProperty('--pull');indicator.setAttribute('aria-busy','true');label.textContent=tr('Refreshing…','تازہ کیا جا رہا ہے…');buzz();
+ try{
+ const r=await call({action:'list'});
+ if(D!==old||U!==user||P!==pass||app.hidden||tab()!==key||attDirty)return;
+ if(!r.ok){toast(r.msg||tr('Refresh failed','ریفریش ناکام'),1);return;}
+ if(r.me?.role!==old.me?.role||String(r.me?.username)!==String(old.me?.username)){toast(tr('Please sign in again.','دوبارہ لاگ ان کریں۔'),1);return;}
+ D=r;fill();if(key==='at')await loadAtt();else if(key==='sal')renderSalary();else if(key==='sum')await loadHazriSummary();else if(key==='stuatt')show(key);
+ toast(tr('Updated','تازہ ہو گیا'));
+ }catch(e){toast(tr('Refresh failed','ریفریش ناکام'),1)}finally{busy=false;indicator.hidden=true;indicator.removeAttribute('aria-busy');badge();}
+}
+main.addEventListener('touchstart',e=>{
+ reset();if(!mq.matches||busy||app.hidden||modal()||e.touches.length!==1||!listTabs.has(tab()))return;
+ if(e.target.closest('input,select,textarea,button,a,[contenteditable]'))return;
+ const p=e.touches[0],row=tab()==='at'?e.target.closest('.att-student'):null;
+ gesture={x:p.clientX,y:p.clientY,row,top:main.scrollTop<=1,mode:null,dx:0,dy:0};
+},{passive:true});
+main.addEventListener('touchmove',e=>{
+ if(!gesture)return;if(e.touches.length!==1){reset();return;}
+ const p=e.touches[0],g=gesture;g.dx=p.clientX-g.x;g.dy=p.clientY-g.y;
+ if(!g.mode&&Math.max(Math.abs(g.dx),Math.abs(g.dy))>12){g.mode=g.row&&Math.abs(g.dx)>Math.abs(g.dy)*1.5?'swipe':g.top&&g.dy>0&&g.dy>Math.abs(g.dx)*1.5?'pull':'scroll';}
+ if(g.mode==='swipe'){if(e.cancelable)e.preventDefault();g.row.style.transform=`translateX(${Math.max(-65,Math.min(65,g.dx*.5))}px)`;}
+ if(g.mode==='pull'){if(e.cancelable)e.preventDefault();indicator.hidden=false;indicator.style.setProperty('--pull',`${Math.min(60,Math.max(0,g.dy*.3))}px`);label.textContent=g.dy>=95?tr('Release to refresh','ریفریش کے لیے چھوڑیں'):tr('Pull to refresh','ریفریش کے لیے کھینچیں');}
+},{passive:false});
+main.addEventListener('touchend',()=>{const g=gesture;reset();if(!g)return;if(g.mode==='pull'&&g.dy>=95){suppress=Date.now()+400;refresh();}if(g.mode==='swipe'&&Math.abs(g.dx)>=80&&g.row?.isConnected&&tab()==='at'&&!document.getElementById('atsave')?.querySelector('.save-spinner:not([hidden])')){const b=g.row.querySelector(g.dx>0?'.att-status-btn.p':'.att-status-btn.a');if(b&&!b.disabled){suppress=Date.now()+400;b.click();buzz();badge();}}},{passive:true});
+main.addEventListener('touchcancel',reset,{passive:true});
+main.addEventListener('click',e=>{if(e.isTrusted&&Date.now()<suppress){e.preventDefault();e.stopImmediatePropagation();} },true);
+document.addEventListener('click',e=>{if(mq.matches&&e.isTrusted&&e.target.closest('.tabs button,.att-status-btn,#atsave,#savebtn'))buzz();requestAnimationFrame(badge);});
+new MutationObserver(badge).observe(document.getElementById('attbl'),{childList:true});
+mq.addEventListener('change',()=>{reset();badge();});
+// Skeleton overlay for initial attendance requests; never replace existing data.
+const originalLoad=loadAtt;let loads=0;
+loadAtt=async function(...args){const box=document.getElementById('attbl'),show=mq.matches&&!box.querySelector('.att-student');if(show){loads++;box.classList.add('native4-loading');box.setAttribute('aria-busy','true');}try{return await originalLoad.apply(this,args);}finally{if(show&&!--loads){box.classList.remove('native4-loading');box.removeAttribute('aria-busy');}badge();}};
+})();
+</script>
+</body>
 </html>
