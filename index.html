@@ -474,6 +474,34 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{padding:0;fo
 .native-enter{animation:nativeEnter .18s ease-out}@keyframes nativeEnter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}@keyframes nativeSheet{from{transform:translateY(100%);opacity:.7}to{transform:translateY(0);opacity:1}}
 @media(prefers-reduced-motion:reduce){.native-enter,.md>.mb{animation:none!important}button{transition:none!important}}
 }
+
+/* Step 2: native student cards and profile */
+@media(max-width:768px){
+.native-performance-cards:not([hidden]){display:grid!important;gap:12px}
+.native-performance-table{display:none!important}
+.native-student-card{display:block;width:100%;text-align:start;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--card,#fff);color:var(--ink);box-shadow:none;font:inherit;cursor:pointer;transition:transform .15s;user-select:auto}
+.native-student-card:active{transform:scale(.98);background:var(--tint)}
+.native-student-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}.native-student-head .ava{width:48px;height:48px;box-shadow:none}.native-student-name{flex:1;min-width:0;overflow-wrap:anywhere}.native-student-name strong,.native-student-name small{display:block}.native-student-name small{color:var(--mute);font-size:13px}.native-student-arrow{font-size:24px;color:var(--pri)}html[dir=rtl] .native-student-arrow{transform:scaleX(-1)}
+.native-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.native-metric{min-width:0;overflow-wrap:anywhere}.native-metric small{display:block;color:var(--mute);font-size:12px}.native-metric .bar{min-width:0;margin:4px 0 0}.native-metric .bar i{transition:none}
+.att-student{border-radius:16px;box-shadow:none;flex-wrap:wrap;padding:12px;gap:8px}.att-student-info{flex:1 1 100%;min-height:48px;cursor:pointer}.att-student-name{white-space:normal;overflow-wrap:anywhere}.att-status-btns{width:100%;display:flex;gap:8px}.att-status-btns button{flex:1;min-height:48px;min-width:0}
+/* Reflow existing table cells, preserving original action buttons */
+.t:has(>table:is(#salTable,#ul,#log,#tlist)){overflow:visible;border:0;box-shadow:none;background:transparent}
+.t>table:is(#salTable,#ul,#log,#tlist){display:block;width:100%;min-width:0!important;background:transparent}
+.t>table:is(#salTable,#ul,#log,#tlist)>thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.t>table:is(#salTable,#ul,#log,#tlist)>tbody{display:grid;gap:12px}
+.t>table:is(#salTable,#ul,#log,#tlist) tr{display:block;border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--card,#fff)}
+.t>table:is(#salTable,#ul,#log,#tlist) td{display:block;text-align:start!important;white-space:normal!important;overflow-wrap:anywhere;border:0;padding:6px 0;min-width:0}
+.t>table:is(#salTable,#ul,#log,#tlist) td[data-native-label]:before{content:attr(data-native-label);display:block;font-size:12px;color:var(--mute);font-weight:600}
+.t>table:is(#salTable,#ul,#log,#tlist) td button{margin:4px!important;white-space:normal}
+#pm:not([hidden]){display:block;position:fixed;inset:0;padding:0;background:var(--paper);backdrop-filter:none;z-index:2100;overflow:hidden}
+#pm>.pmb{width:100%;max-width:none;height:100%;max-height:none;margin:0;padding:0 16px calc(16px + var(--sb));border:0;border-radius:0;box-shadow:none;overflow:auto;overscroll-behavior:contain;background:var(--paper);animation:nativeProfileIn .18s ease-out}
+#pm .pmx{position:sticky;top:0;inset-inline:auto;display:flex;align-items:center;justify-content:flex-start;width:calc(100% + 32px);margin:0 -16px 16px;padding:var(--st) 16px 0;height:calc(56px + var(--st));border:0;border-radius:0;background:var(--pri);color:white;z-index:5;font-size:16px}
+#pm .pmx svg{width:24px;height:24px;stroke:currentColor}html[dir=rtl] #pm .pmx svg{transform:scaleX(-1)}
+#pm .pmh{flex-wrap:wrap}#pm .row{flex-wrap:wrap}#pm .scs{grid-template-columns:repeat(2,minmax(0,1fr))}#pm .sc{min-width:0;overflow-wrap:anywhere}#pm .t{overflow-x:auto}#lb{z-index:2200}
+@keyframes nativeProfileIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileRTL{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){#pm>.pmb,.native-student-card{animation:none!important;transition:none!important}}
+}
 </style>
 </head>
 <body>
@@ -2295,12 +2323,16 @@ function scorecard(s,ks,Tg,at){
   const ac=at&&at.t?`<div class="sc ${lv(at.pc)}"><small>${t('at_rec')}</small><b>${at.pc}%</b><div class="bar"><i class="${lv(at.pc)}" style="width:${Math.min(at.pc,100)}%"></i></div><div class="scf"><span class="note" style="margin:0">${attTxt(at)}</span></div></div>`:'';
   return `<div class="scs"><div class="sc big ${l}"><small>${t('overall')}</small><b>${s.ov==null?'—':s.ov+'%'}</b>${ovBadge(s)}</div>`+ks.map(x=>{const lb=`<small>${esc(L(x))}</small>`;if(s.none)return `<div class="sc">${lb}<b>—</b></div>`;const v=vl(s,x),n=+v.toFixed(1);if(!Tg[x])return `<div class="sc">${lb}<b>${n}</b><span class="of">${t('sc_nt')}</span></div>`;const p=Math.round(v/Tg[x]*100),q=lv(p);return `<div class="sc ${q}">${lb}<b><bdi dir="ltr">${n}<span class="of"> / ${+Tg[x].toFixed(1)}</span></bdi></b><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><div class="scf"><span class="pc ${q}">${p}%</span><span class="bd ${q}">${stl(q)}</span></div></div>`;}).join('')+ac+'</div>';
 }
+function nativeStudentCards(A,ks,Tg,m){
+  const metric=(label,value,p)=>`<span class="native-metric"><small>${esc(label)}</small><strong>${esc(String(value))}</strong>${p==null?'':`<span class="bar"><i class="${lv(p)}" style="width:${Math.max(0,Math.min(100,p))}%"></i></span>`}</span>`;
+  return `<div class="mobile-native native-performance-cards">${A.map(s=>{const st=D.students.find(x=>String(x.username)===String(s.u));const at=attOf(s.u,m);return `<button type="button" class="native-student-card" data-u="${esc(s.u)}" data-period="${esc(m||'')}" onclick="openProfile(this.dataset.u,this.dataset.period)"><span class="native-student-head">${ava(s.u,displayName(s))}<span class="native-student-name"><strong>${esc(displayName(s))}</strong><small>${esc(displayClass(st?.class||s.class))}</small></span><span class="native-student-arrow" aria-hidden="true">›</span></span><span class="native-metrics">${metric(t('overall'),s.ov==null?'—':s.ov+'%',s.ov)}${metric(t('at_rec'),at.t?at.pc+'%':'—',at.t?at.pc:null)}${metric(t('entries'),s.n,null)}${ks.map(k=>{const v=vl(s,k),p=Tg[k]?Math.round(v/Tg[k]*100):null;return metric(L(k),s.none?'—':p==null?+v.toFixed(1):`${+v.toFixed(1)} / ${+Tg[k].toFixed(1)} · ${p}%`,s.none?null:p);}).join('')}</span></button>`;}).join('')}</div>`;
+}
 function ptable(A,ks,Tg,tf,m){
   const hasAt=A.some(s=>attOf(s.u,m).t>0);
   const sh=(key,inner)=>{const active=SFS_AN.sort.key===key;const arrow=active?(SFS_AN.sort.dir===1?'▲':SFS_AN.sort.dir===-1?'▼':''):'';return `<th class="sortable" onclick="sortBy('${key}')">${inner}${arrow?` <span class="sort-arrow">${arrow}</span>`:''}</th>`;};
   const cell=(s,x)=>{if(s.none)return `<td><span class="of">—</span></td>`;const v=vl(s,x),n=+v.toFixed(1);if(!Tg[x])return `<td><span class="num">${n}</span></td>`;const p=Math.round(v/Tg[x]*100),q=lv(p);return `<td><div class="c2"><div dir="ltr"><span class="num">${n}</span><span class="of"> / ${+Tg[x].toFixed(1)}</span></div><div class="bar"><i class="${q}" style="width:${Math.min(p,100)}%"></i></div><span class="pc ${q}">${p}%</span></div></td>`;};
   const atc=s=>{const o=attOf(s.u,m);return o.t?`<td><div class="c2"><b class="pc ${lv(o.pc)}">${o.pc}%</b><div class="bar"><i class="${lv(o.pc)}" style="width:${Math.min(o.pc,100)}%"></i></div><small class="of" style="white-space:nowrap">${attTxt(o)}</small></div></td>`:`<td><span class="of">—</span></td>`;};
-  return `<div class="t"><table><thead><tr><th class="rk">#</th>`+sh('name',t('name'))+sh('entries',t('entries'))+ks.map(x=>sh(x,`${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}`)).join('')+(hasAt?sh('att',t('at_rec')):'')+(tf.length?sh('ov',t('overall')):'')+'</tr></thead><tbody>'+A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,displayName(s))}<span class="nmt">${esc(displayName(s))}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+(tf.length?(s.ov==null?`<td>${ovBadge(s)}</td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b>${ovBadge(s)}</div></td>`):'')+'</tr>').join('')+'</tbody></table></div>';
+  return nativeStudentCards(A,ks,Tg,m)+`<div class="t native-performance-table"><table><thead><tr><th class="rk">#</th>`+sh('name',t('name'))+sh('entries',t('entries'))+ks.map(x=>sh(x,`${esc(L(x))}${Tg[x]?`<small class="tg">${t('target')} ${+Tg[x].toFixed(1)}</small>`:''}`)).join('')+(hasAt?sh('att',t('at_rec')):'')+(tf.length?sh('ov',t('overall')):'')+'</tr></thead><tbody>'+A.map((s,j)=>`<tr><td class="rk">${j+1}</td><td class="l"><div class="nm click" data-u="${esc(s.u)}" onclick="openProfile(this.dataset.u)">${ava(s.u,displayName(s))}<span class="nmt">${esc(displayName(s))}</span></div></td><td>${s.n}</td>`+ks.map(x=>cell(s,x)).join('')+(hasAt?atc(s):'')+(tf.length?(s.ov==null?`<td>${ovBadge(s)}</td>`:`<td><div class="ov"><b class="pc ${lv(s.ov)}">${s.ov}%</b>${ovBadge(s)}</div></td>`):'')+'</tr>').join('')+'</tbody></table></div>';
 }
 let PU=null;
 function openPhoto(u){const s=D.students.find(x=>String(x.username)==String(u));if(!D.photos[u]) return toast(t('pf_nophoto'),1);$('lbi').src=D.photos[u];$('lbc').textContent=s?displayName(s):'';$('lb').hidden=false;}
@@ -2438,7 +2470,7 @@ function render(){
       A.forEach(s=>{ALL.push(s);const ao=attOf(s.u,m);EXP.push([displayClass(k),displayName(s),s.n,...allk.map(x=>x in s.sum?+vl(s,x).toFixed(1):''),ao.t?ao.p:'',ao.t?ao.l:'',ao.t?ao.a:'']);});
       const live=A.filter(s=>!s.none);
       const chips=live.length&&A.length>1?tf.map(x=>`<span class="chip">${t('avg')} ${esc(L(x))} ${Math.round(live.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/live.length)}%</span>`).join(''):'';
-      if(A.length){h+=`<section class="cls"><div class="clsh"><h3>${esc(displayClass(k))}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;h+=A.length==1?scorecard(A[0],ks,Tg,attOf(A[0].u,m)):ptable(A,ks,Tg,tf,m);}else{return;}
+      if(A.length){h+=`<section class="cls"><div class="clsh"><h3>${esc(displayClass(k))}</h3><span class="chip">${t('k_stu')} ${A.length}</span>${chips}</div>`;h+=A.length==1?nativeStudentCards(A,ks,Tg,m)+`<div class="native-performance-table">${scorecard(A[0],ks,Tg,attOf(A[0].u,m))}</div>`:ptable(A,ks,Tg,tf,m);}else{return;}
       let cg='';
       if(A.filter(s=>s.ov!=null).length>1)cg+=`<div class="cbox"><h5>${t('ch_ov')}</h5><div style="height:${Math.max(180,60+A.filter(s=>s.ov!=null).length*26)}px"><canvas id="co${i}"></canvas></div></div>`;
       if(A.length>1&&tf.length)cg+=`<div class="cbox"><h5>${t('ch_perf')}</h5><div style="height:${Math.max(200,70+tf.length*34)}px"><canvas id="cp${i}"></canvas></div></div>`;
@@ -2585,6 +2617,26 @@ document.addEventListener('keydown',e=>{if(!mq.matches||!dialog)return;if(e.key=
 window.addEventListener('popstate',e=>{if(!mq.matches)return;restoring=true;if(dialog)close(dialog);else if(e.state?.tab&&e.state.tab!==current)activate(e.state.tab);sync();restoring=false;schedule();});
 new MutationObserver(schedule).observe(nav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','class']});new MutationObserver(schedule).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir']});new MutationObserver(rs=>{if(rs.some(r=>r.type==='attributes'?(r.target===app||r.target.matches('.md')):[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&(n.matches('.md')||n.querySelector('.md')))))schedule();}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden']});
 function mode(){if(mq.matches)schedule();else{menu.hidden=true;more.hidden=true;tabs().forEach(b=>b.classList.remove('native-extra'));app.inert=false;id('login').inert=false;document.querySelector('.top').inert=false;dialog=null;title.textContent=t('title');}}mq.addEventListener('change',mode);mode();
+})();
+</script>
+<script>
+(()=>{
+ const mq=matchMedia('(max-width:768px)');
+ const att=document.getElementById('attbl');
+ function decorate(){
+ if(!mq.matches)return;
+ for(const id of ['salTable','ul','log','tlist']){
+ const table=document.getElementById(id);if(!table)continue;
+ const heads=[...table.querySelectorAll('thead th')].map(x=>x.textContent.trim());
+ table.querySelectorAll('tbody tr').forEach(row=>[...row.cells].forEach((cell,i)=>{if(cell.colSpan===1&&heads[i])cell.dataset.nativeLabel=heads[i];}));
+ }
+ if(att)att.querySelectorAll('.att-student-info').forEach(el=>{el.tabIndex=0;el.setAttribute('role','button');});
+ }
+ function openAttendance(el){const rows=[...att.querySelectorAll('.att-student-info')];const row=el.closest('.att-student');const status=row?.querySelector('.att-status-btn');if(!status)return;const students=D.students.filter(s=>s.class==$('ac').value);const q=($('aq').value||'').trim().toLowerCase();const shown=students.filter(s=>{if(q&&!String(displayName(s)).toLowerCase().includes(q)&&!String(s.name).toLowerCase().includes(q))return false;const st=AT[s.username];return !(ATT_FILTER==='A'&&st!=='A'||ATT_FILTER==='L'&&st!=='L'||ATT_FILTER==='U'&&st);});const student=shown[rows.indexOf(el)];if(student)openProfile(student.username,$('ad').value.slice(0,7));}
+ if(att){att.addEventListener('click',e=>{const el=e.target.closest('.att-student-info');if(mq.matches&&el)openAttendance(el);});att.addEventListener('keydown',e=>{const el=e.target.closest('.att-student-info');if(mq.matches&&el&&['Enter',' '].includes(e.key)){e.preventDefault();openAttendance(el);}});}
+ let pending=false;function schedule(){if(!pending){pending=true;requestAnimationFrame(()=>{pending=false;decorate();});}}
+ for(const id of ['attbl','salTable','ul','log','tlist']){const el=document.getElementById(id);if(el)new MutationObserver(schedule).observe(el,{childList:true,subtree:true});}
+ mq.addEventListener('change',()=>{if(!mq.matches&&att)att.querySelectorAll('.att-student-info').forEach(el=>{el.removeAttribute('tabindex');el.removeAttribute('role');});else schedule();});schedule();
 })();
 </script>
 </body>
