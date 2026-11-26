@@ -1,7 +1,15 @@
 
+/* Student Performance Portal
+   Speed Optimization V2 - Step 1
+   Fast Startup & Smart Cache
+   Version 9
+*/
+
 const ROOT = new URL('./', self.location.href);
 const PREFIX = 'student-portal-' + ROOT.pathname + '-';
-const CACHE = PREFIX + 'v8-attention-fix';
+const CACHE = PREFIX + 'v9-fast-startup';
+
+const INDEX = new URL('index.html', ROOT).href;
 
 const SHELL = [
   'index.html',
@@ -13,107 +21,304 @@ const SHELL = [
   'JameelNooriNastaleeq.ttf'
 ];
 
-const allowed = new Set(
-  SHELL.map(p => new URL(p, ROOT).href)
+const ALLOWED = new Set(
+  SHELL.map(file => new URL(file, ROOT).href)
 );
 
-const chart = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+const CHART =
+  'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+
+const pending = new Map();
+
+// =====================================
+// INSTALL
+// =====================================
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
-    const c = await caches.open(CACHE);
 
-    await c.add(new URL('index.html', ROOT).href);
+    const cache = await caches.open(CACHE);
 
-    await Promise.all(
-      SHELL.slice(1).map(p =>
-        c.add(new URL(p, ROOT).href).catch(() => {})
+    await cache.add(
+      new Request(INDEX, { cache: 'reload' })
+    );
+
+    await Promise.allSettled(
+      SHELL.slice(1).map(file =>
+        cache.add(
+          new Request(
+            new URL(file, ROOT).href,
+            { cache: 'reload' }
+          )
+        )
       )
     );
 
-    await c.add(chart).catch(() => {});
     await self.skipWaiting();
+
   })());
 });
+
+// =====================================
+// ACTIVATE
+// =====================================
 
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
-    for (const key of await caches.keys()) {
-      if (key.startsWith(PREFIX) && key !== CACHE) {
-        await caches.delete(key);
-      }
-    }
+
+    const keys = await caches.keys();
+
+    await Promise.all(
+      keys
+        .filter(key =>
+          key.startsWith(PREFIX) && key !== CACHE
+        )
+        .map(key => caches.delete(key))
+    );
 
     await self.clients.claim();
+
   })());
 });
 
-self.addEventListener('fetch', event => {
-  const r = event.request;
-  const u = new URL(r.url);
+// =====================================
+// SAFE BACKGROUND UPDATE
+// =====================================
 
-  if (r.method !== 'GET') return;
+function updateCache(request, key, navigation) {
 
-  const nav =
-    r.mode === 'navigate' &&
-    u.origin === ROOT.origin &&
-    (
-      u.pathname === ROOT.pathname ||
-      u.pathname === new URL('index.html', ROOT).pathname
-    );
+  const id = typeof key === 'string'
+    ? key
+    : key.url;
 
-  const staticAsset =
-    allowed.has(u.href) ||
-    u.href === chart ||
-    (
-      (
-        u.origin === 'https://fonts.googleapis.com' ||
-        u.origin === 'https://fonts.gstatic.com'
-      ) &&
-      ['style', 'font'].includes(r.destination)
-    );
+  if (pending.has(id)) {
+    return pending.get(id).then(r => r.clone());
+  }
 
-  if (!nav && !staticAsset) return;
+  const task = (async () => {
 
-  event.respondWith((async () => {
-    const c = await caches.open(CACHE);
+    const response = await fetch(request, {
+      cache: 'no-cache'
+    });
 
-    const key = nav
-      ? new URL('index.html', ROOT).href
-      : r;
+    const valid = navigation
+      ? response.ok && !response.redirected
+      : response.ok || response.type === 'opaque';
 
-    try {
-      const response = await fetch(r);
+    if (valid) {
 
-      if (
-        (response.ok || (!nav && response.type === 'opaque')) &&
-        (!nav || (!u.search && !response.redirected))
-      ) {
-        await c.put(key, response.clone());
+      const cache = await caches.open(CACHE);
+
+      try {
+        await cache.put(key, response.clone());
+      } catch (error) {
+        // Cache failure must not block the portal.
       }
 
-      return response;
+    }
 
-    } catch (e) {
-      const cached = await c.match(key);
+    return response;
 
-      if (cached) return cached;
+  })();
 
-      if (nav) {
-        return new Response(
-          '<meta charset="utf-8">' +
-          '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-          '<h1>No internet / انٹرنیٹ دستیاب نہیں</h1>' +
-          '<p>Reconnect and reopen the portal.</p>',
-          {
-            headers: {
-              'Content-Type': 'text/html; charset=utf-8'
-            }
-          }
-        );
+  pending.set(id, task);
+
+  task.then(
+    () => pending.delete(id),
+    () => pending.delete(id)
+  );
+
+  return task.then(r => r.clone());
+}
+
+// =====================================
+// OFFLINE PAGE
+// =====================================
+
+function offlinePage() {
+
+  return new Response(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport"
+        content="width=device-width,initial-scale=1">
+      <title>No Internet</title>
+      <style>
+        * { box-sizing: border-box; }
+        body {
+          margin: 0;
+          padding: 24px;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #F7F5EF;
+          font-family: Arial, sans-serif;
+          color: #2E7D74;
+          text-align: center;
+        }
+        .card {
+          width: 100%;
+          max-width: 400px;
+          background: white;
+          border-radius: 20px;
+          padding: 30px 20px;
+          border: 1px solid #ddd;
+        }
+        .symbol {
+          font-size: 48px;
+        }
+        p {
+          color: #555;
+          line-height: 1.8;
+        }
+        button {
+          width: 100%;
+          min-height: 48px;
+          border: 0;
+          border-radius: 12px;
+          background: #2E7D74;
+          color: white;
+          font-size: 16px;
+          cursor: pointer;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="symbol">&#9888;</div>
+        <h2>No Internet Connection</h2>
+        <h2 lang="ur" dir="rtl">
+          انٹرنیٹ دستیاب نہیں
+        </h2>
+        <p>
+          Please reconnect to access the portal.
+        </p>
+        <p lang="ur" dir="rtl">
+          پورٹل استعمال کرنے کے لیے
+          انٹرنیٹ سے دوبارہ منسلک ہوں۔
+        </p>
+        <button onclick="location.reload()">
+          Try Again / دوبارہ کوشش کریں
+        </button>
+      </div>
+    </body>
+    </html>
+  `, {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8'
+    }
+  });
+
+}
+
+// =====================================
+// FAST FETCH STRATEGY
+// =====================================
+
+self.addEventListener('fetch', event => {
+
+  const request = event.request;
+  const url = new URL(request.url);
+
+  // Never cache POST requests or API data.
+  if (request.method !== 'GET') return;
+
+  // Never intercept Google Apps Script.
+  if (
+    url.hostname === 'script.google.com' ||
+    url.hostname === 'script.googleusercontent.com'
+  ) return;
+
+  // Never cache requests with authorization.
+  if (request.headers.has('Authorization')) return;
+
+  const navigation =
+    request.mode === 'navigate' &&
+    url.origin === ROOT.origin &&
+    !url.search &&
+    (
+      url.pathname === ROOT.pathname ||
+      url.pathname === new URL(
+        'index.html', ROOT
+      ).pathname
+    );
+
+  const fontAsset =
+    (
+      url.origin === 'https://fonts.googleapis.com' ||
+      url.origin === 'https://fonts.gstatic.com'
+    ) &&
+    ['style', 'font'].includes(request.destination);
+
+  const staticAsset =
+    ALLOWED.has(url.href) ||
+    url.href === CHART ||
+    fontAsset;
+
+  // Private data and other requests remain untouched.
+  if (!navigation && !staticAsset) return;
+
+  const key = navigation ? INDEX : request;
+
+  const cached = caches.open(CACHE)
+    .then(cache => cache.match(key))
+    .catch(() => undefined);
+
+  const network = updateCache(
+    request,
+    key,
+    navigation
+  );
+
+  // Keep background updates alive.
+  event.waitUntil(
+    network.then(() => {}, () => {})
+  );
+
+  event.respondWith((async () => {
+
+    // FAST STARTUP:
+    // Show cached interface immediately.
+    const saved = await cached;
+
+    if (saved) {
+      return saved;
+    }
+
+    // First visit: use the network.
+    try {
+      return await network;
+    } catch (error) {
+
+      if (navigation) {
+        return offlinePage();
       }
 
       return Response.error();
+
     }
+
   })());
+
+});
+
+// =====================================
+// UPDATE MESSAGE SUPPORT
+// =====================================
+
+self.addEventListener('message', event => {
+
+  if (
+    event.data === 'SKIP_WAITING' ||
+    (
+      event.data &&
+      event.data.type === 'SKIP_WAITING'
+    )
+  ) {
+    event.waitUntil(self.skipWaiting());
+  }
+
 });
