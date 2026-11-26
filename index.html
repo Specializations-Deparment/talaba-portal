@@ -598,7 +598,32 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 #confirmMsg{white-space:pre-line}
 }
 </style>
-</head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E7D74">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Student Portal">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+#pwaSplash,#pwaOffline,#pwaInstall{display:none}
+@media(max-width:768px){
+#pwaSplash:not([hidden]){position:fixed;inset:0;z-index:20000;background:#F7F5EF;display:grid;place-content:center;justify-items:center;gap:20px;color:#2E7D74;pointer-events:none}
+#pwaSplash img{width:96px;height:96px;object-fit:contain}
+.pwaSpinner{width:30px;height:30px;border:3px solid #d5e4df;border-top-color:#2E7D74;border-radius:50%;animation:pwaSpin .8s linear infinite}
+@keyframes pwaSpin{to{transform:rotate(360deg)}}
+#pwaOffline:not([hidden]){display:flex;position:fixed;inset:0;z-index:19000;background:#F7F5EF;color:#23443f;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:16px;overflow:auto}
+#pwaInstall:not([hidden]){display:flex;position:fixed;inset-inline:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:1100;background:#F7F5EF;color:#23443f;border:1px solid #b7cbc5;border-radius:16px;padding:12px;gap:8px;align-items:center;flex-wrap:wrap;box-shadow:0 4px 16px #0002}
+#pwaInstall button,#pwaOffline button{min-height:48px;padding:8px 14px;border-radius:12px;border:1px solid #2E7D74;background:#2E7D74;color:white;font:inherit}
+#pwaInstall span{flex:1;min-width:120px} #pwaInstall [data-dismiss]{background:transparent;color:#23443f}
+@media(prefers-reduced-motion:reduce){.pwaSpinner{animation:none}}
+}
+</style>
+<style>
+#loginInstall[hidden],#loginInstallHelp[hidden]{display:none!important}
+#loginInstall{width:100%;min-height:48px;border:1px solid var(--pri);border-radius:12px;background:transparent;color:var(--pri);font:inherit;font-weight:700;cursor:pointer;padding:10px}
+#loginInstallHelp{font-size:14px;line-height:1.7;margin:0;color:var(--ink)}
+@media(max-width:768px){#login .side .lg{width:140px;height:140px;max-width:100%;padding:4px;margin:0 auto 12px;box-shadow:none;border-radius:16px}#login .side{padding:16px}#login form{padding:16px;gap:12px}}
+</style></head>
 <body>
 <header class="top">
 <button type="button" id="nativeBack" class="mobile-native" aria-label="Back" hidden><span>←</span></button>
@@ -630,6 +655,8 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
       <span data-i="signin"></span>
       <span class="save-spinner" id="loginSpin" hidden></span>
     </button>
+    <button type="button" id="loginInstall" hidden></button>
+    <p id="loginInstallHelp" role="status" hidden></p>
   </form>
 </div>
 
@@ -2830,6 +2857,53 @@ mq.addEventListener('change',()=>{reset();badge();});
 // Skeleton overlay for initial attendance requests; never replace existing data.
 const originalLoad=loadAtt;let loads=0;
 loadAtt=async function(...args){const box=document.getElementById('attbl'),show=mq.matches&&!box.querySelector('.att-student');if(show){loads++;box.classList.add('native4-loading');box.setAttribute('aria-busy','true');}try{return await originalLoad.apply(this,args);}finally{if(show&&!--loads){box.classList.remove('native4-loading');box.removeAttribute('aria-busy');}badge();}};
+})();
+</script>
+<div id="pwaSplash" hidden aria-hidden="true"><img src="logo.png" alt=""><div class="pwaSpinner"></div></div>
+<div id="pwaOffline" hidden role="status"><img src="logo.png" width="80" alt=""><h2 id="pwaOfflineTitle"></h2><p id="pwaOfflineText"></p><button id="pwaRetry" type="button"></button></div>
+<div id="pwaInstall" hidden><span id="pwaInstallText"></span><button id="pwaInstallGo" type="button"></button><button id="pwaDismiss" data-dismiss type="button"></button></div>
+<script>
+(function(){
+ const $p=id=>document.getElementById(id), mobile=matchMedia('(max-width:768px)');
+ const splash=$p('pwaSplash'), offline=$p('pwaOffline'), banner=$p('pwaInstall');
+ let promptEvent=null, dismissed=false;
+ try{dismissed=localStorage.getItem('pwaInstallDismissed')==='1'}catch(e){}
+ const tr=(en,ur)=>document.documentElement.lang==='ur'?ur:en;
+ const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ const installed=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+ function sync(){
+  offline.hidden=!mobile.matches||navigator.onLine;
+  $p('pwaOfflineTitle').textContent=tr('No internet','انٹرنیٹ دستیاب نہیں');
+  $p('pwaOfflineText').textContent=tr('Reconnect to access student data. Your existing drafts are unchanged.','طلبہ کا ڈیٹا دیکھنے کے لیے انٹرنیٹ سے دوبارہ جڑیں۔ موجودہ ڈرافٹ محفوظ ہیں۔');
+  $p('pwaRetry').textContent=tr('Try again','دوبارہ کوشش کریں');
+  banner.hidden=true;
+  const install=$p('loginInstall');
+  install.hidden=installed();
+  install.textContent=tr('↓ Download / Install App','↓ ایپ ڈاؤن لوڈ / انسٹال کریں');
+  if(installed())$p('loginInstallHelp').hidden=true;
+  $p('pwaInstallText').textContent=promptEvent?tr('Install Student Portal','اسٹوڈنٹ پورٹل انسٹال کریں'):tr('Safari: Share → Add to Home Screen','سفاری: شیئر → ہوم اسکرین پر شامل کریں');
+  $p('pwaInstallGo').hidden=!promptEvent;
+  $p('pwaInstallGo').textContent=tr('Install app','ایپ انسٹال کریں');
+  $p('pwaDismiss').textContent=tr('Dismiss','بند کریں');
+ }
+ function dismiss(){dismissed=true;try{localStorage.setItem('pwaInstallDismissed','1')}catch(e){}sync()}
+ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();promptEvent=e;sync()});
+ $p('pwaInstallGo').onclick=async()=>{if(!promptEvent)return;const ev=promptEvent;promptEvent=null;try{await ev.prompt();await ev.userChoice}catch(e){}dismiss()};
+ $p('loginInstall').onclick=async()=>{
+  const help=$p('loginInstallHelp');
+  if(promptEvent){const ev=promptEvent;promptEvent=null;try{await ev.prompt();const choice=await ev.userChoice;if(choice.outcome==='accepted'){help.hidden=true;sync();return}}catch(e){} }
+  help.textContent=ios?tr('Open in Safari, tap Share, then Add to Home Screen.','سفاری میں کھولیں، شیئر دبائیں، پھر ہوم اسکرین پر شامل کریں۔'):tr('Open the browser menu (⋮), then choose Install app or Add to Home screen if available.','براؤزر مینو کھولیں، پھر ایپ انسٹال کریں یا ہوم اسکرین پر شامل کریں۔');
+  help.hidden=false;sync();
+ };
+ $p('pwaDismiss').onclick=dismiss;
+ window.addEventListener('appinstalled',dismiss);
+ $p('pwaRetry').onclick=()=>{sync();if(!navigator.onLine)return;offline.hidden=true};
+ window.addEventListener('online',sync);window.addEventListener('offline',sync);
+ new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+ if(mobile.addEventListener)mobile.addEventListener('change',sync);else mobile.addListener(sync);
+ if(mobile.matches){splash.hidden=false;setTimeout(()=>{splash.hidden=true},650)}
+ sync();
+ if('serviceWorker' in navigator && window.isSecureContext){navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('PWA registration failed',e));}
 })();
 </script>
 </body>
