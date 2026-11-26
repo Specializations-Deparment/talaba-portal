@@ -7,7 +7,7 @@
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=Source+Sans+3:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
 <style>
 @font-face{font-family:'JNN';src:local('Jameel Noori Nastaleeq'),local('JameelNooriNastaleeq'),local('Jameel Noori Nastaleeq Kasheeda'),url('JameelNooriNastaleeq.ttf') format('truetype');font-display:swap}
 :root{
@@ -1046,7 +1046,28 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='41';
+const VER='42';
+
+let chartLoadPromise=null, pendingAnalysisCharts=null;
+function ensureCharts(){
+  if(typeof Chart!=='undefined')return Promise.resolve();
+  if(!chartLoadPromise)chartLoadPromise=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';script.async=true;
+    script.onload=resolve;script.onerror=()=>{script.remove();chartLoadPromise=null;reject(new Error('Chart loading failed'));};
+    document.head.appendChild(script);
+  });
+  return chartLoadPromise;
+}
+function flushAnalysisCharts(){
+  const job=pendingAnalysisCharts;
+  if(!job||$('p_an').hidden||$('app').hidden)return;
+  ensureCharts().then(()=>{
+    if(pendingAnalysisCharts!==job||$('p_an').hidden||$('app').hidden)return;
+    pendingAnalysisCharts=null;job();
+  }).catch(e=>console.warn(e));
+}
+
 let FORCEM=null;
 let _resetAttempted = false;
 let LG=(()=>{try{return localStorage.getItem('lg')}catch(e){return null}})()||'en';
@@ -1324,7 +1345,7 @@ const ordk=s=>D.keys.filter(k=>k!='photo'&&s.has(k));
 const HIGH=85,LOW=60;
 const lv=p=>p>=HIGH?'ok':p>=LOW?'mid':'low';
 const stl=l=>t({ok:'st_ex',mid:'st_ok',low:'st_low'}[l]);
-const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
+const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" ${c==='xxl'?'':'loading="lazy" decoding="async"'} src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
 function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');$('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
 function toast(m,bad){const x=$('toast');x.innerHTML='';x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,4000);}
 function toastWithUndo(msg, onUndo, ms){
@@ -1339,6 +1360,7 @@ function toastWithUndo(msg, onUndo, ms){
 function show(x){
   ['an','stuatt','sum','sal','en','at','tg','adm'].forEach(y=>{$(y=='an'||y=='stuatt'||y=='sum'||y=='sal'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));
+  if(x=='an')flushAnalysisCharts();
   if(x=='at')attOpen();
   if(x=='stuatt')refreshTimePolicy();
   if(x=='sal')renderSalary();
@@ -2506,7 +2528,7 @@ function openProfile(u,per){
   $('pm_in').innerHTML=`<div class="pmh"><span class="${photo?'pz':''}" ${photo?`onclick="openPhoto(PU)"`:''}>${ava(s.username,displayName(s),'xxl')}</span><div><h2>${esc(displayName(s))}</h2><div class="note" style="unicode-bidi:plaintext;font-size:15px;">${esc(displayClass(s.class))} · ${esc(s.username)}</div>${photo?'':`<div class="note">${t('pf_nophoto')}</div>`}</div></div><div class="row" style="margin-bottom:12px;margin-top:16px;"><label class="btn ghost sm">${t('chg_photo')}<input type="file" accept="image/*" hidden onchange="pick(this,PU)"></label><button class="btn sm" onclick="goStudent()">${t('pf_open')}</button><label class="f" style="flex-direction:row;align-items:center;gap:8px;text-transform:none;"><span>${t('pf_pick')}</span><select class="pps" onchange="openProfile(PU,this.value)"><option value="">${t('pf_overall')}</option>${months.map(x=>`<option ${x==m?'selected':''}>${x}</option>`).join('')}</select></label></div><h4 style="margin-top:24px;">${t('pf_period')} — ${esc(m||t('pf_overall'))}</h4>`+(list.length?scorecard(a,ks,Tg,attOf(s.username,m)):`<div class="empty">${t('empty')}</div>`)+(trend.length>1?`<div class="cbox" style="margin-top:20px;"><h5>${t('ch_trend')}</h5><div style="height:210px"><canvas id="pch"></canvas></div></div>`:'')+`<div id="pcal" style="margin-top:20px;"></div>`+(hist?`<h4 style="margin-top:32px;">${t('pf_hist')}</h4><div class="t"><table><thead><tr><th class="l">${t('month')}</th><th>${t('overall')}</th><th></th><th class="l">${t('details')}</th><th class="l">${t('at_rec')}</th></tr></thead><tbody>${hist}</tbody></table></div>`:'');
   $('pm').hidden=false;
   if(PCH){PCH.destroy();PCH=null;}
-  if(trend.length>1&&typeof Chart!='undefined'){PCH=new Chart($('pch'),{type:'line',data:{labels:trend.map(x=>x.mm),datasets:[{data:trend.map(x=>x.o2),borderColor:'#2E7D74',backgroundColor:'#2E7D7422',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#2E7D74'}]},options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]});}
+  if(trend.length>1){const canvas=$('pch');ensureCharts().then(()=>{if(!canvas||$('pch')!==canvas||$('pm').hidden||$('app').hidden)return;Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5B6769';PCH=new Chart($('pch'),{type:'line',data:{labels:trend.map(x=>x.mm),datasets:[{data:trend.map(x=>x.o2),borderColor:'#2E7D74',backgroundColor:'#2E7D7422',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#2E7D74'}]},options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]});}).catch(e=>console.warn(e));}
   drawCal('pcal',s.username,calM);
 }
 function goStudent(){const s=D.students.find(x=>String(x.username)==String(PU));if(!s) return;$('pm').hidden=true;$('cf').value=s.class;fsf();$('sf').value=s.username;render();show('an');window.scrollTo({top:0,behavior:'smooth'});}
@@ -2577,10 +2599,9 @@ function printReports() {
 
     $('print-area').innerHTML = printHTML;
     
-    setTimeout(() => {
-      window.print();
-      // Keep report available until the next print request.
-    }, 500);
+    const images=[...$('print-area').querySelectorAll('img')];
+    images.forEach(img=>{img.loading='eager';});
+    Promise.race([Promise.allSettled(images.map(img=>img.decode())),new Promise(resolve=>setTimeout(resolve,3000))]).then(()=>setTimeout(()=>window.print(),100));
     
   } catch(e) {
     console.error(e);
@@ -2591,7 +2612,7 @@ function printReports() {
 function render(){
   try{
     renderDashboard();
-    CH.forEach(c=>c.destroy());CH=[];srFill();
+    CH.forEach(c=>c.destroy());CH=[];pendingAnalysisCharts=null;srFill();
     if(typeof Chart!=='undefined'){Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5B6769';}
     const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
     const q=normalizeUrdu(($('q')&&$('q').value)||'');
@@ -2661,7 +2682,8 @@ function render(){
       return;
     }
 
-    if(typeof Chart!=='undefined'){
+    pendingAnalysisCharts=()=>{
+      Chart.defaults.font.family=LG=='ur'?UF:EF;Chart.defaults.color='#5B6769';
       const pct={x:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}};
       const bar=(el,labels,data,thick)=>CH.push(new Chart(el,{type:'bar',data:{labels,datasets:[{data,backgroundColor:data.map(v=>CLR[lv(v)]),borderRadius:4,barThickness:thick}]},options:{indexAxis:'y',rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:pct},plugins:[hl('x')]}));
       items.forEach(({i,A,tf,Tg,bm,tr})=>{
@@ -2669,7 +2691,8 @@ function render(){
         const o2=$('cp'+i);if(o2){const lv2=A.filter(s=>!s.none);bar(o2,tf.map(x=>L(x)),tf.map(x=>Math.round(lv2.reduce((a,s)=>a+vl(s,x)/Tg[x]*100,0)/(lv2.length||1))),22);}
         const o3=$('ct'+i);if(o3)CH.push(new Chart(o3,{type:'line',data:{labels:bm,datasets:[{data:tr,borderColor:'#2E7D74',backgroundColor:'#2E7D7422',fill:true,tension:.3,pointRadius:5,pointBackgroundColor:'#2E7D74',spanGaps:true}]},options:{rtl:LG=='ur',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,suggestedMax:100,grid:{color:'#E2DED3'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}},plugins:[hl('y')]}));
       });
-    }
+    };
+    flushAnalysisCharts();
     try{ attCard(); }catch(e){ console.error('attCard failed:', e); }
     try{ renderLog(); }catch(e){ console.error('renderLog failed:', e); }
   }catch(err){
