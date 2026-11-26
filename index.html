@@ -360,7 +360,7 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
   .print-grid .pc.mid { color: #7A5200; }
   .print-grid .pc.low { color: var(--low); }
 }
-@media (max-width:768px){
+@media screen and (max-width:768px){
   body{padding-bottom:80px}
   .wrap{flex-direction:column;padding:10px;gap:16px;width:100%;overflow-x:hidden}
   .main-content{width:100%}
@@ -447,7 +447,7 @@ html[dir=rtl] .back-arrow{transform:scaleX(-1)}
 }
 
 .mobile-native{display:none!important}
-@media(max-width:768px){
+@media screen and (max-width:768px){
 :root{--mh:56px;--mn:64px;--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{padding:0;font-size:16px}html[lang=ur] body{font-size:17px;line-height:2}
 .mobile-native:not([hidden]){display:flex!important}
@@ -476,7 +476,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{padding:0;fo
 }
 
 /* Step 2: native student cards and profile */
-@media(max-width:768px){
+@media screen and (max-width:768px){
 .native-performance-cards:not([hidden]){display:grid!important;gap:12px}
 .native-performance-table{display:none!important}
 .native-student-card{display:block;width:100%;text-align:start;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--card,#fff);color:var(--ink);box-shadow:none;font:inherit;cursor:pointer;transition:transform .15s;user-select:auto}
@@ -504,7 +504,7 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 }
 
 /* Step 2.1 — mobile profile viewport correction */
-@media (max-width:768px) {
+@media screen and (max-width:768px) {
   body > #pm:not([hidden]) {
     position:fixed !important; inset:0 !important;
     display:block !important; z-index:3000 !important;
@@ -540,7 +540,7 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 
 /* Step 3: mobile forms and actions */
 .native3-only{display:none!important}
-@media(max-width:768px){
+@media screen and (max-width:768px){
 .native3-only:not([hidden]){display:flex!important}
 #app .grid,#login .grid,.md .grid{grid-template-columns:minmax(0,1fr)!important;gap:16px}
 #app .f,.md .f,#login .f{min-width:0!important;max-width:100%;gap:8px}
@@ -562,7 +562,7 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 }
 
 /* Step 3.1: mobile card progress and navigation order */
-@media(max-width:768px){
+@media screen and (max-width:768px){
 #app .native-student-card{height:auto;max-height:none;overflow:hidden;box-sizing:border-box;white-space:normal}
 #app .native-metrics{align-items:start;row-gap:16px;column-gap:12px}
 #app .native-metric{display:flex;flex-direction:column;align-items:stretch;gap:4px;min-width:0;line-height:1.45}
@@ -575,7 +575,7 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 
 
 /* Step 3.2: attendance layout and single save action */
-@media(max-width:768px){
+@media screen and (max-width:768px){
 #app .att-quick-actions{position:static!important;margin:0 0 12px!important;padding:8px 0!important;box-shadow:none!important;border:0!important}
 #app .att-quick-row,#app .att-kpi-chips{gap:6px}
 #app .att-filter-row{flex-wrap:nowrap;overflow-x:auto;gap:8px;margin-top:8px;scrollbar-width:none}
@@ -586,7 +586,7 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 }
 
 /* Step 3.3: mobile attendance footer and logout alert */
-@media(max-width:768px){
+@media screen and (max-width:768px){
 #app .att-save-wrap{position:fixed!important;inset-inline:0!important;bottom:calc(var(--mn) + var(--sb))!important;margin:0!important;padding:8px 16px!important;background:var(--paper)!important;z-index:45!important;border-top:1px solid var(--line)!important}
 #app #attbl{padding-bottom:84px!important}
 #app .main-content{scroll-padding-bottom:84px}
@@ -606,7 +606,7 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 #pwaSplash,#pwaOffline,#pwaInstall{display:none}
-@media(max-width:768px){
+@media screen and (max-width:768px){
 #pwaSplash:not([hidden]){position:fixed;inset:0;z-index:20000;background:#F7F5EF;display:grid;place-content:center;justify-items:center;gap:20px;color:#2E7D74;pointer-events:none}
 #pwaSplash img{width:96px;height:96px;object-fit:contain}
 .pwaSpinner{width:30px;height:30px;border:3px solid #d5e4df;border-top-color:#2E7D74;border-radius:50%;animation:pwaSpin .8s linear infinite}
@@ -622,8 +622,22 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 #loginInstall[hidden],#loginInstallHelp[hidden]{display:none!important}
 #loginInstall{width:100%;min-height:48px;border:1px solid var(--pri);border-radius:12px;background:transparent;color:var(--pri);font:inherit;font-weight:700;cursor:pointer;padding:10px}
 #loginInstallHelp{font-size:14px;line-height:1.7;margin:0;color:var(--ink)}
-@media(max-width:768px){#login .side .lg{width:140px;height:140px;max-width:100%;padding:4px;margin:0 auto 12px;box-shadow:none;border-radius:16px}#login .side{padding:16px}#login form{padding:16px;gap:12px}}
-</style></head>
+@media screen and (max-width:768px){#login .side .lg{width:140px;height:140px;max-width:100%;padding:4px;margin:0 auto 12px;box-shadow:none;border-radius:16px}#login .side{padding:16px}#login form{padding:16px;gap:12px}}
+</style><style>
+@media print {
+ @page { size: A4 portrait; margin: 10mm; }
+ html, body { display:block !important; height:auto !important; min-height:0 !important; max-height:none !important; overflow:visible !important; position:static !important; padding:0 !important; margin:0 !important; }
+ body > :not(#print-area) { display:none !important; }
+ #print-area { display:block !important; position:static !important; height:auto !important; max-height:none !important; overflow:visible !important; width:100% !important; }
+ #print-area .print-page { display:block !important; position:static !important; height:auto !important; overflow:visible !important; break-inside:auto; page-break-inside:auto; break-after:auto; page-break-after:auto; padding:0; }
+ #print-area .print-page + .print-page { break-before:page; page-break-before:always; }
+ #print-area .print-header, #print-area .sc { break-inside:avoid; page-break-inside:avoid; }
+ #print-area .print-grid { gap:10px; }
+ #print-area .sc { box-shadow:none !important; }
+ #print-area { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+}
+</style>
+</head>
 <body>
 <header class="top">
 <button type="button" id="nativeBack" class="mobile-native" aria-label="Back" hidden><span>←</span></button>
@@ -2510,8 +2524,8 @@ function printReports() {
     
     const by={};
     D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)||normalizeUrdu(s.nameEn||'').includes(q)))
-      .forEach(s=>{ (by[s.class]??={})[s.username]={u:s.username,name:s.name,nameEn:s.nameEn,list:[]}; });
-    E.forEach(e=>{ (by[e.class]??={})[e.username]??={u:e.username,name:e.name,nameEn:e.nameEn,list:[]}; by[e.class][e.username].list.push(e); });
+      .forEach(s=>{ (by[s.class]??={})[s.username]={u:s.username,name:s.name,nameEn:s.nameEn,class:s.class,list:[]}; });
+    E.forEach(e=>{ (by[e.class]??={})[e.username]??={u:e.username,name:e.name,nameEn:e.nameEn,class:e.class,list:[]}; by[e.class][e.username].list.push(e); });
 
     let printHTML = '';
     let count = 0;
@@ -2569,7 +2583,7 @@ function printReports() {
     
     setTimeout(() => {
       window.print();
-      setTimeout(() => { $('print-area').innerHTML = ''; }, 1000);
+      // Keep report available until the next print request.
     }, 500);
     
   } catch(e) {
@@ -2596,8 +2610,8 @@ function render(){
     $('mine').hidden=!bs;$('mine').style.cursor=bs?'pointer':'';$('mine').onclick=bs?()=>openProfile(bs.username):null;
     if(bs)$('mine').innerHTML=ava(bs.username,displayName(bs),'xl')+`<div><b>${esc(displayName(bs))}</b><div class="note">${esc(displayClass(bs.class))}${D.photos[bs.username]?'':(D.me.role=='student'?t('photo_hint'):'')}</div></div>`;
     const by={};
-    D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)||normalizeUrdu(s.nameEn||'').includes(q))).forEach(s=>{(by[s.class]??={})[s.username]={u:s.username,name:s.name,nameEn:s.nameEn,list:[]};});
-    E.forEach(e=>{(by[e.class]??={})[e.username]??={u:e.username,name:e.name,nameEn:e.nameEn,list:[]};by[e.class][e.username].list.push(e);});
+    D.students.filter(s=>(!c||s.class==c)&&(!sv||s.username==sv)&&(!q||normalizeUrdu(s.name).includes(q)||normalizeUrdu(s.nameEn||'').includes(q))).forEach(s=>{(by[s.class]??={})[s.username]={u:s.username,name:s.name,nameEn:s.nameEn,class:s.class,list:[]};});
+    E.forEach(e=>{(by[e.class]??={})[e.username]??={u:e.username,name:e.name,nameEn:e.nameEn,class:e.class,list:[]};by[e.class][e.username].list.push(e);});
     const allk=D.keys.filter(k=>k!='photo');
     EXP=[[t('cls'),t('name'),t('entries'),...allk.map(L),t('at_p'),t('at_l'),t('at_a')]];
     let h='';const items=[],ALL=[];
@@ -2819,7 +2833,7 @@ new MutationObserver(rs=>{if(rs.some(r=>!fab.contains(r.target)&&!([...segments.
 (()=>{const d=document.getElementById('nativeLogoutDialog');document.getElementById('nativeLogoutNo').onclick=()=>d.close();document.getElementById('nativeLogoutYes').onclick=()=>{window.nativeConfirmedLogout=true;d.close();try{U='';P='';D=null;}catch(e){console.error(e);}try{document.querySelectorAll('.md').forEach(x=>x.hidden=true);for(const k of ['app','user'])document.getElementById(k).hidden=true;const l=document.getElementById('login');l.hidden=false;l.inert=false;document.getElementById('app').inert=false;document.querySelector('.top').inert=false;document.getElementById('p').value='';document.querySelector('.top .ttl').textContent=t('title');}finally{location.reload();}};})();
 </script><style>
 #native4Refresh{display:none}
-@media(max-width:768px){
+@media screen and (max-width:768px){
 #native4Refresh:not([hidden]){display:flex;position:fixed;top:calc(56px + env(safe-area-inset-top,0px) + 8px);left:50%;transform:translate(-50%,var(--pull,0px));z-index:1050;align-items:center;gap:8px;padding:10px 16px;border-radius:24px;background:var(--card);color:var(--pri);border:1px solid var(--line);pointer-events:none;font-size:14px;white-space:nowrap}
 #native4Refresh[aria-busy=true] .native4spin{animation:native4spin .8s linear infinite}
 .native4spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--pri);border-radius:50%}
