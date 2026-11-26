@@ -105,7 +105,7 @@
     // Poll for D.alumni to show/hide Alumni tab
     setInterval(function(){
       if (typeof D !== 'undefined' && D && D.me){
-        var show = (D.me.role === 'admin' || D.me.role === 'teacher');
+        var show = (D.me.role === 'admin');
         var tb = document.getElementById('tbAlumni');
         if (tb) tb.hidden = !show;
       }
@@ -199,7 +199,7 @@
   };
 
   function injectPassoutButtons(){
-    if (typeof D === 'undefined' || !D || !D.users) return;
+    if (typeof D === 'undefined' || !D || !D.users || D.me.role !== 'admin') return;
     var lg = (typeof LG !== 'undefined') ? LG : 'en';
     var T2 = (typeof T !== 'undefined') ? T[lg] : {};
     document.querySelectorAll('#ul tbody tr').forEach(function(row){
@@ -222,6 +222,7 @@
   }
 
   function showPassOutModal(username){
+    if (!D || D.me.role !== "admin") return;
     var lg = (typeof LG !== 'undefined') ? LG : 'en';
     var T2 = (typeof T !== 'undefined') ? T[lg] : {};
     var u = (D.users||[]).find(function(x){ return String(x.username) === String(username); });
@@ -292,6 +293,7 @@
     } catch(e){ toastSimple(e.message, true); }
   }
   async function restoreUsers(usernames){
+    if (!D || D.me.role !== "admin") return;
     var lg = (typeof LG !== 'undefined') ? LG : 'en';
     var T2 = (typeof T !== 'undefined') ? T[lg] : {};
     for (var i = 0; i < usernames.length; i++){
