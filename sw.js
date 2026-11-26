@@ -1,6 +1,6 @@
 const ROOT = new URL('./', self.location.href);
 const PREFIX = 'student-portal-' + ROOT.pathname + '-';
-const CACHE = PREFIX + 'v10-font-fix';
+const CACHE = PREFIX + 'v11-speed-v43';
 const SHELL = ['index.html','logo.png','icon-192.png','icon-512.png','manifest.json','passout.js'];
 const allowed = new Set(SHELL.map(p=>new URL(p,ROOT).href));
 const chart = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
