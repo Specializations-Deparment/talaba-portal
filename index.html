@@ -753,6 +753,8 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
     <section id="p_stuatt" class="panel" hidden>
       <div class="att-form-box">
         <h2 style="color:var(--pri);margin-bottom:24px;text-align:center;">Submit Time Attendance</h2>
+        <label class="f" id="timeStudentWrap" hidden><span id="timeStudentLabel">Student</span><select id="timeStudent" onchange="refreshTimePolicy()"></select></label>
+        <div id="timePolicyNotice" role="status" class="hint" hidden></div>
         <div id="stuAttMsg" style="margin-bottom:20px;font-weight:bold;text-align:center;font-size:15px;"></div>
         <label class="f"><span>Date</span><input type="date" id="sa_date" style="margin-bottom:20px;" onchange="checkSunday()"></label>
         <label class="f"><span>Status</span>
@@ -1328,6 +1330,7 @@ function show(x){
   ['an','stuatt','sum','sal','en','at','tg','adm'].forEach(y=>{$(y=='an'||y=='stuatt'||y=='sum'||y=='sal'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));
   if(x=='at')attOpen();
+  if(x=='stuatt')refreshTimePolicy();
   if(x=='sal')renderSalary();
   if(x=='sum')loadHazriSummary();
   try{ localStorage.setItem('lastTab',x); }catch(e){}
@@ -1342,7 +1345,7 @@ function reorderTabs(){
   order.forEach(t=>{if(map[t]) tabs.appendChild(map[t]);});
 }
 function setLang(l){
-  LG=l;try{localStorage.setItem('lg',l)}catch(e){}
+  LG=l;if(typeof D!=='undefined'&&D?.me)refreshTimePolicy();try{localStorage.setItem('lg',l)}catch(e){}
   const scrollY = window.scrollY;
   document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
   document.title=t('title');
@@ -1449,7 +1452,7 @@ async function login(e){
   $('login').hidden=true; $('app').hidden=false; $('user').hidden=false;
   $('tbU').hidden=D.me.role!='admin'; $('tbA').hidden=D.me.role=='student';
   $('tbT').hidden=D.me.role=='student'; $('tbS').hidden=false;
-  $('tbStuAtt').hidden=D.me.role!='student'; $('tbSum').hidden=D.me.role!='student';
+  $('tbStuAtt').hidden=false; $('tbSum').hidden=D.me.role!='student';
   $('tbE').hidden=false;
   $('dt').value=$('tm').value=$('salMonth').value=$('sumMonth').value=new Date().toISOString().slice(0,7);
   $('sa_date').value=new Date().toISOString().slice(0,10);
@@ -1503,6 +1506,7 @@ function checkSunday(){
 }
 function toggleTimeInputs(status){ const hide=['Leave','Absent','Qafila','Haftawar Tatti'].includes(status); document.getElementById('timeInputsDiv').style.display=hide?'none':'block'; }
 async function submitStuTimeAtt(){
+  const selected=timeSelectedStudent(); if(!selected)return;
   const dt=$('sa_date').value,st=$('sa_status').value;
   const hideTime=['Leave','Absent','Qafila','Haftawar Tatti'].includes(st);
   const inT=hideTime?"":$('sa_in').value, outT=hideTime?"":$('sa_out').value, prec=$('sa_precaution').value;
@@ -1510,9 +1514,9 @@ async function submitStuTimeAtt(){
   if(inT){ const m=parseInt(inT.split(':')[0])*60+parseInt(inT.split(':')[1]); if(m<480) return toast('Roster Error: IN Time 08:00 AM se pehle ka nahi ho sakta!',1); if(m>=720) return toast('Roster Error: IN Time subah (AM) ka hona chahiye!',1); }
   if(outT){ const m=parseInt(outT.split(':')[0])*60+parseInt(outT.split(':')[1]); if(m>960) return toast('Roster Error: OUT Time 04:00 PM ke baad ka nahi ho sakta!',1); if(m<720) return toast('Roster Error: OUT Time shaam (PM) ka hona chahiye!',1); }
   $('stuAttMsg').textContent="Saving...";$('stuAttMsg').style.color="var(--pri)";
-  const r=await call({action:'submitTimeAtt',student:D.students[0].username,date:dt,status:st,inTime:inT,outTime:outT,precaution:prec});
-  if(r.ok){$('stuAttMsg').textContent="Attendance Submitted Successfully!";$('stuAttMsg').style.color="var(--ok)";toast('Hazri lag gayi!');}
-  else{$('stuAttMsg').textContent=r.msg;$('stuAttMsg').style.color="var(--low)";}
+  const r=await call({action:'submitTimeAtt',student:timeSelectedStudent()?.username,date:dt,status:st,inTime:inT,outTime:outT,precaution:prec});
+  if(r.ok){const fresh=await call({action:'list'});if(fresh.ok){D=fresh;refreshTimePolicy();}$('stuAttMsg').textContent="Attendance Submitted Successfully!";$('stuAttMsg').style.color="var(--ok)";toast('Hazri lag gayi!');}
+  else{if(r.msg==='TIME_ATT_LOCKED'){selected.timeLock={locked:true,missed:4};refreshTimePolicy();r.msg=LG==='ur'?'حاضری بند ہے، استاد یا ناظم سے رابطہ کریں۔':'Attendance locked. Contact your teacher or admin.';}$('stuAttMsg').textContent=r.msg;$('stuAttMsg').style.color="var(--low)";}
 }
 async function loadHazriSummary(){
   const m=$('sumMonth').value||new Date().toISOString().slice(0,7);
@@ -1585,6 +1589,7 @@ function renderSalary(){
         statusHtml = `<span class="bd low" style="margin-right:4px;">${t('app_rejected')}</span> <button class="btn sm" style="background:var(--mute);" onclick="toggleApp('${s.username}','${m}','Pending')">Reset</button>`;
     }
 
+    if(D.me.role!=='admin')statusHtml=statusHtml.replace(/<button[\s\S]*?<\/button>/g,'');
     const markedDays=att.length;
     let attColor=markedDays>=totalDaysInMonth?'var(--ok)':'var(--low)';
     let attText=`<b style="color:${attColor};cursor:pointer;text-decoration:underline;" onclick="showMissingDays('${s.username}','${m}')">${markedDays} / ${totalDaysInMonth} days</b>`;
@@ -1719,6 +1724,7 @@ function tsRender(r) {
     document.body.appendChild(modal);
   }
   modal.querySelector('.mb').innerHTML = html;
+  if(D.me.role!=='admin')modal.querySelectorAll('button[onclick^="tsBulk"],button[onclick^="tsDay"],button[onclick^="tsEdit"],input.tsSel,#tsSelAll').forEach(el=>el.remove());
   modal.hidden = false;
 }
 
@@ -1879,8 +1885,26 @@ async function downloadExcel(){
   const ba=new Uint8Array(bn),blob=new Blob([ba],{type:'application/vnd.ms-excel'});
   const url=window.URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=r.filename;a.click();window.URL.revokeObjectURL(url);toast('Excel Downloaded!');
 }
+function timeSelectedStudent(){
+  if(!D?.me)return null;
+  return D.me.role==='student'?D.students[0]:D.students.find(s=>String(s.username)===$('timeStudent').value);
+}
+function refreshTimePolicy(){
+  if(!D?.me)return;
+  const staff=D.me.role!=='student', sel=$('timeStudent'), old=sel.value;
+  $('timeStudentWrap').hidden=!staff;
+  $('timeStudentLabel').textContent=LG==='ur'?'طالب علم':'Student';
+  sel.innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(displayName(s))}${s.timeLock?.locked?' 🔒':''}</option>`).join('');
+  if(D.students.some(s=>String(s.username)===old))sel.value=old;
+  const student=timeSelectedStudent(), locked=!!student?.timeLock?.locked;
+  const notice=$('timePolicyNotice');notice.hidden=!locked;
+  notice.textContent=LG==='ur'?(staff?'حاضری درج کرنے سے لاک کھل جائے گا۔':'چار ایام کی حاضری نہ ہونے کی وجہ سے حاضری بند ہے۔ استاد یا ناظم سے رابطہ کریں۔'):(staff?'Locked: submitting attendance will unlock this student.':'Attendance locked after four missed working days. Contact your teacher or admin.');
+  document.querySelector('#p_stuatt button[onclick="submitStuTimeAtt()"]').disabled=!student||(!staff&&locked);
+  $('sa_precaution').parentElement.hidden=D.me.role==='teacher';
+  if(D.me.role==='teacher')$('sa_precaution').value='';
+}
 function fill(){
-  applyClassCorrections();setVer();
+  applyClassCorrections();setVer();refreshTimePolicy();
   const sv=$('st').value,cv=$('cf').value,mv=$('mf').value,tv=$('tc').value;
   $('st').innerHTML=D.students.map(s=>`<option value="${esc(s.username)}">${esc(displayName(s))} (${esc(displayClass(s.class))})</option>`).join('');
   if(sv)$('st').value=sv;
