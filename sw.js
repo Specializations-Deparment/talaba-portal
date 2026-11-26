@@ -1,7 +1,7 @@
 
 const ROOT = new URL('./', self.location.href);
 const PREFIX = 'student-portal-' + ROOT.pathname + '-';
-const CACHE = PREFIX + 'v7-print-fix';
+const CACHE = PREFIX + 'v8-attention-fix';
 
 const SHELL = [
   'index.html',
@@ -17,8 +17,7 @@ const allowed = new Set(
   SHELL.map(p => new URL(p, ROOT).href)
 );
 
-const chart =
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+const chart = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
@@ -33,7 +32,6 @@ self.addEventListener('install', event => {
     );
 
     await c.add(chart).catch(() => {});
-
     await self.skipWaiting();
   })());
 });
