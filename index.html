@@ -774,12 +774,19 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
         <label class="f"><span>Date</span><input type="date" id="sa_date" style="margin-bottom:20px;" onchange="checkSunday()"></label>
         <label class="f"><span>Status</span>
           <select id="sa_status" style="margin-bottom:20px;" onchange="toggleTimeInputs(this.value)">
-            <option value="Present">Present</option>
-            <option value="Leave">Leave</option>
-            <option value="Absent">Absent</option>
-            <option value="Qafila">Madani Qafila</option>
-            <option value="Haftawar Tatti">Haftawar Tatti (Weekly Holiday)</option>
-          </select>
+<option value="Present">Present</option>
+<option value="Absent">Absent</option>
+<option value="Leave">Leave</option>
+<option value="Qafila">Madani Qafila</option>
+<option value="Haftawar Tatti">Haftawar Taatil (Weekly Holiday)</option>
+<option value="Ashura">Ashura</option>
+<option value="Milad Celebration">Milad Celebration</option>
+<option value="Gyarhveen Sharif">Gyarhveen Sharif</option>
+<option value="Day of Arafah">Day of Arafah</option>
+<option value="Eid-ul-Adha">Eid-ul-Adha</option>
+<option value="Independence Day">Independence Day</option>
+<option value="Half Day">Half Day</option>
+</select>
         </label>
         <div id="timeInputsDiv">
           <label class="f"><span>IN TIME (08:00 AM - 11:59 AM)</span><input type="time" id="sa_in" min="08:00" max="11:59" style="margin-bottom:20px;"></label>
@@ -1000,12 +1007,19 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
     
     <label class="f" style="margin-bottom:10px;"><span>Status</span>
       <select id="te_status" onchange="toggleTeTimeInputs(this.value)">
-        <option value="Present">Present</option>
-        <option value="Leave">Leave</option>
-        <option value="Absent">Absent</option>
-        <option value="Qafila">Madani Qafila</option>
-        <option value="Haftawar Tatti">Haftawar Tatti (Holiday)</option>
-      </select>
+<option value="Present">Present</option>
+<option value="Absent">Absent</option>
+<option value="Leave">Leave</option>
+<option value="Qafila">Madani Qafila</option>
+<option value="Haftawar Tatti">Haftawar Taatil (Weekly Holiday)</option>
+<option value="Ashura">Ashura</option>
+<option value="Milad Celebration">Milad Celebration</option>
+<option value="Gyarhveen Sharif">Gyarhveen Sharif</option>
+<option value="Day of Arafah">Day of Arafah</option>
+<option value="Eid-ul-Adha">Eid-ul-Adha</option>
+<option value="Independence Day">Independence Day</option>
+<option value="Half Day">Half Day</option>
+</select>
     </label>
     
     <div id="te_timewrap">
@@ -1047,7 +1061,7 @@ html[dir=rtl] #pm>.pmb{animation-name:nativeProfileRTL}@keyframes nativeProfileR
 <script>
 const API='https://script.google.com/macros/s/AKfycbyMaERKLv2aE6K3ZHlW2QG-VGOQAdF-Nu4vXF7az-TEo3KRxOWwmUD7l-3FricEbPgV9g/exec';
 let U,P,D,CH=[],TT,EXP=[],EID;
-const VER='43';
+const VER='45';
 
 let chartLoadPromise=null, pendingAnalysisCharts=null;
 function ensureCharts(){
@@ -1346,7 +1360,29 @@ const ordk=s=>D.keys.filter(k=>k!='photo'&&s.has(k));
 const HIGH=85,LOW=60;
 const lv=p=>p>=HIGH?'ok':p>=LOW?'mid':'low';
 const stl=l=>t({ok:'st_ex',mid:'st_ok',low:'st_low'}[l]);
-const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" ${c==='xxl'?'':'loading="lazy" decoding="async"'} src="${D.photos[u]}" alt="">`:`<span class="ava ini ${c}">${esc(String(n).trim()[0]||'')}</span>`;
+const ava=(u,n,c='')=>D.photos[u]?`<img class="ava ${c}" ${c==='xxl'?'':'loading="lazy" decoding="async"'} src="${esc(D.photos[u])}" alt="">`:`<span class="ava ini ${c}" data-deferred-photo="${esc(u)}">${esc(String(n).trim()[0]||'')}</span>`;
+let photoJob=null, photoOwner=null;
+async function ensurePortalPhotos(){
+  if(!D || !D.photosDeferred)return true;
+  const owner=D, user=U, pass=P;
+  if(photoJob && photoOwner===owner)return photoJob;
+  photoOwner=owner;
+  const job=(async()=>{
+    const r=await call({action:'loadPhotos'});
+    if(D!==owner || U!==user || P!==pass || $('app').hidden)return false;
+    if(!r.ok || !r.photos)return false;
+    D.photos=r.photos;D.photosDeferred=false;
+    document.querySelectorAll('[data-deferred-photo]').forEach(el=>{
+      const src=D.photos[el.dataset.deferredPhoto];if(!src)return;
+      const img=document.createElement('img');img.className=el.className.replace(/\bini\b/g,'').trim();img.alt='';img.loading='lazy';img.decoding='async';img.src=src;el.replaceWith(img);
+    });
+    return true;
+  })();
+  photoJob=job;
+  try{return await job;}finally{if(photoJob===job){photoJob=null;photoOwner=null;}}
+}
+function requestTabPhotos(x){if(['an','at','en','stuatt'].includes(x))ensurePortalPhotos().catch(()=>{});}
+
 function setVer(){$('vtag').textContent='v'+VER+(D?' · server '+(D.ver?'v'+D.ver:'old'):'');$('ver').textContent='Portal v'+VER+(D?' · Server '+(D.ver?'v'+D.ver:'OLD (update Code.gs)'):'');}
 function toast(m,bad){const x=$('toast');x.innerHTML='';x.textContent=m;x.className=bad?'bad':'';x.hidden=false;clearTimeout(TT);TT=setTimeout(()=>x.hidden=true,4000);}
 function toastWithUndo(msg, onUndo, ms){
@@ -1361,6 +1397,7 @@ function toastWithUndo(msg, onUndo, ms){
 function show(x){
   ['an','stuatt','sum','sal','en','at','tg','adm'].forEach(y=>{$(y=='an'||y=='stuatt'||y=='sum'||y=='sal'||y=='en'||y=='at'?'p_'+y:y).hidden=y!=x;});
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==x));
+  if(D && !$('app').hidden)requestTabPhotos(x);
   if(x=='an')flushAnalysisCharts();
   if(x=='at')attOpen();
   if(x=='stuatt')refreshTimePolicy();
@@ -1377,8 +1414,10 @@ function reorderTabs(){
   const map={};tabs.querySelectorAll('button').forEach(b=>{map[b.dataset.t]=b;});
   order.forEach(t=>{if(map[t]) tabs.appendChild(map[t]);});
 }
+const TIME_STATUS_LABELS = {"Present": ["Present", "حاضر"], "Absent": ["Absent", "غیر حاضر"], "Leave": ["Leave", "رخصت"], "Qafila": ["Madani Qafila", "مدنی قافلہ"], "Haftawar Tatti": ["Haftawar Taatil (Weekly Holiday)", "ہفتہ وار تعطیل"], "Ashura": ["Ashura", "عاشورہ"], "Milad Celebration": ["Milad Celebration", "جشنِ میلاد"], "Gyarhveen Sharif": ["Gyarhveen Sharif", "گیارہویں شریف"], "Day of Arafah": ["Day of Arafah", "یومِ عرفہ"], "Eid-ul-Adha": ["Eid-ul-Adha", "عید الاضحیٰ"], "Independence Day": ["Independence Day", "یومِ آزادی"], "Half Day": ["Half Day", "نصف دن"]};
+function timeStatusLabel(status){return TIME_STATUS_LABELS[status]?.[LG==='ur'?1:0] || status;}
 function setLang(l){
-  LG=l;if(typeof D!=='undefined'&&D?.me)refreshTimePolicy();try{localStorage.setItem('lg',l)}catch(e){}
+  LG=l;document.querySelectorAll('#sa_status option,#te_status option').forEach(o=>o.textContent=timeStatusLabel(o.value));if(typeof D!=='undefined'&&D?.me)refreshTimePolicy();try{localStorage.setItem('lg',l)}catch(e){}
   const scrollY = window.scrollY;
   document.documentElement.lang=l;document.documentElement.dir=l=='ur'?'rtl':'ltr';
   document.title=t('title');
@@ -1441,7 +1480,7 @@ async function login(e){
   btn.disabled = true;
   spin.hidden = false;
 
-  const r=await call({action:'list'});
+  const r=await call({action:'list',deferPhotos:true});
   
   btn.disabled = false;
   spin.hidden = true;
@@ -1498,6 +1537,7 @@ async function login(e){
     const anSearch=document.querySelector('#p_an .bar-tools .sfs-search-wrap'); if(anSearch) anSearch.style.display='none';
   }
   try{ const lt=localStorage.getItem('lastTab')||'an'; const lBtn=document.querySelector(`.tabs button[data-t="${lt}"]`); if(lBtn && !lBtn.hidden) show(lt); }catch(e){}
+  requestTabPhotos(document.querySelector('.tabs button.on')?.dataset.t);
 }
 
 function startLockout(secs) {
@@ -1537,11 +1577,11 @@ function checkSunday(){
   if(dow===0){$('sa_status').value='Haftawar Tatti';toggleTimeInputs('Haftawar Tatti');}
   else if($('sa_status').value==='Haftawar Tatti'){$('sa_status').value='Present';toggleTimeInputs('Present');}
 }
-function toggleTimeInputs(status){ const hide=['Leave','Absent','Qafila','Haftawar Tatti'].includes(status); document.getElementById('timeInputsDiv').style.display=hide?'none':'block'; }
+function toggleTimeInputs(status){ const hide=["Leave", "Absent", "Qafila", "Haftawar Tatti", "Ashura", "Milad Celebration", "Gyarhveen Sharif", "Day of Arafah", "Eid-ul-Adha", "Independence Day"].includes(status); document.getElementById('timeInputsDiv').style.display=hide?'none':'block'; }
 async function submitStuTimeAtt(){
   const selected=timeSelectedStudent(); if(!selected)return;
   const dt=$('sa_date').value,st=$('sa_status').value;
-  const hideTime=['Leave','Absent','Qafila','Haftawar Tatti'].includes(st);
+  const hideTime=["Leave", "Absent", "Qafila", "Haftawar Tatti", "Ashura", "Milad Celebration", "Gyarhveen Sharif", "Day of Arafah", "Eid-ul-Adha", "Independence Day"].includes(st);
   const inT=hideTime?"":$('sa_in').value, outT=hideTime?"":$('sa_out').value, prec=$('sa_precaution').value;
   if(!dt) return toast('Date select karein',1);
   if(inT){ const m=parseInt(inT.split(':')[0])*60+parseInt(inT.split(':')[1]); if(m<480) return toast('Roster Error: IN Time 08:00 AM se pehle ka nahi ho sakta!',1); if(m>=720) return toast('Roster Error: IN Time subah (AM) ka hona chahiye!',1); }
@@ -1573,7 +1613,7 @@ async function loadHazriSummary(){
   html+=`<h4>${t('at_rec')}</h4><div class="t"><table><thead><tr><th>${t('ts_date')}</th><th>${t('ts_status')}</th><th>${t('ts_in')}</th><th>${t('ts_out')}</th><th>${t('ts_late')}</th></tr></thead><tbody>`;
   let allRecs=[];for(let st in summary){summary[st].forEach(rec=>allRecs.push({...rec,status:st}));}
   allRecs.sort((a,b)=>new Date(a.date)-new Date(b.date));
-  allRecs.forEach(rec=>{let stName=rec.status==='Present'?t('ts_present'):rec.status==='Leave'?t('ts_leave'):rec.status==='Absent'?t('ts_absent'):t('ts_holiday');let clr=rec.status==='Present'?'var(--ok)':rec.status==='Leave'?'var(--mid)':'var(--low)';html+=`<tr><td>${rec.date}</td><td style="color:${clr};font-weight:bold;">${stName}</td><td>${rec.inTime}</td><td>${rec.outTime}</td><td>${rec.lateMins||0}</td></tr>`;});
+  allRecs.forEach(rec=>{let stName=esc(timeStatusLabel(rec.status));let clr=rec.status==='Present'?'var(--ok)':rec.status==='Leave'?'var(--mid)':'var(--low)';html+=`<tr><td>${rec.date}</td><td style="color:${clr};font-weight:bold;">${stName}</td><td>${rec.inTime}</td><td>${rec.outTime}</td><td>${rec.lateMins||0}</td></tr>`;});
   html+=`</tbody></table></div>`;
   
   $('sumOut').innerHTML = statusHtml + html;
@@ -1721,7 +1761,7 @@ function tsRender(r) {
 
   if (!allRecs.length) html += `<tr><td colspan="8" style="text-align:center;">${t('empty')}</td></tr>`;
   else allRecs.forEach(rec => {
-    const stName = rec.status==='Present'?t('ts_present'):rec.status==='Leave'?t('ts_leave'):rec.status==='Absent'?t('ts_absent'):t('ts_holiday');
+    const stName = esc(timeStatusLabel(rec.status));
     const clr = rec.status==='Present'?'var(--ok)':rec.status==='Leave'?'var(--mid)':'var(--low)';
     html += `<tr>
       <td><input type="checkbox" class="tsSel" data-date="${esc(rec.date)}"></td>
@@ -1834,7 +1874,7 @@ function tsEdit(date, status, inRaw, outRaw, prec) {
 }
 
 function toggleTeTimeInputs(status) {
-  const hide = ['Leave', 'Absent', 'Qafila', 'Haftawar Tatti'].includes(status);
+  const hide = ["Leave", "Absent", "Qafila", "Haftawar Tatti", "Ashura", "Milad Celebration", "Gyarhveen Sharif", "Day of Arafah", "Eid-ul-Adha", "Independence Day"].includes(status);
   $('te_timewrap').style.display = hide ? 'none' : 'block';
 }
 
@@ -2515,7 +2555,8 @@ function ptable(A,ks,Tg,tf,m){
 }
 let PU=null;
 function openPhoto(u){const s=D.students.find(x=>String(x.username)==String(u));if(!D.photos[u]) return toast(t('pf_nophoto'),1);$('lbi').src=D.photos[u];$('lbc').textContent=s?displayName(s):'';$('lb').hidden=false;}
-function openProfile(u,per){
+async function openProfile(u,per){
+  const owner=D; if(D?.photosDeferred){const ok=await ensurePortalPhotos();if(D!==owner)return;if(!ok){toast(t('msg_no_net'),1);return;}}
   const s=D.students.find(x=>String(x.username)==String(u));if(!s) return;PU=s.username;PP=per===undefined?'':per;
   const m=PP,all=D.entries.filter(e=>String(e.username)==String(u)),list=all.filter(e=>!m||mon(e)==m);
   const ms=m?[m]:[...new Set(list.map(mon))].sort(),a=agg(list);withAtt(a,ms,s.username,list);a.ov=ovOf(a,s.class,ms);
@@ -2534,7 +2575,8 @@ function openProfile(u,per){
 }
 function goStudent(){const s=D.students.find(x=>String(x.username)==String(PU));if(!s) return;$('pm').hidden=true;$('cf').value=s.class;fsf();$('sf').value=s.username;render();show('an');window.scrollTo({top:0,behavior:'smooth'});}
 
-function printReports() {
+async function printReports() {
+  const owner=D; if(D?.photosDeferred){const ok=await ensurePortalPhotos();if(D!==owner)return;if(!ok){toast(t('msg_no_net'),1);return;}}
   try {
     const c=$('cf').value,m=$('mf').value,sv=$('sf').value;
     const q=normalizeUrdu(($('q')&&$('q').value)||'');
